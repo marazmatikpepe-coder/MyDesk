@@ -1,0 +1,3261 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MyDesk">
+<meta name="theme-color" content="#007AFF">
+<title>MyDesk</title>
+<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk15RGVzayIsICAic2hvcnRfbmFtZSI6ICJNeURlc2siLCAgInN0YXJ0X3VybCI6ICIuIiwgICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAgImJhY2tncm91bmRfY29sb3IiOiAiI0YyRjJGNyIsICAidGhlbWVfY29sb3IiOiAiIzAwN0FGRiIKfQ==">
+
+<style>
+:root {
+  --accent: #007AFF;
+  --accent-light: #4DA3FF;
+  --accent-dark: #0055CC;
+  --accent-rgb: 0, 122, 255;
+
+  --bg-primary: #F2F2F7;
+  --bg-secondary: #FFFFFF;
+  --bg-tertiary: #E5E5EA;
+  --bg-elevated: rgba(255, 255, 255, 0.72);
+
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.78);
+  --glass-bg-light: rgba(255, 255, 255, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: rgba(0, 0, 0, 0.08);
+  --glass-blur: 40px;
+  --glass-blur-heavy: 60px;
+
+  --text-primary: #1C1C1E;
+  --text-secondary: #8E8E93;
+  --text-tertiary: #C7C7CC;
+  --text-on-accent: #FFFFFF;
+
+  --color-success: #34C759;
+  --color-warning: #FF9500;
+  --color-danger: #FF3B30;
+  --color-info: #5AC8FA;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 40px;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+
+  --spring: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.3s;
+  --duration-slow: 0.5s;
+
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --nav-height: 52px;
+  --tab-height: 56px;
+  --header-height: 56px;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #000000;
+  --bg-secondary: #1C1C1E;
+  --bg-tertiary: #2C2C2E;
+  --bg-elevated: rgba(44, 44, 46, 0.72);
+  --glass-bg: rgba(44, 44, 46, 0.55);
+  --glass-bg-heavy: rgba(44, 44, 46, 0.78);
+  --glass-bg-light: rgba(44, 44, 46, 0.35);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: rgba(0, 0, 0, 0.3);
+  --text-primary: #F2F2F7;
+  --text-secondary: #8E8E93;
+  --text-tertiary: #48484A;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-family: var(--font);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  transition: background var(--duration-normal) var(--spring);
+}
+
+input, textarea, select, button {
+  font-family: var(--font);
+  font-size: inherit;
+  border: none;
+  outline: none;
+  background: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+a { color: var(--accent); text-decoration: none; }
+img { display: block; max-width: 100%; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-tertiary); border-radius: var(--radius-full); }
+
+/* ============================================
+   WEBP EMOJI — сохраняем прозрачность и анимацию
+   ============================================ */
+.wemoji {
+  display: inline-block;
+  vertical-align: middle;
+  object-fit: contain;
+  background: transparent;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.wemoji-xs { width: 16px; height: 16px; }
+.wemoji-sm { width: 20px; height: 20px; }
+.wemoji-md { width: 28px; height: 28px; }
+.wemoji-lg { width: 48px; height: 48px; }
+.wemoji-xl { width: 72px; height: 72px; }
+.wemoji-2xl { width: 100px; height: 100px; }
+.wemoji-3xl { width: 128px; height: 128px; }
+
+#app {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 24px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.glass-heavy {
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.2);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: calc(var(--safe-top) + var(--space-sm)) var(--space-lg) var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-height: var(--header-height);
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.header-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; flex: 1; }
+
+.header-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) var(--spring);
+  position: relative;
+}
+
+.header-btn:active { transform: scale(0.9); background: rgba(var(--accent-rgb), 0.1); }
+.header-btn svg { width: 22px; height: 22px; }
+
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  padding: var(--space-sm) var(--space-lg) calc(var(--safe-bottom) + var(--space-sm));
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border-top: 1px solid var(--glass-border);
+}
+
+.tab-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-xs) var(--space-md);
+  border-radius: var(--radius-md);
+  transition: all var(--duration-fast) var(--spring);
+  position: relative;
+  min-width: 56px;
+}
+
+.tab-item svg { width: 24px; height: 24px; transition: all var(--duration-fast) var(--spring); color: var(--text-secondary); }
+.tab-item span { font-size: 10px; font-weight: 500; color: var(--text-secondary); transition: color var(--duration-fast) var(--spring); }
+.tab-item.active svg { color: var(--accent); }
+.tab-item.active span { color: var(--accent); }
+.tab-item:active { transform: scale(0.9); }
+
+.screen {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(var(--tab-height) + var(--safe-bottom) + var(--space-xl));
+  opacity: 0;
+  transform: translateY(8px);
+  transition: all var(--duration-normal) var(--ease-out);
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.screen.active { display: block; opacity: 1; transform: translateY(0); }
+.screen-content { padding: calc(var(--safe-top) + var(--space-lg)) var(--space-lg) var(--space-xl); }
+
+/* ONBOARDING */
+.onboarding-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  padding: var(--space-3xl);
+  transition: all var(--duration-slow) var(--ease-out);
+}
+
+.onboarding-overlay.hidden { opacity: 0; transform: scale(1.05); pointer-events: none; }
+
+.onboarding-step {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-xl);
+  max-width: 340px;
+  animation: fadeSlideUp 0.5s var(--ease-out);
+}
+
+.onboarding-step.active { display: flex; }
+.onboarding-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; }
+.onboarding-desc { font-size: 16px; color: var(--text-secondary); line-height: 1.5; }
+
+.onboarding-dots { display: flex; gap: var(--space-sm); margin: var(--space-xl) 0; }
+.onboarding-dot { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--text-tertiary); transition: all var(--duration-normal) var(--spring-bounce); }
+.onboarding-dot.active { width: 24px; background: var(--accent); }
+
+.btn-primary {
+  width: 100%;
+  max-width: 320px;
+  padding: var(--space-lg) var(--space-2xl);
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-size: 17px;
+  font-weight: 600;
+  border-radius: var(--radius-xl);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.btn-primary:active { transform: scale(0.97); filter: brightness(0.9); }
+
+.btn-secondary {
+  padding: var(--space-md) var(--space-2xl);
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: var(--radius-lg);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.btn-secondary:active { transform: scale(0.97); background: rgba(var(--accent-rgb), 0.08); }
+
+/* AUTH */
+.auth-screen {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 8000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  padding: var(--space-3xl);
+  transition: all var(--duration-slow) var(--ease-out);
+}
+
+.auth-screen.hidden { opacity: 0; transform: scale(1.02); pointer-events: none; }
+
+.auth-container { width: 100%; max-width: 380px; display: flex; flex-direction: column; align-items: center; gap: var(--space-xl); }
+
+.auth-logo-row { display: flex; align-items: center; gap: var(--space-md); }
+
+.auth-logo {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-subtitle { font-size: 16px; color: var(--text-secondary); text-align: center; }
+.auth-form { width: 100%; display: flex; flex-direction: column; gap: var(--space-md); }
+
+.input-group { position: relative; }
+
+.input-field {
+  width: 100%;
+  padding: var(--space-lg) var(--space-xl);
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  font-size: 16px;
+  color: var(--text-primary);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.input-field::placeholder { color: var(--text-tertiary); }
+.input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.15); }
+
+.auth-error { color: var(--color-danger); font-size: 14px; text-align: center; min-height: 20px; }
+.auth-toggle { font-size: 14px; color: var(--text-secondary); text-align: center; }
+.auth-toggle a { color: var(--accent); font-weight: 600; cursor: pointer; }
+.auth-forgot { font-size: 14px; color: var(--accent); text-align: center; cursor: pointer; }
+
+/* DASHBOARD */
+.dashboard-greeting {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin-bottom: var(--space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.dashboard-date { font-size: 15px; color: var(--text-secondary); margin-bottom: var(--space-2xl); }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  margin-top: var(--space-2xl);
+  gap: var(--space-sm);
+}
+
+.section-title { font-size: 18px; font-weight: 700; letter-spacing: -0.2px; display: flex; align-items: center; gap: var(--space-sm); }
+.section-action { font-size: 14px; color: var(--accent); font-weight: 600; }
+
+.dash-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 4px 16px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.12);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.dash-card:active { transform: scale(0.98); }
+
+.dash-schedule-item { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-md) 0; }
+.dash-schedule-item + .dash-schedule-item { border-top: 1px solid rgba(128,128,128,0.1); }
+
+.schedule-time { font-size: 14px; font-weight: 600; color: var(--accent); min-width: 50px; font-variant-numeric: tabular-nums; }
+.schedule-name { font-size: 15px; font-weight: 500; flex: 1; }
+.schedule-dot { width: 8px; height: 8px; border-radius: var(--radius-full); background: var(--accent); }
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-sm);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.task-item:active { transform: scale(0.98); }
+
+.task-check {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--duration-fast) var(--spring-bounce);
+  flex-shrink: 0;
+}
+
+.task-check.done { background: var(--accent); border-color: var(--accent); }
+.task-check.done::after {
+  content: '';
+  width: 8px;
+  height: 5px;
+  border-left: 2px solid white;
+  border-bottom: 2px solid white;
+  transform: rotate(-45deg) translateY(-1px);
+}
+
+.task-text { font-size: 15px; flex: 1; transition: all var(--duration-fast) var(--spring); }
+.task-text.done { text-decoration: line-through; color: var(--text-tertiary); }
+
+.task-priority { width: 6px; height: 6px; border-radius: var(--radius-full); flex-shrink: 0; }
+.task-priority.high { background: var(--color-danger); }
+.task-priority.medium { background: var(--color-warning); }
+.task-priority.low { background: var(--color-info); }
+
+.task-due { font-size: 12px; color: var(--text-secondary); flex-shrink: 0; }
+
+/* NOTES */
+.notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: var(--space-md); }
+
+.note-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  box-shadow: 0 2px 12px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.12);
+  transition: all var(--duration-normal) var(--spring);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.note-card:active { transform: scale(0.96); }
+.note-card.pinned { border-color: rgba(var(--accent-rgb), 0.3); }
+
+.note-card .pin-badge {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+}
+
+.note-title { font-size: 15px; font-weight: 600; letter-spacing: -0.2px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.note-preview { font-size: 13px; color: var(--text-secondary); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+.note-meta { display: flex; align-items: center; justify-content: space-between; gap: var(--space-sm); }
+.note-date { font-size: 11px; color: var(--text-tertiary); }
+.note-folder-badge { font-size: 10px; padding: 2px 6px; background: rgba(var(--accent-rgb), 0.1); color: var(--accent); border-radius: var(--radius-sm); font-weight: 500; }
+.note-img-preview { width: 100%; height: 80px; object-fit: cover; border-radius: var(--radius-md); margin-bottom: var(--space-xs); }
+
+/* EDITOR */
+.editor-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 500;
+  background: var(--bg-primary);
+  display: flex;
+  flex-direction: column;
+  transition: all var(--duration-normal) var(--ease-out);
+  transform: translateY(100%);
+  opacity: 0;
+}
+
+.editor-overlay.open { transform: translateY(0); opacity: 1; }
+
+.editor-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: calc(var(--safe-top) + var(--space-sm)) var(--space-lg) var(--space-sm);
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border-bottom: 1px solid var(--glass-border);
+  min-height: var(--header-height);
+}
+
+.editor-back {
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-full);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.editor-back:active { transform: scale(0.9); background: rgba(var(--accent-rgb), 0.1); }
+.editor-back svg { width: 22px; height: 22px; color: var(--accent); }
+
+.editor-status {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.editor-actions { display: flex; gap: var(--space-sm); }
+
+.editor-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: var(--space-xl) var(--space-lg); }
+
+.editor-title-input {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  width: 100%;
+  border: none; outline: none; background: transparent;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  line-height: 1.3;
+}
+
+.editor-title-input::placeholder { color: var(--text-tertiary); }
+
+.editor-content {
+  font-size: 16px;
+  line-height: 1.7;
+  min-height: 200px;
+  width: 100%;
+  border: none; outline: none; background: transparent;
+  color: var(--text-primary);
+  resize: none;
+  font-family: var(--font);
+}
+
+.editor-content::placeholder { color: var(--text-tertiary); }
+
+.editor-images { display: flex; flex-wrap: wrap; gap: var(--space-sm); margin-top: var(--space-lg); }
+.editor-img { width: 100px; height: 100px; object-fit: cover; border-radius: var(--radius-md); }
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-lg) calc(var(--safe-bottom) + var(--space-sm));
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border-top: 1px solid var(--glass-border);
+}
+
+.toolbar-btn {
+  width: 40px; height: 40px;
+  border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.toolbar-btn:active { transform: scale(0.9); background: rgba(var(--accent-rgb), 0.1); }
+.toolbar-btn svg { width: 20px; height: 20px; color: var(--text-secondary); }
+
+/* FAB */
+.fab {
+  position: fixed;
+  bottom: calc(var(--tab-height) + var(--safe-bottom) + var(--space-lg));
+  right: var(--space-xl);
+  width: 56px; height: 56px;
+  border-radius: var(--radius-full);
+  background: var(--accent);
+  color: white;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(var(--accent-rgb), 0.4), 0 8px 32px rgba(0,0,0,0.1);
+  z-index: 150;
+  transition: all var(--duration-fast) var(--spring-bounce);
+}
+
+.fab:active { transform: scale(0.9); }
+.fab svg { width: 26px; height: 26px; }
+
+.fab-menu {
+  position: fixed;
+  bottom: calc(var(--tab-height) + var(--safe-bottom) + var(--space-lg) + 64px);
+  right: var(--space-xl);
+  z-index: 149;
+  display: flex;
+  flex-direction: column-reverse;
+  gap: var(--space-sm);
+  opacity: 0;
+  transform: translateY(20px) scale(0.8);
+  pointer-events: none;
+  transition: all var(--duration-normal) var(--spring-bounce);
+}
+
+.fab-menu.open { opacity: 1; transform: translateY(0) scale(1); pointer-events: auto; }
+
+.fab-menu-item {
+  display: flex; align-items: center; gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 4px 16px var(--glass-shadow);
+  white-space: nowrap;
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.fab-menu-item:active { transform: scale(0.95); }
+.fab-menu-item span { font-size: 15px; font-weight: 500; }
+
+/* SEARCH */
+.search-bar {
+  display: flex; align-items: center; gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-lg);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.search-bar:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1); }
+.search-bar svg { width: 18px; height: 18px; color: var(--text-tertiary); flex-shrink: 0; }
+.search-bar input { flex: 1; font-size: 16px; background: transparent; }
+.search-bar input::placeholder { color: var(--text-tertiary); }
+
+/* FOLDERS */
+.folder-list { display: flex; flex-direction: column; gap: var(--space-sm); }
+
+.folder-item {
+  display: flex; align-items: center; gap: var(--space-md);
+  padding: var(--space-lg);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  transition: all var(--duration-fast) var(--spring);
+  cursor: pointer;
+}
+
+.folder-item:active { transform: scale(0.98); }
+
+.folder-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-md);
+  background: rgba(var(--accent-rgb), 0.08);
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+
+.folder-info { flex: 1; }
+.folder-name { font-size: 16px; font-weight: 600; }
+.folder-count { font-size: 13px; color: var(--text-secondary); }
+.folder-arrow { color: var(--text-tertiary); }
+
+/* SCHEDULE */
+.schedule-tab {
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-full);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.schedule-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+.schedule-tab:active { transform: scale(0.95); }
+
+.schedule-day-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 2px 12px var(--glass-shadow);
+}
+
+.schedule-entry { display: flex; align-items: center; gap: var(--space-md); padding: var(--space-sm) 0; }
+.schedule-entry + .schedule-entry { border-top: 1px solid rgba(128,128,128,0.08); }
+
+.schedule-entry-color { width: 4px; height: 32px; border-radius: 2px; background: var(--accent); flex-shrink: 0; }
+.schedule-entry-time { font-size: 13px; font-weight: 600; color: var(--text-secondary); min-width: 48px; font-variant-numeric: tabular-nums; }
+.schedule-entry-name { font-size: 15px; font-weight: 500; flex: 1; }
+
+/* CALENDAR */
+.calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; margin-bottom: var(--space-lg); }
+.cal-header { text-align: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); padding: var(--space-sm) 0; }
+
+.cal-day {
+  aspect-ratio: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border-radius: var(--radius-md);
+  font-size: 15px; font-weight: 500;
+  transition: all var(--duration-fast) var(--spring);
+  cursor: pointer;
+  position: relative;
+}
+
+.cal-day:active { transform: scale(0.9); }
+.cal-day.today { background: var(--accent); color: white; font-weight: 700; }
+.cal-day.selected { background: rgba(var(--accent-rgb), 0.15); color: var(--accent); font-weight: 700; }
+.cal-day.other-month { color: var(--text-tertiary); }
+.cal-day .has-event { width: 4px; height: 4px; background: var(--accent); border-radius: var(--radius-full); position: absolute; bottom: 4px; }
+.cal-day.today .has-event { background: white; }
+
+.cal-month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-lg); }
+.cal-month-title { font-size: 20px; font-weight: 700; }
+
+.cal-nav-btn {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-full);
+  display: flex; align-items: center; justify-content: center;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  transition: all var(--duration-fast) var(--spring);
+}
+
+.cal-nav-btn:active { transform: scale(0.9); }
+
+/* SETTINGS */
+.settings-group { margin-bottom: var(--space-2xl); }
+.settings-group-title { font-size: 13px; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-sm); padding-left: var(--space-sm); }
+
+.settings-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.setting-item {
+  display: flex; align-items: center; gap: var(--space-md);
+  padding: var(--space-lg);
+  transition: all var(--duration-fast) var(--spring);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.setting-item + .setting-item { border-top: 1px solid rgba(128,128,128,0.08); }
+.setting-item:active { background: rgba(128,128,128,0.05); }
+
+.setting-icon {
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.setting-icon.blue { background: #007AFF; }
+.setting-icon.green { background: #34C759; }
+.setting-icon.orange { background: #FF9500; }
+.setting-icon.red { background: #FF3B30; }
+.setting-icon.purple { background: #AF52DE; }
+.setting-icon.gray { background: #8E8E93; }
+.setting-icon svg { width: 16px; height: 16px; color: white; }
+
+.setting-label { flex: 1; font-size: 16px; }
+.setting-value { font-size: 15px; color: var(--text-secondary); }
+
+.toggle {
+  width: 51px; height: 31px;
+  border-radius: 16px;
+  background: var(--text-tertiary);
+  position: relative;
+  transition: background var(--duration-fast) var(--spring);
+  flex-shrink: 0;
+}
+
+.toggle.on { background: var(--accent); }
+
+.toggle::after {
+  content: '';
+  width: 27px; height: 27px;
+  border-radius: 14px;
+  background: white;
+  position: absolute;
+  top: 2px; left: 2px;
+  transition: transform var(--duration-fast) var(--spring-bounce);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.toggle.on::after { transform: translateX(20px); }
+
+.color-options { display: flex; gap: var(--space-md); padding: var(--space-lg); flex-wrap: wrap; }
+
+.color-option {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-full);
+  transition: all var(--duration-fast) var(--spring-bounce);
+  position: relative;
+}
+
+.color-option:active { transform: scale(0.85); }
+.color-option.selected::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border: 2px solid currentColor;
+  border-radius: var(--radius-full);
+}
+
+/* EMPTY STATES */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4xl) var(--space-2xl);
+  text-align: center;
+  gap: var(--space-lg);
+}
+
+.empty-state-title { font-size: 20px; font-weight: 700; letter-spacing: -0.3px; }
+.empty-state-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.5; max-width: 280px; }
+
+/* MODALS */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 600;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duration-normal) var(--ease-out);
+  padding: var(--space-lg);
+}
+
+.modal-backdrop.open { opacity: 1; pointer-events: auto; }
+
+.modal-sheet {
+  width: 100%;
+  max-width: 420px;
+  max-height: 85vh;
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur-heavy));
+  -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform var(--duration-normal) var(--ease-out);
+  padding: var(--space-xl);
+  padding-bottom: calc(var(--safe-bottom) + var(--space-xl));
+}
+
+.modal-backdrop.open .modal-sheet { transform: translateY(0); }
+.modal-handle { width: 36px; height: 5px; background: var(--text-tertiary); border-radius: 3px; margin: 0 auto var(--space-xl); }
+.modal-title { font-size: 20px; font-weight: 700; margin-bottom: var(--space-lg); text-align: center; display: flex; align-items: center; justify-content: center; gap: var(--space-sm); }
+
+/* SYNC */
+.sync-indicator {
+  position: fixed;
+  top: calc(var(--safe-top) + var(--space-sm));
+  left: 50%;
+  transform: translateX(-50%) translateY(-60px);
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--glass-bg-heavy);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  z-index: 300;
+  transition: transform var(--duration-normal) var(--spring-bounce);
+  box-shadow: 0 4px 20px var(--glass-shadow);
+}
+
+.sync-indicator.visible { transform: translateX(-50%) translateY(0); }
+
+.sync-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid var(--text-tertiary);
+  border-top-color: var(--accent);
+  border-radius: var(--radius-full);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in { animation: fadeSlideUp 0.4s var(--ease-out) forwards; }
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.1s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.2s; opacity: 0; }
+.stagger-5 { animation-delay: 0.25s; opacity: 0; }
+
+.toast {
+  position: fixed;
+  bottom: calc(var(--tab-height) + var(--safe-bottom) + var(--space-2xl));
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: var(--space-md) var(--space-xl);
+  background: var(--bg-secondary);
+  border-radius: var(--radius-xl);
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  z-index: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: all var(--duration-normal) var(--spring-bounce);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 90vw;
+}
+
+.toast.visible { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+
+/* DESKTOP */
+@media (min-width: 768px) {
+  .tab-bar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0; right: auto;
+    width: 80px;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: calc(var(--safe-top) + var(--space-2xl)) var(--space-sm) var(--space-2xl);
+    gap: var(--space-sm);
+    border-top: none;
+    border-right: 1px solid var(--glass-border);
+  }
+
+  .tab-item { width: 56px; height: 48px; gap: 3px; }
+  .screen-content { margin-left: 80px; padding: calc(var(--safe-top) + var(--space-2xl)) var(--space-3xl); }
+  .screen { padding-bottom: var(--space-3xl); }
+  .notes-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+  .fab { bottom: var(--space-3xl); right: var(--space-3xl); }
+  .fab-menu { bottom: calc(var(--space-3xl) + 64px); right: var(--space-3xl); }
+  .editor-overlay { margin-left: 80px; width: calc(100% - 80px); }
+  .modal-sheet { border-radius: var(--radius-2xl); margin-bottom: var(--space-xl); }
+}
+
+@media (min-width: 1024px) {
+  .notes-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+  .screen-content { max-width: 900px; }
+}
+
+/* LOADING */
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  gap: var(--space-lg);
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+.loading-screen.hidden { opacity: 0; pointer-events: none; }
+
+.loading-logo {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(0.97); }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-screen" id="loadingScreen">
+  <img class="wemoji wemoji-2xl" src="https://i.ibb.co/LDGqYG69/Rocket.webp" alt="">
+  <div class="loading-logo">MyDesk</div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SYNC -->
+<div class="sync-indicator" id="syncIndicator">
+  <img class="wemoji wemoji-xs" src="https://i.ibb.co/Rrjn3z6/Cloud.webp" alt="" id="syncIcon">
+  <span id="syncText">Синхронизация...</span>
+</div>
+
+<!-- ONBOARDING -->
+<div class="onboarding-overlay hidden" id="onboarding">
+  <div class="onboarding-step active" data-step="0">
+    <img class="wemoji wemoji-3xl" src="https://i.ibb.co/fYNSDGnG/Waving-Hand.webp" alt="">
+    <div class="onboarding-title">Добро пожаловать в MyDesk</div>
+    <div class="onboarding-desc">Ваше единое пространство для заметок, задач и расписания</div>
+  </div>
+  <div class="onboarding-step" data-step="1">
+    <img class="wemoji wemoji-3xl" src="https://i.ibb.co/S4Gzxm2Y/Memo.webp" alt="">
+    <div class="onboarding-title">Заметки и задачи</div>
+    <div class="onboarding-desc">Записывайте идеи, создавайте задачи и организуйте информацию</div>
+  </div>
+  <div class="onboarding-step" data-step="2">
+    <img class="wemoji wemoji-3xl" src="https://i.ibb.co/ycqGctjz/Tear-Off-Calendar.webp" alt="">
+    <div class="onboarding-title">Расписание и календарь</div>
+    <div class="onboarding-desc">Планируйте свой день с удобным расписанием и календарём</div>
+  </div>
+  <div class="onboarding-step" data-step="3">
+    <img class="wemoji wemoji-3xl" src="https://i.ibb.co/Rrjn3z6/Cloud.webp" alt="">
+    <div class="onboarding-title">Работает везде</div>
+    <div class="onboarding-desc">Автосохранение, офлайн-доступ и синхронизация между устройствами</div>
+  </div>
+  <div class="onboarding-dots">
+    <div class="onboarding-dot active" data-dot="0"></div>
+    <div class="onboarding-dot" data-dot="1"></div>
+    <div class="onboarding-dot" data-dot="2"></div>
+    <div class="onboarding-dot" data-dot="3"></div>
+  </div>
+  <button class="btn-primary" id="onboardingNext">Далее</button>
+  <button class="btn-secondary" id="onboardingSkip" style="margin-top:8px;">Пропустить</button>
+</div>
+
+<!-- AUTH -->
+<div class="auth-screen hidden" id="authScreen">
+  <div class="auth-container">
+    <div class="auth-logo-row">
+      <img class="wemoji wemoji-lg" src="https://i.ibb.co/LDGqYG69/Rocket.webp" alt="">
+      <div class="auth-logo">MyDesk</div>
+    </div>
+    <div class="auth-subtitle" id="authSubtitle">Войдите, чтобы синхронизировать данные</div>
+
+    <div class="auth-form" id="authForm">
+      <div class="input-group" id="authNameGroup" style="display:none;">
+        <input type="text" class="input-field" id="authName" placeholder="Имя" autocomplete="name">
+      </div>
+      <div class="input-group">
+        <input type="email" class="input-field" id="authEmail" placeholder="Email" autocomplete="email">
+      </div>
+      <div class="input-group" id="authPasswordGroup">
+        <input type="password" class="input-field" id="authPassword" placeholder="Пароль" autocomplete="current-password">
+      </div>
+      <div class="auth-error" id="authError"></div>
+      <button class="btn-primary" id="authSubmit">Войти</button>
+    </div>
+
+    <div class="auth-forgot" id="authForgot">Забыли пароль?</div>
+    <div class="auth-toggle">
+      <span id="authToggleText">Нет аккаунта?</span>
+      <a id="authToggleLink">Создать</a>
+    </div>
+    <button class="btn-secondary" id="authSkip">Продолжить без аккаунта</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div style="flex:1;position:relative;overflow:hidden;">
+    <div class="screen active" id="screenDashboard"><div class="screen-content" id="dashboardContent"></div></div>
+    <div class="screen" id="screenNotes"><div class="screen-content" id="notesContent"></div></div>
+    <div class="screen" id="screenTasks"><div class="screen-content" id="tasksContent"></div></div>
+    <div class="screen" id="screenSchedule"><div class="screen-content" id="scheduleContent"></div></div>
+    <div class="screen" id="screenCalendar"><div class="screen-content" id="calendarContent"></div></div>
+    <div class="screen" id="screenFolders"><div class="screen-content" id="foldersContent"></div></div>
+    <div class="screen" id="screenArchive"><div class="screen-content" id="archiveContent"></div></div>
+    <div class="screen" id="screenSettings"><div class="screen-content" id="settingsContent"></div></div>
+    <div class="screen" id="screenSearch"><div class="screen-content" id="searchContent"></div></div>
+  </div>
+
+  <!-- EDITOR -->
+  <div class="editor-overlay" id="noteEditor">
+    <div class="editor-header">
+      <button class="editor-back" id="editorClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="editor-status" id="editorStatus">
+        <img class="wemoji wemoji-xs" src="https://i.ibb.co/YBHyN0c8/Check-Mark-Button.webp" alt="">
+        <span>Сохранено</span>
+      </div>
+      <div class="editor-actions">
+        <button class="header-btn" id="editorPin" title="Закрепить">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10m0 0l4-4m-4 4l-4-4M5 17h14M7 21h10"/></svg>
+        </button>
+        <button class="header-btn" id="editorMore" title="Ещё">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="editor-body">
+      <input type="text" class="editor-title-input" id="editorTitle" placeholder="Заголовок">
+      <textarea class="editor-content" id="editorContent" placeholder="Начните писать..."></textarea>
+      <div class="editor-images" id="editorImages"></div>
+    </div>
+    <div class="editor-toolbar">
+      <button class="toolbar-btn" id="editorAddImage" title="Изображение">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+      </button>
+      <button class="toolbar-btn" id="editorAddLink" title="Ссылка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+      </button>
+      <div style="flex:1;"></div>
+      <button class="toolbar-btn" id="editorFolder" title="Папка">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- TASK MODAL -->
+  <div class="modal-backdrop" id="taskModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">
+        <img class="wemoji wemoji-sm" src="https://i.ibb.co/YBHyN0c8/Check-Mark-Button.webp" alt="">
+        <span>Новая задача</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <input type="text" class="input-field" id="taskTitle" placeholder="Название задачи">
+        <textarea class="input-field" id="taskDesc" placeholder="Описание (опционально)" rows="2" style="resize:none;"></textarea>
+        <div style="display:flex;gap:8px;">
+          <input type="date" class="input-field" id="taskDue" style="flex:1;">
+          <input type="time" class="input-field" id="taskTime" style="flex:1;">
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+          <span style="font-size:14px;color:var(--text-secondary);min-width:80px;">Приоритет:</span>
+          <button class="schedule-tab active" data-priority="low">Низкий</button>
+          <button class="schedule-tab" data-priority="medium">Средний</button>
+          <button class="schedule-tab" data-priority="high">Высокий</button>
+        </div>
+        <button class="btn-primary" id="taskSave" style="margin-top:8px;">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCHEDULE MODAL -->
+  <div class="modal-backdrop" id="scheduleModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title" id="scheduleModalTitle">
+        <img class="wemoji wemoji-sm" src="https://i.ibb.co/ycqGctjz/Tear-Off-Calendar.webp" alt="">
+        <span>Новое расписание</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <input type="text" class="input-field" id="schedInputName" placeholder="Название расписания">
+        <div id="schedEntries"></div>
+        <button class="btn-secondary" id="schedAddEntry" style="color:var(--accent);">+ Добавить запись</button>
+        <button class="btn-primary" id="schedSave" style="margin-top:8px;">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOLDER MODAL -->
+  <div class="modal-backdrop" id="folderModal">
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-title">
+        <img class="wemoji wemoji-sm" src="https://i.ibb.co/BK2HQh9Y/File-Folder.webp" alt="">
+        <span>Новая папка</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <input type="text" class="input-field" id="folderName" placeholder="Название папки">
+        <button class="btn-primary" id="folderSave">Создать</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="noteActionsModal">
+    <div class="modal-sheet" id="noteActionsSheet"></div>
+  </div>
+
+  <button class="fab" id="fab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+
+  <div class="fab-menu" id="fabMenu">
+    <div class="fab-menu-item" data-action="note">
+      <img class="wemoji wemoji-sm" src="https://i.ibb.co/S4Gzxm2Y/Memo.webp" alt="">
+      <span>Заметка</span>
+    </div>
+    <div class="fab-menu-item" data-action="task">
+      <img class="wemoji wemoji-sm" src="https://i.ibb.co/YBHyN0c8/Check-Mark-Button.webp" alt="">
+      <span>Задача</span>
+    </div>
+    <div class="fab-menu-item" data-action="schedule">
+      <img class="wemoji wemoji-sm" src="https://i.ibb.co/ycqGctjz/Tear-Off-Calendar.webp" alt="">
+      <span>Расписание</span>
+    </div>
+  </div>
+
+  <nav class="tab-bar" id="tabBar">
+    <button class="tab-item active" data-tab="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      <span>Главная</span>
+    </button>
+    <button class="tab-item" data-tab="notes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span>Заметки</span>
+    </button>
+    <button class="tab-item" data-tab="tasks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+      <span>Задачи</span>
+    </button>
+    <button class="tab-item" data-tab="calendar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <span>Календарь</span>
+    </button>
+    <button class="tab-item" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Ещё</span>
+    </button>
+  </nav>
+</div>
+
+<input type="file" id="imageUploadInput" accept="image/*" style="display:none;" multiple>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-database-compat.js"></script>
+
+<script>
+// ============================================
+// WEBP EMOJI LIBRARY — Пользовательские анимированные эмодзи
+// ============================================
+const WEMOJI = {
+  wavingHand: 'https://i.ibb.co/fYNSDGnG/Waving-Hand.webp',
+  sparkles: 'https://i.ibb.co/9m2nJvhy/Sparkles.webp',
+  confetti: 'https://i.ibb.co/HfjKLxkd/Confetti-Ball.webp',
+  heart: 'https://i.ibb.co/7JqBJJXG/Red-Heart.webp',
+  fire: 'https://i.ibb.co/9CLhWLz/Fire.webp',
+  star: 'https://i.ibb.co/cSWs9mWy/Star.webp',
+  rocket: 'https://i.ibb.co/LDGqYG69/Rocket.webp',
+  music: 'https://i.ibb.co/BH78xXps/Musical-Note.webp',
+  trophy: 'https://i.ibb.co/Wvgj3tzR/Trophy.webp',
+  calendar: 'https://i.ibb.co/ycqGctjz/Tear-Off-Calendar.webp',
+  check: 'https://i.ibb.co/YBHyN0c8/Check-Mark-Button.webp',
+  memo: 'https://i.ibb.co/S4Gzxm2Y/Memo.webp',
+  folder: 'https://i.ibb.co/BK2HQh9Y/File-Folder.webp',
+  search: 'https://i.ibb.co/B5r2pYzc/Magnifying-Glass-Tilted-Right.webp',
+  cloud: 'https://i.ibb.co/Rrjn3z6/Cloud.webp'
+};
+
+// Helper для создания <img> тегов с эмодзи
+function wemoji(key, size = 'sm') {
+  const url = WEMOJI[key];
+  if (!url) return '';
+  return `<img class="wemoji wemoji-${size}" src="${url}" alt="" loading="eager">`;
+}
+
+// ============================================
+// FIREBASE — Realtime Database (offline-first)
+// ============================================
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDnF2zAxyOXk1T9We7cEbHW_81re1xRX8A",
+  authDomain: "mydesk-f83cc.firebaseapp.com",
+  databaseURL: "https://mydesk-f83cc-default-rtdb.firebaseio.com",
+  projectId: "mydesk-f83cc",
+  storageBucket: "mydesk-f83cc.firebasestorage.app",
+  messagingSenderId: "438550019588",
+  appId: "1:438550019588:web:1f2de4372e9f356bb87f51"
+};
+
+const IMGBB_KEY = 'd8a9dad272290e9bd78173da55a97d77';
+
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth = firebase.auth();
+const rtdb = firebase.database();
+
+// Enable offline persistence for RTDB
+try {
+  firebase.database().goOnline();
+} catch (e) {}
+
+// ============================================
+// STATE
+// ============================================
+const App = {
+  user: null,
+  currentScreen: 'dashboard',
+  currentNote: null,
+  fabOpen: false,
+  onboardingStep: 0,
+  calendarDate: new Date(),
+  selectedCalDate: null,
+  settings: {
+    theme: 'system',
+    accentColor: '#007AFF',
+    autoSave: true,
+    animations: true,
+    liquidGlass: true
+  },
+  notes: [],
+  tasks: [],
+  schedules: [],
+  folders: [],
+  isOnline: navigator.onLine,
+  isSyncing: false,
+  lastSync: null,
+  saveTimer: null,
+  taskPriority: 'low',
+  editingTaskId: null,
+  editingScheduleId: null,
+  scheduleEntries: []
+};
+
+// ============================================
+// LOCAL STORAGE
+// ============================================
+const Store = {
+  get(key) {
+    try { const v = localStorage.getItem('mydesk_' + key); return v ? JSON.parse(v) : null; }
+    catch { return null; }
+  },
+  set(key, val) {
+    try { localStorage.setItem('mydesk_' + key, JSON.stringify(val)); }
+    catch (e) { console.warn('Storage error:', e); }
+  },
+  loadAll() {
+    App.notes = this.get('notes') || [];
+    App.tasks = this.get('tasks') || [];
+    App.schedules = this.get('schedules') || [];
+    App.folders = this.get('folders') || [];
+    App.lastSync = this.get('lastSync');
+    const s = this.get('settings');
+    if (s) App.settings = { ...App.settings, ...s };
+  },
+  saveNotes() { this.set('notes', App.notes); },
+  saveTasks() { this.set('tasks', App.tasks); },
+  saveSchedules() { this.set('schedules', App.schedules); },
+  saveFolders() { this.set('folders', App.folders); },
+  saveSettings() { this.set('settings', App.settings); }
+};
+
+// ============================================
+// UTILS
+// ============================================
+function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 9); }
+
+function formatDate(d) {
+  if (!d) return '';
+  const date = new Date(d);
+  const now = new Date();
+  const diff = now - date;
+  if (diff < 60000) return 'Только что';
+  if (diff < 3600000) return Math.floor(diff / 60000) + ' мин назад';
+  if (diff < 86400000) return Math.floor(diff / 3600000) + ' ч назад';
+  if (diff < 172800000) return 'Вчера';
+  return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
+}
+
+function getGreeting() {
+  const h = new Date().getHours();
+  if (h < 6) return 'Доброй ночи';
+  if (h < 12) return 'Доброе утро';
+  if (h < 18) return 'Добрый день';
+  return 'Добрый вечер';
+}
+
+function getTodayStr() {
+  return new Date().toLocaleDateString('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function getDayName(d) {
+  return ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'][d];
+}
+
+function getMonthName(m) {
+  return ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][m];
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function showToast(msg, wemojiKey = null) {
+  const t = document.getElementById('toast');
+  const icon = wemojiKey ? wemoji(wemojiKey, 'sm') : '';
+  t.innerHTML = icon + '<span>' + escHtml(msg) + '</span>';
+  t.classList.add('visible');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('visible'), 2500);
+}
+
+function showSync(text, useCloud = true, spinner = false) {
+  const el = document.getElementById('syncIndicator');
+  const iconEl = document.getElementById('syncIcon');
+
+  if (spinner) {
+    iconEl.outerHTML = '<div class="sync-spinner" id="syncIcon"></div>';
+  } else {
+    const currentIcon = document.getElementById('syncIcon');
+    if (currentIcon.tagName !== 'IMG') {
+      currentIcon.outerHTML = `<img class="wemoji wemoji-xs" src="${WEMOJI.cloud}" alt="" id="syncIcon">`;
+    }
+  }
+
+  document.getElementById('syncText').textContent = text;
+  el.classList.add('visible');
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('visible'), 2500);
+}
+
+// ============================================
+// THEME
+// ============================================
+const Theme = {
+  apply() {
+    const { theme, accentColor } = App.settings;
+    let effective = theme;
+    if (theme === 'system') {
+      effective = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', effective);
+
+    const root = document.documentElement.style;
+    root.setProperty('--accent', accentColor);
+    const hex = accentColor.replace('#', '');
+    const r = parseInt(hex.substr(0, 2), 16);
+    const g = parseInt(hex.substr(2, 2), 16);
+    const b = parseInt(hex.substr(4, 2), 16);
+    root.setProperty('--accent-rgb', `${r}, ${g}, ${b}`);
+    root.setProperty('--accent-light', this.shift(accentColor, 30));
+    root.setProperty('--accent-dark', this.shift(accentColor, -20));
+
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', effective === 'dark' ? '#000000' : '#F2F2F7');
+  },
+  shift(hex, percent) {
+    const num = parseInt(hex.replace('#', ''), 16);
+    const amt = Math.round(2.55 * percent);
+    let r = (num >> 16) + amt;
+    let g = ((num >> 8) & 0x00FF) + amt;
+    let b = (num & 0x0000FF) + amt;
+    r = Math.max(0, Math.min(255, r));
+    g = Math.max(0, Math.min(255, g));
+    b = Math.max(0, Math.min(255, b));
+    return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
+  }
+};
+
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+  if (App.settings.theme === 'system') Theme.apply();
+});
+
+// ============================================
+// REALTIME DATABASE SYNC
+// ============================================
+const Sync = {
+  refs: {},
+
+  setupRefs() {
+    if (!App.user) return;
+    const uid = App.user.uid;
+    this.refs = {
+      notes: rtdb.ref(`users/${uid}/notes`),
+      tasks: rtdb.ref(`users/${uid}/tasks`),
+      schedules: rtdb.ref(`users/${uid}/schedules`),
+      folders: rtdb.ref(`users/${uid}/folders`),
+      settings: rtdb.ref(`users/${uid}/settings`)
+    };
+  },
+
+  detach() {
+    Object.values(this.refs).forEach(ref => ref.off && ref.off());
+    this.refs = {};
+  },
+
+  async pushAll() {
+    if (!App.user || !App.isOnline) return;
+    App.isSyncing = true;
+    showSync('Синхронизация...', true, true);
+
+    try {
+      const uid = App.user.uid;
+      await rtdb.ref(`users/${uid}`).update({
+        notes: App.notes,
+        tasks: App.tasks,
+        schedules: App.schedules,
+        folders: App.folders,
+        settings: App.settings,
+        lastSync: firebase.database.ServerValue.TIMESTAMP
+      });
+      App.lastSync = Date.now();
+      Store.set('lastSync', App.lastSync);
+      showSync('Синхронизировано');
+    } catch (e) {
+      console.error('Sync push error:', e);
+      showSync('Ошибка синхронизации');
+    }
+    App.isSyncing = false;
+  },
+
+  async pullAll() {
+    if (!App.user || !App.isOnline) return;
+    showSync('Загрузка...', true, true);
+
+    try {
+      const uid = App.user.uid;
+      const snap = await rtdb.ref(`users/${uid}`).once('value');
+      const data = snap.val();
+
+      if (data) {
+        if (data.notes) App.notes = this.mergeArrays(App.notes, Object.values(data.notes || {}), 'id');
+        if (data.tasks) App.tasks = this.mergeArrays(App.tasks, Object.values(data.tasks || {}), 'id');
+        if (data.schedules) App.schedules = this.mergeArrays(App.schedules, Object.values(data.schedules || {}), 'id');
+        if (data.folders) App.folders = this.mergeArrays(App.folders, Object.values(data.folders || {}), 'id');
+        if (data.settings) App.settings = { ...App.settings, ...data.settings };
+
+        Store.saveNotes(); Store.saveTasks(); Store.saveSchedules();
+        Store.saveFolders(); Store.saveSettings();
+        Theme.apply();
+        renderCurrentScreen();
+      }
+      showSync('Синхронизировано');
+    } catch (e) {
+      console.error('Sync pull error:', e);
+      showSync('Работаем локально');
+    }
+  },
+
+  mergeArrays(local, remote, key) {
+    const map = new Map();
+    remote.forEach(item => { if (item && item[key]) map.set(item[key], item); });
+    local.forEach(item => {
+      if (!item || !item[key]) return;
+      const existing = map.get(item[key]);
+      if (!existing || (item.modified && (!existing.modified || item.modified > existing.modified))) {
+        map.set(item[key], item);
+      }
+    });
+    return Array.from(map.values());
+  },
+
+  debounceSync() {
+    if (!App.user) return;
+    clearTimeout(this._syncTimer);
+    this._syncTimer = setTimeout(() => this.pushAll(), 2000);
+  }
+};
+
+window.addEventListener('online', () => {
+  App.isOnline = true;
+  showSync('Подключение восстановлено');
+  Sync.pushAll();
+});
+
+window.addEventListener('offline', () => {
+  App.isOnline = false;
+  showSync('Офлайн-режим');
+});
+
+// ============================================
+// IMAGE UPLOAD
+// ============================================
+async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append('image', file);
+  try {
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_KEY}`, {
+      method: 'POST', body: formData
+    });
+    const data = await res.json();
+    if (data.success) return data.data.url;
+    throw new Error('Upload failed');
+  } catch (e) {
+    console.error('Image upload:', e);
+    showToast('Не удалось загрузить изображение');
+    return null;
+  }
+}
+
+// ============================================
+// NAVIGATION
+// ============================================
+function navigateTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  const tab = document.querySelector(`.tab-item[data-tab="${screen}"]`);
+  if (tab) tab.classList.add('active');
+  const el = document.getElementById('screen' + screen.charAt(0).toUpperCase() + screen.slice(1));
+  if (el) {
+    el.classList.add('active');
+    App.currentScreen = screen;
+    renderCurrentScreen();
+  }
+}
+
+function renderCurrentScreen() {
+  switch (App.currentScreen) {
+    case 'dashboard': renderDashboard(); break;
+    case 'notes': renderNotes(); break;
+    case 'tasks': renderTasks(); break;
+    case 'schedule': renderSchedule(); break;
+    case 'calendar': renderCalendar(); break;
+    case 'folders': renderFolders(); break;
+    case 'archive': renderArchive(); break;
+    case 'settings': renderSettings(); break;
+    case 'search': renderSearch(); break;
+  }
+}
+
+// ============================================
+// DASHBOARD
+// ============================================
+function renderDashboard() {
+  const el = document.getElementById('dashboardContent');
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const dayName = getDayName(dayOfWeek);
+  const todayStr = today.toISOString().split('T')[0];
+
+  const todayTasks = App.tasks.filter(t => !t.done && !t.archived && t.due === todayStr);
+  const overdueTasks = App.tasks.filter(t => !t.done && !t.archived && t.due && t.due < todayStr);
+  const upcomingTasks = App.tasks.filter(t => !t.done && !t.archived && t.due && t.due > todayStr).slice(0, 3);
+
+  const completedToday = App.tasks.filter(t => t.done && t.completedAt &&
+    new Date(t.completedAt).toISOString().split('T')[0] === todayStr).length;
+
+  let todaySchedule = [];
+  App.schedules.forEach(s => {
+    (s.entries || []).filter(e => e.day === dayName).forEach(e => {
+      todaySchedule.push({ ...e, scheduleName: s.name, color: s.color || 'var(--accent)' });
+    });
+  });
+  todaySchedule.sort((a, b) => (a.time || '').localeCompare(b.time || ''));
+
+  const recentNotes = [...App.notes].filter(n => !n.archived)
+    .sort((a, b) => (b.modified || 0) - (a.modified || 0)).slice(0, 4);
+  const pinnedNotes = App.notes.filter(n => n.pinned && !n.archived);
+
+  let html = `
+    <div class="dashboard-greeting animate-in">
+      ${getGreeting()} ${wemoji('wavingHand', 'md')}
+    </div>
+    <div class="dashboard-date animate-in stagger-1">${getTodayStr()}</div>
+  `;
+
+  // Streak (fire) if completed 3+ tasks today
+  if (completedToday >= 3) {
+    html += `
+      <div class="dash-card animate-in stagger-2" style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(255,149,0,0.15),rgba(255,59,48,0.1));">
+        ${wemoji('fire', 'lg')}
+        <div>
+          <div style="font-weight:700;font-size:16px;">Отличный день!</div>
+          <div style="font-size:13px;color:var(--text-secondary);">Выполнено задач сегодня: ${completedToday}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  if (overdueTasks.length > 0) {
+    html += `
+      <div class="section-header animate-in stagger-2">
+        <div class="section-title" style="color:var(--color-danger);">Просроченные</div>
+      </div>
+    `;
+    overdueTasks.forEach(t => { html += renderTaskItem(t); });
+  }
+
+  if (todaySchedule.length > 0) {
+    html += `
+      <div class="section-header animate-in stagger-2">
+        <div class="section-title">${wemoji('calendar', 'sm')} Расписание на сегодня</div>
+        <button class="section-action" onclick="navigateTo('schedule')">Все</button>
+      </div>
+      <div class="dash-card animate-in stagger-3">
+    `;
+    todaySchedule.forEach(entry => {
+      html += `
+        <div class="dash-schedule-item">
+          <div class="schedule-dot" style="background:${entry.color}"></div>
+          <div class="schedule-time">${entry.time || ''}</div>
+          <div class="schedule-name">${escHtml(entry.name || '')}</div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  if (todayTasks.length > 0 || upcomingTasks.length > 0) {
+    html += `
+      <div class="section-header animate-in stagger-3">
+        <div class="section-title">${wemoji('check', 'sm')} Задачи</div>
+        <button class="section-action" onclick="navigateTo('tasks')">Все</button>
+      </div>
+    `;
+    todayTasks.forEach(t => { html += renderTaskItem(t); });
+    if (todayTasks.length === 0 && upcomingTasks.length > 0) {
+      html += '<div style="font-size:13px;color:var(--text-secondary);margin-bottom:8px;">Ближайшие:</div>';
+      upcomingTasks.forEach(t => { html += renderTaskItem(t); });
+    }
+  }
+
+  if (pinnedNotes.length > 0) {
+    html += `
+      <div class="section-header animate-in stagger-4">
+        <div class="section-title">${wemoji('star', 'sm')} Закреплённые</div>
+      </div>
+      <div class="notes-grid animate-in stagger-5">
+    `;
+    pinnedNotes.forEach(n => { html += renderNoteCard(n); });
+    html += '</div>';
+  }
+
+  if (recentNotes.length > 0) {
+    html += `
+      <div class="section-header animate-in stagger-4">
+        <div class="section-title">${wemoji('memo', 'sm')} Недавние заметки</div>
+        <button class="section-action" onclick="navigateTo('notes')">Все</button>
+      </div>
+      <div class="notes-grid animate-in stagger-5">
+    `;
+    recentNotes.forEach(n => { html += renderNoteCard(n); });
+    html += '</div>';
+  }
+
+  if (App.notes.length === 0 && App.tasks.length === 0 && App.schedules.length === 0) {
+    html += `
+      <div class="empty-state animate-in">
+        ${wemoji('sparkles', '2xl')}
+        <div class="empty-state-title">Начните с чего-нибудь</div>
+        <div class="empty-state-desc">Создайте заметку, задачу или расписание, нажав кнопку +</div>
+      </div>
+    `;
+  }
+
+  el.innerHTML = html;
+}
+
+function renderTaskItem(t) {
+  return `
+    <div class="task-item animate-in" onclick="toggleTask('${t.id}')">
+      <div class="task-check ${t.done ? 'done' : ''}"></div>
+      <div class="task-text ${t.done ? 'done' : ''}">${escHtml(t.title)}</div>
+      ${t.priority ? `<div class="task-priority ${t.priority}"></div>` : ''}
+      ${t.due ? `<div class="task-due">${formatDate(t.due)}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderNoteCard(n) {
+  const folder = n.folderId ? App.folders.find(f => f.id === n.folderId) : null;
+  const firstImg = (n.images && n.images.length > 0) ? n.images[0] : null;
+  return `
+    <div class="note-card ${n.pinned ? 'pinned' : ''}" onclick="openNote('${n.id}')">
+      ${n.pinned ? '<svg class="pin-badge" viewBox="0 0 24 24" fill="currentColor"><path d="M16 2l-4 4-6-2-2 2 5 5-4 8 2 1 5-6 5 5 2-2-2-6 4-4-1-1z"/></svg>' : ''}
+      ${firstImg ? `<img class="note-img-preview" src="${firstImg}" alt="" loading="lazy">` : ''}
+      <div class="note-title">${escHtml(n.title || 'Без названия')}</div>
+      <div class="note-preview">${escHtml((n.content || '').substring(0, 120))}</div>
+      <div class="note-meta">
+        <span class="note-date">${formatDate(n.modified)}</span>
+        ${folder ? `<span class="note-folder-badge">${escHtml(folder.name)}</span>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+// ============================================
+// NOTES
+// ============================================
+function renderNotes(folderId = null) {
+  const el = document.getElementById('notesContent');
+  let notes = App.notes.filter(n => !n.archived);
+  if (folderId) notes = notes.filter(n => n.folderId === folderId);
+
+  const pinned = notes.filter(n => n.pinned).sort((a, b) => (b.modified || 0) - (a.modified || 0));
+  const regular = notes.filter(n => !n.pinned).sort((a, b) => (b.modified || 0) - (a.modified || 0));
+  const folder = folderId ? App.folders.find(f => f.id === folderId) : null;
+
+  let html = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;" class="animate-in">
+      ${folder ? `<button onclick="navigateTo('folders')" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>` : ''}
+      <h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;flex:1;">${folder ? escHtml(folder.name) : 'Заметки'}</h1>
+      <button class="header-btn" onclick="navigateTo('search')">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+    </div>
+  `;
+
+  if (notes.length === 0) {
+    html += `
+      <div class="empty-state animate-in">
+        ${wemoji('memo', '2xl')}
+        <div class="empty-state-title">Пока нет заметок</div>
+        <div class="empty-state-desc">Нажмите + чтобы создать первую заметку</div>
+      </div>
+    `;
+  } else {
+    if (pinned.length > 0) {
+      html += `<div class="section-header animate-in stagger-1"><div class="section-title">${wemoji('star', 'sm')} Закреплённые</div></div>`;
+      html += '<div class="notes-grid animate-in stagger-2">';
+      pinned.forEach(n => { html += renderNoteCard(n); });
+      html += '</div>';
+    }
+    if (regular.length > 0) {
+      if (pinned.length > 0) html += `<div class="section-header animate-in stagger-3"><div class="section-title">Все заметки</div></div>`;
+      html += '<div class="notes-grid animate-in stagger-3">';
+      regular.forEach(n => { html += renderNoteCard(n); });
+      html += '</div>';
+    }
+  }
+
+  el.innerHTML = html;
+  el._folderId = folderId;
+}
+
+// ============================================
+// EDITOR
+// ============================================
+function openNote(id) {
+  let note;
+  if (id) {
+    note = App.notes.find(n => n.id === id);
+    if (!note) return;
+  } else {
+    note = {
+      id: uid(), title: '', content: '',
+      created: Date.now(), modified: Date.now(),
+      pinned: false, archived: false, folderId: null,
+      images: [], tags: [], links: []
+    };
+    App.notes.unshift(note);
+    Store.saveNotes();
+  }
+
+  App.currentNote = note;
+  document.getElementById('editorTitle').value = note.title || '';
+  document.getElementById('editorContent').value = note.content || '';
+  renderEditorImages();
+  updateEditorStatus('Сохранено');
+  updatePinButton();
+
+  document.getElementById('noteEditor').classList.add('open');
+  setTimeout(() => {
+    if (!note.title) document.getElementById('editorTitle').focus();
+    else document.getElementById('editorContent').focus();
+  }, 300);
+}
+
+function closeEditor() {
+  saveCurrentNote();
+  document.getElementById('noteEditor').classList.remove('open');
+  App.currentNote = null;
+  renderCurrentScreen();
+}
+
+function saveCurrentNote() {
+  if (!App.currentNote) return;
+  const title = document.getElementById('editorTitle').value.trim();
+  const content = document.getElementById('editorContent').value.trim();
+
+  if (!title && !content && !App.currentNote.images?.length) {
+    App.notes = App.notes.filter(n => n.id !== App.currentNote.id);
+    Store.saveNotes();
+    Sync.debounceSync();
+    return;
+  }
+
+  App.currentNote.title = title;
+  App.currentNote.content = content;
+  App.currentNote.modified = Date.now();
+  const idx = App.notes.findIndex(n => n.id === App.currentNote.id);
+  if (idx >= 0) App.notes[idx] = App.currentNote;
+  Store.saveNotes();
+  Sync.debounceSync();
+}
+
+function autoSaveNote() {
+  if (!App.settings.autoSave || !App.currentNote) return;
+  clearTimeout(App.saveTimer);
+  updateEditorStatus('Сохранение...', true);
+  App.saveTimer = setTimeout(() => {
+    saveCurrentNote();
+    updateEditorStatus('Сохранено');
+  }, 500);
+}
+
+function updateEditorStatus(text, saving = false) {
+  const statusEl = document.getElementById('editorStatus');
+  if (saving) {
+    statusEl.innerHTML = `<div class="sync-spinner" style="width:12px;height:12px;"></div><span>${text}</span>`;
+  } else {
+    statusEl.innerHTML = `${wemoji('check', 'xs')}<span>${text}</span>`;
+  }
+}
+
+function updatePinButton() {
+  const btn = document.getElementById('editorPin');
+  btn.style.color = App.currentNote?.pinned ? 'var(--accent)' : '';
+}
+
+function toggleCurrentNotePin() {
+  if (!App.currentNote) return;
+  App.currentNote.pinned = !App.currentNote.pinned;
+  App.currentNote.modified = Date.now();
+  updatePinButton();
+  saveCurrentNote();
+  showToast(App.currentNote.pinned ? 'Заметка закреплена' : 'Заметка откреплена', 'star');
+}
+
+function renderEditorImages() {
+  const container = document.getElementById('editorImages');
+  if (!App.currentNote || !App.currentNote.images?.length) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = App.currentNote.images.map((url, i) => `
+    <div style="position:relative;display:inline-block;">
+      <img class="editor-img" src="${url}" alt="" loading="lazy">
+      <button onclick="removeNoteImage(${i})" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--color-danger);color:white;font-size:14px;display:flex;align-items:center;justify-content:center;">×</button>
+    </div>
+  `).join('');
+}
+
+function removeNoteImage(idx) {
+  if (!App.currentNote) return;
+  App.currentNote.images.splice(idx, 1);
+  App.currentNote.modified = Date.now();
+  renderEditorImages();
+  saveCurrentNote();
+}
+
+async function handleImageUpload(files) {
+  if (!App.currentNote || !files.length) return;
+  showToast('Загрузка изображения...');
+  for (const file of files) {
+    const url = await uploadImage(file);
+    if (url) {
+      if (!App.currentNote.images) App.currentNote.images = [];
+      App.currentNote.images.push(url);
+    }
+  }
+  renderEditorImages();
+  saveCurrentNote();
+  showToast('Изображение добавлено', 'sparkles');
+}
+
+function showNoteActions() {
+  if (!App.currentNote) return;
+  const n = App.currentNote;
+  document.getElementById('noteActionsSheet').innerHTML = `
+    <div class="modal-handle"></div>
+    <div class="modal-title">Действия</div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <button class="setting-item" onclick="toggleCurrentNotePin();closeModal('noteActionsModal');">
+        <span class="setting-label">${n.pinned ? 'Открепить' : 'Закрепить'}</span>
+      </button>
+      <button class="setting-item" onclick="moveNoteToFolder()">
+        <span class="setting-label">Переместить в папку</span>
+      </button>
+      <button class="setting-item" onclick="archiveCurrentNote()">
+        <span class="setting-label">Архивировать</span>
+      </button>
+      <button class="setting-item" onclick="shareCurrentNote()">
+        <span class="setting-label">Поделиться</span>
+      </button>
+      <button class="setting-item" onclick="deleteCurrentNote()">
+        <span class="setting-label" style="color:var(--color-danger);">Удалить</span>
+      </button>
+    </div>
+  `;
+  openModal('noteActionsModal');
+}
+
+function archiveCurrentNote() {
+  if (!App.currentNote) return;
+  App.currentNote.archived = true;
+  App.currentNote.modified = Date.now();
+  saveCurrentNote();
+  closeModal('noteActionsModal');
+  closeEditor();
+  showToast('Заметка архивирована');
+}
+
+function deleteCurrentNote() {
+  if (!App.currentNote) return;
+  if (!confirm('Удалить заметку?')) return;
+  App.notes = App.notes.filter(n => n.id !== App.currentNote.id);
+  Store.saveNotes();
+  Sync.debounceSync();
+  closeModal('noteActionsModal');
+  closeEditor();
+  showToast('Заметка удалена');
+}
+
+function shareCurrentNote() {
+  if (!App.currentNote) return;
+  const text = `${App.currentNote.title || ''}\n\n${App.currentNote.content || ''}`;
+  if (navigator.share) {
+    navigator.share({ title: App.currentNote.title || 'Заметка', text }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(text).then(() => showToast('Скопировано', 'sparkles'));
+  }
+  closeModal('noteActionsModal');
+}
+
+function moveNoteToFolder() {
+  closeModal('noteActionsModal');
+  let html = `
+    <div class="modal-handle"></div>
+    <div class="modal-title">${wemoji('folder', 'sm')}<span>Выберите папку</span></div>
+    <div style="display:flex;flex-direction:column;gap:4px;">
+      <button class="setting-item" onclick="setNoteFolder(null)">
+        <span class="setting-label">Без папки</span>
+      </button>
+  `;
+  App.folders.forEach(f => {
+    html += `<button class="setting-item" onclick="setNoteFolder('${f.id}')"><span class="setting-label">${escHtml(f.name)}</span></button>`;
+  });
+  html += '</div>';
+  document.getElementById('noteActionsSheet').innerHTML = html;
+  openModal('noteActionsModal');
+}
+
+function setNoteFolder(folderId) {
+  if (!App.currentNote) return;
+  App.currentNote.folderId = folderId;
+  App.currentNote.modified = Date.now();
+  saveCurrentNote();
+  closeModal('noteActionsModal');
+  showToast(folderId ? 'Перемещено в папку' : 'Убрано из папки');
+}
+
+// ============================================
+// TASKS
+// ============================================
+function renderTasks() {
+  const el = document.getElementById('tasksContent');
+  const todayStr = new Date().toISOString().split('T')[0];
+
+  const active = App.tasks.filter(t => !t.done && !t.archived);
+  const overdue = active.filter(t => t.due && t.due < todayStr);
+  const today = active.filter(t => t.due === todayStr);
+  const upcoming = active.filter(t => t.due && t.due > todayStr);
+  const noDue = active.filter(t => !t.due);
+  const done = App.tasks.filter(t => t.done && !t.archived).slice(0, 10);
+
+  let html = `<h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:20px;" class="animate-in">Задачи</h1>`;
+
+  if (active.length === 0 && done.length === 0) {
+    html += `
+      <div class="empty-state animate-in">
+        ${wemoji('check', '2xl')}
+        <div class="empty-state-title">Нет задач</div>
+        <div class="empty-state-desc">Нажмите + чтобы создать задачу</div>
+      </div>
+    `;
+  } else {
+    if (overdue.length > 0) {
+      html += `<div class="section-header animate-in stagger-1"><div class="section-title" style="color:var(--color-danger);">Просроченные</div></div>`;
+      overdue.sort((a,b) => a.due.localeCompare(b.due)).forEach(t => { html += renderTaskItem(t); });
+    }
+    if (today.length > 0) {
+      html += `<div class="section-header animate-in stagger-2"><div class="section-title">Сегодня</div></div>`;
+      today.forEach(t => { html += renderTaskItem(t); });
+    }
+    if (upcoming.length > 0) {
+      html += `<div class="section-header animate-in stagger-3"><div class="section-title">Предстоящие</div></div>`;
+      upcoming.sort((a,b) => a.due.localeCompare(b.due)).forEach(t => { html += renderTaskItem(t); });
+    }
+    if (noDue.length > 0) {
+      html += `<div class="section-header animate-in stagger-3"><div class="section-title">Без срока</div></div>`;
+      noDue.forEach(t => { html += renderTaskItem(t); });
+    }
+    if (done.length > 0) {
+      html += `<div class="section-header animate-in stagger-4"><div class="section-title" style="color:var(--text-secondary);">Выполненные</div></div>`;
+      done.forEach(t => { html += renderTaskItem(t); });
+    }
+  }
+  el.innerHTML = html;
+}
+
+function toggleTask(id) {
+  const task = App.tasks.find(t => t.id === id);
+  if (!task) return;
+  task.done = !task.done;
+  task.modified = Date.now();
+  if (task.done) {
+    task.completedAt = Date.now();
+    // Count today's completed
+    const todayStr = new Date().toISOString().split('T')[0];
+    const doneToday = App.tasks.filter(t => t.done && t.completedAt &&
+      new Date(t.completedAt).toISOString().split('T')[0] === todayStr).length;
+
+    if (doneToday === 5) showToast('5 задач за день! Огонь!', 'fire');
+    else if (doneToday === 10) showToast('10 задач! Настоящий трофей!', 'trophy');
+    else showToast('Задача выполнена!', 'check');
+  }
+  Store.saveTasks();
+  Sync.debounceSync();
+  renderCurrentScreen();
+}
+
+function openTaskModal(taskId = null) {
+  const titleEl = document.getElementById('taskTitle');
+  const descEl = document.getElementById('taskDesc');
+  const dueEl = document.getElementById('taskDue');
+  const timeEl = document.getElementById('taskTime');
+
+  if (taskId) {
+    const task = App.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    titleEl.value = task.title || '';
+    descEl.value = task.description || '';
+    dueEl.value = task.due || '';
+    timeEl.value = task.time || '';
+    App.editingTaskId = taskId;
+    setTaskPriority(task.priority || 'low');
+  } else {
+    titleEl.value = ''; descEl.value = '';
+    dueEl.value = new Date().toISOString().split('T')[0];
+    timeEl.value = '';
+    App.editingTaskId = null;
+    setTaskPriority('low');
+  }
+  openModal('taskModal');
+  setTimeout(() => titleEl.focus(), 300);
+}
+
+function setTaskPriority(p) {
+  document.querySelectorAll('[data-priority]').forEach(b => {
+    b.classList.toggle('active', b.dataset.priority === p);
+  });
+  App.taskPriority = p;
+}
+
+function saveTask() {
+  const title = document.getElementById('taskTitle').value.trim();
+  if (!title) { showToast('Введите название задачи'); return; }
+  const taskData = {
+    title,
+    description: document.getElementById('taskDesc').value.trim(),
+    due: document.getElementById('taskDue').value,
+    time: document.getElementById('taskTime').value,
+    priority: App.taskPriority || 'low',
+    modified: Date.now()
+  };
+  if (App.editingTaskId) {
+    const idx = App.tasks.findIndex(t => t.id === App.editingTaskId);
+    if (idx >= 0) App.tasks[idx] = { ...App.tasks[idx], ...taskData };
+  } else {
+    App.tasks.unshift({
+      id: uid(), ...taskData,
+      done: false, archived: false, created: Date.now()
+    });
+  }
+  Store.saveTasks();
+  Sync.debounceSync();
+  closeModal('taskModal');
+  renderCurrentScreen();
+  showToast('Задача сохранена', 'sparkles');
+}
+
+// ============================================
+// SCHEDULE
+// ============================================
+function renderSchedule() {
+  const el = document.getElementById('scheduleContent');
+  let html = `<h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:20px;" class="animate-in">Расписание</h1>`;
+
+  if (App.schedules.length === 0) {
+    html += `
+      <div class="empty-state animate-in">
+        ${wemoji('calendar', '2xl')}
+        <div class="empty-state-title">Нет расписаний</div>
+        <div class="empty-state-desc">Создайте расписание для учёбы, работы или тренировок</div>
+      </div>
+    `;
+  } else {
+    App.schedules.forEach(sched => {
+      html += `
+        <div class="dash-card animate-in" style="margin-bottom:16px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+            <div style="font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;">
+              <div style="width:4px;height:20px;border-radius:2px;background:${sched.color || 'var(--accent)'};"></div>
+              ${escHtml(sched.name)}
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="header-btn" onclick="editSchedule('${sched.id}')">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <button class="header-btn" onclick="deleteSchedule('${sched.id}')" style="color:var(--color-danger);">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+              </button>
+            </div>
+          </div>
+      `;
+      const days = {};
+      (sched.entries || []).forEach(e => {
+        if (!days[e.day]) days[e.day] = [];
+        days[e.day].push(e);
+      });
+      const dayOrder = ['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'];
+      dayOrder.forEach(day => {
+        if (!days[day]) return;
+        html += `<div style="font-size:14px;font-weight:600;color:var(--text-secondary);margin:12px 0 6px;">${day}</div>`;
+        days[day].sort((a, b) => (a.time || '').localeCompare(b.time || '')).forEach(entry => {
+          html += `
+            <div class="schedule-entry">
+              <div class="schedule-entry-color" style="background:${sched.color || 'var(--accent)'}"></div>
+              <div class="schedule-entry-time">${entry.time || ''}</div>
+              <div class="schedule-entry-name">${escHtml(entry.name)}</div>
+            </div>
+          `;
+        });
+      });
+      html += '</div>';
+    });
+  }
+  el.innerHTML = html;
+}
+
+function openScheduleModal(schedId = null) {
+  const nameInput = document.getElementById('schedInputName');
+  if (schedId) {
+    const sched = App.schedules.find(s => s.id === schedId);
+    if (!sched) return;
+    nameInput.value = sched.name || '';
+    App.editingScheduleId = schedId;
+    App.scheduleEntries = [...(sched.entries || [])];
+    document.getElementById('scheduleModalTitle').innerHTML = `${wemoji('calendar', 'sm')}<span>Редактировать</span>`;
+  } else {
+    nameInput.value = '';
+    App.editingScheduleId = null;
+    App.scheduleEntries = [];
+    document.getElementById('scheduleModalTitle').innerHTML = `${wemoji('calendar', 'sm')}<span>Новое расписание</span>`;
+  }
+  renderScheduleEntries();
+  openModal('scheduleModal');
+  setTimeout(() => nameInput.focus(), 300);
+}
+
+function renderScheduleEntries() {
+  const entriesEl = document.getElementById('schedEntries');
+  entriesEl.innerHTML = App.scheduleEntries.map((e, i) => `
+    <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+      <select class="input-field" style="flex:1;padding:12px;" onchange="updateSchedEntry(${i},'day',this.value)">
+        <option value="">День</option>
+        ${['Понедельник','Вторник','Среда','Четверг','Пятница','Суббота','Воскресенье'].map(d =>
+          `<option value="${d}" ${e.day === d ? 'selected' : ''}>${d}</option>`
+        ).join('')}
+      </select>
+      <input type="time" class="input-field" style="width:100px;padding:12px;" value="${e.time || ''}" onchange="updateSchedEntry(${i},'time',this.value)">
+      <input type="text" class="input-field" style="flex:1;padding:12px;" value="${escHtml(e.name || '')}" placeholder="Название" onchange="updateSchedEntry(${i},'name',this.value)">
+      <button onclick="removeSchedEntry(${i})" style="color:var(--color-danger);font-size:24px;width:32px;height:32px;">×</button>
+    </div>
+  `).join('');
+}
+
+function updateSchedEntry(idx, field, value) {
+  if (App.scheduleEntries[idx]) App.scheduleEntries[idx][field] = value;
+}
+
+function addSchedEntry() {
+  App.scheduleEntries.push({ day: '', time: '', name: '' });
+  renderScheduleEntries();
+}
+
+function removeSchedEntry(idx) {
+  App.scheduleEntries.splice(idx, 1);
+  renderScheduleEntries();
+}
+
+function saveSchedule() {
+  const name = document.getElementById('schedInputName').value.trim();
+  if (!name) { showToast('Введите название расписания'); return; }
+  const entries = App.scheduleEntries.filter(e => e.name && e.day);
+  const colors = ['#007AFF','#34C759','#FF9500','#AF52DE','#FF3B30','#5AC8FA'];
+
+  if (App.editingScheduleId) {
+    const idx = App.schedules.findIndex(s => s.id === App.editingScheduleId);
+    if (idx >= 0) {
+      App.schedules[idx].name = name;
+      App.schedules[idx].entries = entries;
+      App.schedules[idx].modified = Date.now();
+    }
+  } else {
+    App.schedules.push({
+      id: uid(), name, entries,
+      color: colors[App.schedules.length % colors.length],
+      created: Date.now(), modified: Date.now()
+    });
+  }
+  Store.saveSchedules();
+  Sync.debounceSync();
+  closeModal('scheduleModal');
+  renderCurrentScreen();
+  showToast('Расписание сохранено', 'sparkles');
+}
+
+function editSchedule(id) { openScheduleModal(id); }
+
+function deleteSchedule(id) {
+  if (!confirm('Удалить расписание?')) return;
+  App.schedules = App.schedules.filter(s => s.id !== id);
+  Store.saveSchedules();
+  Sync.debounceSync();
+  renderCurrentScreen();
+  showToast('Расписание удалено');
+}
+
+// ============================================
+// CALENDAR
+// ============================================
+function renderCalendar() {
+  const el = document.getElementById('calendarContent');
+  const d = App.calendarDate;
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  const today = new Date();
+  const todayStr = today.toISOString().split('T')[0];
+
+  const eventDates = new Set();
+  App.tasks.filter(t => t.due && !t.archived).forEach(t => eventDates.add(t.due));
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const daysInPrev = new Date(year, month, 0).getDate();
+
+  let html = `
+    <h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:20px;display:flex;align-items:center;gap:12px;" class="animate-in">
+      ${wemoji('calendar', 'md')} Календарь
+    </h1>
+    <div class="cal-month-nav animate-in stagger-1">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="cal-month-title">${getMonthName(month)} ${year}</div>
+      <button class="cal-nav-btn" onclick="changeMonth(1)">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="calendar-grid animate-in stagger-2">
+  `;
+
+  ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
+    html += `<div class="cal-header">${d}</div>`;
+  });
+
+  const startDay = firstDay === 0 ? 6 : firstDay - 1;
+  for (let i = startDay - 1; i >= 0; i--) {
+    html += `<div class="cal-day other-month">${daysInPrev - i}</div>`;
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isToday = dateStr === todayStr;
+    const isSelected = App.selectedCalDate === dateStr;
+    const hasEvent = eventDates.has(dateStr);
+    html += `
+      <div class="cal-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}" onclick="selectCalDate('${dateStr}')">
+        ${day}${hasEvent ? '<div class="has-event"></div>' : ''}
+      </div>
+    `;
+  }
+  const totalCells = startDay + daysInMonth;
+  const remaining = (7 - (totalCells % 7)) % 7;
+  for (let i = 1; i <= remaining; i++) {
+    html += `<div class="cal-day other-month">${i}</div>`;
+  }
+  html += '</div>';
+
+  if (App.selectedCalDate) {
+    const selDate = new Date(App.selectedCalDate + 'T00:00:00');
+    const selTasks = App.tasks.filter(t => t.due === App.selectedCalDate && !t.archived);
+    const selDayName = getDayName(selDate.getDay());
+
+    html += `
+      <div class="section-header animate-in">
+        <div class="section-title">${selDate.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</div>
+      </div>
+    `;
+
+    let hasAny = false;
+    App.schedules.forEach(s => {
+      const dayEntries = (s.entries || []).filter(e => e.day === selDayName);
+      if (dayEntries.length > 0) {
+        hasAny = true;
+        html += `<div style="font-size:14px;color:var(--text-secondary);margin-bottom:8px;">${escHtml(s.name)}</div>`;
+        dayEntries.sort((a, b) => (a.time || '').localeCompare(b.time || '')).forEach(e => {
+          html += `
+            <div class="schedule-entry" style="margin-bottom:4px;">
+              <div class="schedule-entry-color" style="background:${s.color || 'var(--accent)'}"></div>
+              <div class="schedule-entry-time">${e.time || ''}</div>
+              <div class="schedule-entry-name">${escHtml(e.name)}</div>
+            </div>
+          `;
+        });
+      }
+    });
+
+    if (selTasks.length > 0) {
+      hasAny = true;
+      html += '<div style="font-size:14px;color:var(--text-secondary);margin:12px 0 8px;">Задачи:</div>';
+      selTasks.forEach(t => { html += renderTaskItem(t); });
+    }
+
+    if (!hasAny) {
+      html += `<div style="text-align:center;padding:20px;color:var(--text-tertiary);">Нет событий на этот день</div>`;
+    }
+  }
+  el.innerHTML = html;
+}
+
+function changeMonth(delta) {
+  App.calendarDate.setMonth(App.calendarDate.getMonth() + delta);
+  renderCalendar();
+}
+
+function selectCalDate(dateStr) {
+  App.selectedCalDate = App.selectedCalDate === dateStr ? null : dateStr;
+  renderCalendar();
+}
+
+// ============================================
+// FOLDERS
+// ============================================
+function renderFolders() {
+  const el = document.getElementById('foldersContent');
+  let html = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;" class="animate-in">
+      <h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;">Папки</h1>
+      <button class="header-btn" onclick="openModal('folderModal')">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+  `;
+
+  if (App.folders.length === 0) {
+    html += `
+      <div class="empty-state animate-in">
+        ${wemoji('folder', '2xl')}
+        <div class="empty-state-title">Нет папок</div>
+        <div class="empty-state-desc">Создайте папки для организации заметок</div>
+      </div>
+    `;
+  } else {
+    html += '<div class="folder-list animate-in stagger-1">';
+    App.folders.forEach(f => {
+      const count = App.notes.filter(n => n.folderId === f.id && !n.archived).length;
+      html += `
+        <div class="folder-item" onclick="openFolder('${f.id}')">
+          <div class="folder-icon">${wemoji('folder', 'md')}</div>
+          <div class="folder-info">
+            <div class="folder-name">${escHtml(f.name)}</div>
+            <div class="folder-count">${count} ${count === 1 ? 'заметка' : count < 5 && count !== 0 ? 'заметки' : 'заметок'}</div>
+          </div>
+          <div class="folder-arrow">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  html += `
+    <div style="margin-top:24px;" class="animate-in stagger-2">
+      <div class="folder-list">
+        <div class="folder-item" onclick="navigateTo('schedule')">
+          <div class="folder-icon">${wemoji('calendar', 'md')}</div>
+          <div class="folder-info">
+            <div class="folder-name">Расписание</div>
+            <div class="folder-count">${App.schedules.length} расписаний</div>
+          </div>
+          <div class="folder-arrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+        <div class="folder-item" onclick="navigateTo('archive')">
+          <div class="folder-icon" style="background:rgba(142,142,147,0.12);">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--text-secondary)" stroke-width="2" stroke-linecap="round"><polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+          </div>
+          <div class="folder-info">
+            <div class="folder-name">Архив</div>
+            <div class="folder-count">${App.notes.filter(n => n.archived).length + App.tasks.filter(t => t.archived).length} элементов</div>
+          </div>
+          <div class="folder-arrow"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg></div>
+        </div>
+      </div>
+    </div>
+  `;
+  el.innerHTML = html;
+}
+
+function openFolder(folderId) {
+  navigateTo('notes');
+  setTimeout(() => renderNotes(folderId), 50);
+}
+
+function createFolder() {
+  const name = document.getElementById('folderName').value.trim();
+  if (!name) { showToast('Введите название папки'); return; }
+  App.folders.push({
+    id: uid(), name,
+    created: Date.now(), modified: Date.now()
+  });
+  Store.saveFolders();
+  Sync.debounceSync();
+  closeModal('folderModal');
+  document.getElementById('folderName').value = '';
+  renderCurrentScreen();
+  showToast('Папка создана', 'folder');
+}
+
+// ============================================
+// ARCHIVE
+// ============================================
+function renderArchive() {
+  const el = document.getElementById('archiveContent');
+  const archivedNotes = App.notes.filter(n => n.archived);
+  const archivedTasks = App.tasks.filter(t => t.archived);
+
+  let html = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;" class="animate-in">
+      <button onclick="navigateTo('folders')" style="width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;">Архив</h1>
+    </div>
+  `;
+
+  if (archivedNotes.length === 0 && archivedTasks.length === 0) {
+    html += `
+      <div class="empty-state animate-in">
+        ${wemoji('sparkles', '2xl')}
+        <div class="empty-state-title">Архив пуст</div>
+        <div class="empty-state-desc">Архивированные заметки и задачи появятся здесь</div>
+      </div>
+    `;
+  } else {
+    if (archivedNotes.length > 0) {
+      html += `<div class="section-header animate-in stagger-1"><div class="section-title">Заметки</div></div>`;
+      archivedNotes.forEach(n => {
+        html += `
+          <div class="task-item animate-in" style="justify-content:space-between;">
+            <div style="flex:1;">
+              <div style="font-size:15px;font-weight:500;">${escHtml(n.title || 'Без названия')}</div>
+              <div style="font-size:12px;color:var(--text-secondary);">${formatDate(n.modified)}</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onclick="restoreNote('${n.id}')" style="color:var(--accent);font-size:13px;font-weight:600;">Восстановить</button>
+              <button onclick="permanentDeleteNote('${n.id}')" style="color:var(--color-danger);font-size:13px;font-weight:600;">Удалить</button>
+            </div>
+          </div>
+        `;
+      });
+    }
+    if (archivedTasks.length > 0) {
+      html += `<div class="section-header animate-in stagger-2"><div class="section-title">Задачи</div></div>`;
+      archivedTasks.forEach(t => {
+        html += `
+          <div class="task-item animate-in">
+            <div style="flex:1;"><div style="font-size:15px;font-weight:500;">${escHtml(t.title)}</div></div>
+            <button onclick="restoreTask('${t.id}')" style="color:var(--accent);font-size:13px;font-weight:600;">Восстановить</button>
+          </div>
+        `;
+      });
+    }
+  }
+  el.innerHTML = html;
+}
+
+function restoreNote(id) {
+  const note = App.notes.find(n => n.id === id);
+  if (note) {
+    note.archived = false; note.modified = Date.now();
+    Store.saveNotes(); Sync.debounceSync();
+    renderArchive();
+    showToast('Заметка восстановлена', 'sparkles');
+  }
+}
+
+function permanentDeleteNote(id) {
+  if (!confirm('Удалить навсегда?')) return;
+  App.notes = App.notes.filter(n => n.id !== id);
+  Store.saveNotes(); Sync.debounceSync();
+  renderArchive();
+  showToast('Удалено навсегда');
+}
+
+function restoreTask(id) {
+  const task = App.tasks.find(t => t.id === id);
+  if (task) {
+    task.archived = false; task.modified = Date.now();
+    Store.saveTasks(); Sync.debounceSync();
+    renderArchive();
+    showToast('Задача восстановлена', 'sparkles');
+  }
+}
+
+// ============================================
+// SEARCH
+// ============================================
+function renderSearch() {
+  const el = document.getElementById('searchContent');
+  el.innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;" class="animate-in">
+      <h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;flex:1;">Поиск</h1>
+    </div>
+    <div class="search-bar animate-in stagger-1">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Заметки, задачи, папки..." id="searchInput" oninput="performSearch(this.value)">
+    </div>
+    <div id="searchResults">
+      <div class="empty-state">
+        ${wemoji('search', '2xl')}
+        <div class="empty-state-title">Что ищем?</div>
+        <div class="empty-state-desc">Начните вводить, чтобы найти заметки, задачи или папки</div>
+      </div>
+    </div>
+  `;
+  setTimeout(() => document.getElementById('searchInput')?.focus(), 300);
+}
+
+function performSearch(query) {
+  const results = document.getElementById('searchResults');
+  if (!query.trim()) {
+    results.innerHTML = `
+      <div class="empty-state">
+        ${wemoji('search', '2xl')}
+        <div class="empty-state-title">Что ищем?</div>
+        <div class="empty-state-desc">Начните вводить, чтобы найти заметки, задачи или папки</div>
+      </div>
+    `;
+    return;
+  }
+  const q = query.toLowerCase();
+  let html = '';
+  const matchedNotes = App.notes.filter(n => !n.archived &&
+    ((n.title || '').toLowerCase().includes(q) || (n.content || '').toLowerCase().includes(q)));
+  const matchedTasks = App.tasks.filter(t => !t.archived &&
+    (t.title || '').toLowerCase().includes(q));
+  const matchedFolders = App.folders.filter(f => (f.name || '').toLowerCase().includes(q));
+
+  if (matchedNotes.length > 0) {
+    html += `<div class="section-header"><div class="section-title">${wemoji('memo', 'sm')} Заметки</div></div>`;
+    html += '<div class="notes-grid">';
+    matchedNotes.slice(0, 10).forEach(n => { html += renderNoteCard(n); });
+    html += '</div>';
+  }
+  if (matchedTasks.length > 0) {
+    html += `<div class="section-header"><div class="section-title">${wemoji('check', 'sm')} Задачи</div></div>`;
+    matchedTasks.slice(0, 10).forEach(t => { html += renderTaskItem(t); });
+  }
+  if (matchedFolders.length > 0) {
+    html += `<div class="section-header"><div class="section-title">${wemoji('folder', 'sm')} Папки</div></div>`;
+    html += '<div class="folder-list">';
+    matchedFolders.forEach(f => {
+      html += `<div class="folder-item" onclick="openFolder('${f.id}')">
+        <div class="folder-icon">${wemoji('folder', 'md')}</div>
+        <div class="folder-info"><div class="folder-name">${escHtml(f.name)}</div></div>
+      </div>`;
+    });
+    html += '</div>';
+  }
+  if (!html) {
+    html = `
+      <div class="empty-state">
+        ${wemoji('search', '2xl')}
+        <div class="empty-state-title">Ничего не найдено</div>
+        <div class="empty-state-desc">Попробуйте другой запрос</div>
+      </div>
+    `;
+  }
+  results.innerHTML = html;
+}
+
+// ============================================
+// SETTINGS
+// ============================================
+function renderSettings() {
+  const el = document.getElementById('settingsContent');
+  const s = App.settings;
+  const themeLabel = { system: 'Системная', light: 'Светлая', dark: 'Тёмная' };
+  const accentColors = ['#007AFF','#34C759','#FF9500','#FF3B30','#AF52DE','#5AC8FA','#FF2D55','#FF6B35','#00C7BE'];
+
+  const html = `
+    <h1 style="font-size:28px;font-weight:800;letter-spacing:-0.5px;margin-bottom:24px;" class="animate-in">Настройки</h1>
+
+    <div class="settings-group animate-in stagger-1">
+      <div class="settings-group-title">Внешний вид</div>
+      <div class="settings-card">
+        <button class="setting-item" onclick="cycleTheme()">
+          <div class="setting-icon blue">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><circle cx="12" cy="12" r="5"/></svg>
+          </div>
+          <span class="setting-label">Тема</span>
+          <span class="setting-value">${themeLabel[s.theme]}</span>
+        </button>
+        <div class="setting-item">
+          <div class="setting-icon purple">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><rect x="3" y="3" width="18" height="18" rx="3"/></svg>
+          </div>
+          <span class="setting-label">Основной цвет</span>
+        </div>
+        <div class="color-options">
+          ${accentColors.map(c => `
+            <div class="color-option ${c === s.accentColor ? 'selected' : ''}"
+                 style="background:${c};color:${c};"
+                 onclick="setAccentColor('${c}')"></div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-group animate-in stagger-2">
+      <div class="settings-group-title">Поведение</div>
+      <div class="settings-card">
+        <div class="setting-item" onclick="toggleSetting('autoSave')">
+          <div class="setting-icon green">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/></svg>
+          </div>
+          <span class="setting-label">Автосохранение</span>
+          <div class="toggle ${s.autoSave ? 'on' : ''}"></div>
+        </div>
+        <div class="setting-item" onclick="toggleSetting('animations')">
+          <div class="setting-icon orange">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="white"><polygon points="13,2 3,14 12,14 11,22 21,10 12,10"/></svg>
+          </div>
+          <span class="setting-label">Анимации</span>
+          <div class="toggle ${s.animations ? 'on' : ''}"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-group animate-in stagger-3">
+      <div class="settings-group-title">Аккаунт</div>
+      <div class="settings-card">
+        ${App.user ? `
+          <div class="setting-item">
+            <div class="setting-icon blue">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span class="setting-label">${escHtml(App.user.email || 'Пользователь')}</span>
+          </div>
+          <button class="setting-item" onclick="signOut()">
+            <div class="setting-icon red">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+            </div>
+            <span class="setting-label" style="color:var(--color-danger);">Выйти</span>
+          </button>
+        ` : `
+          <button class="setting-item" onclick="showAuth()">
+            <div class="setting-icon blue">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            </div>
+            <span class="setting-label">Войти в аккаунт</span>
+          </button>
+        `}
+      </div>
+    </div>
+
+    <div class="settings-group animate-in stagger-4">
+      <div class="settings-group-title">Синхронизация</div>
+      <div class="settings-card">
+        <div class="setting-item">
+          <div class="setting-icon gray" style="padding:2px;">
+            ${wemoji('cloud', 'sm')}
+          </div>
+          <span class="setting-label">Статус</span>
+          <span class="setting-value">${App.isOnline ? (App.user ? 'Подключено' : 'Без аккаунта') : 'Офлайн'}</span>
+        </div>
+        <div class="setting-item">
+          <span class="setting-label">Последняя синхронизация</span>
+          <span class="setting-value">${App.lastSync ? formatDate(App.lastSync) : 'Не было'}</span>
+        </div>
+        ${App.user ? `
+          <button class="setting-item" onclick="Sync.pushAll()">
+            <span class="setting-label" style="color:var(--accent);">Синхронизировать сейчас</span>
+          </button>
+        ` : ''}
+      </div>
+    </div>
+
+    <div class="settings-group animate-in stagger-5">
+      <div class="settings-group-title">Разделы</div>
+      <div class="settings-card">
+        <button class="setting-item" onclick="navigateTo('folders')">
+          <div class="setting-icon" style="padding:2px;">${wemoji('folder', 'sm')}</div>
+          <span class="setting-label">Папки</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-tertiary)" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <button class="setting-item" onclick="navigateTo('schedule')">
+          <div class="setting-icon" style="padding:2px;">${wemoji('calendar', 'sm')}</div>
+          <span class="setting-label">Расписание</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-tertiary)" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+        <button class="setting-item" onclick="navigateTo('archive')">
+          <div class="setting-icon gray">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="21,8 21,21 3,21 3,8"/><rect x="1" y="3" width="22" height="5"/></svg>
+          </div>
+          <span class="setting-label">Архив</span>
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--text-tertiary)" stroke-width="2.5" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="settings-group animate-in stagger-5">
+      <div class="settings-group-title">Данные</div>
+      <div class="settings-card">
+        <button class="setting-item" onclick="exportData()">
+          <div class="setting-icon green">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+          </div>
+          <span class="setting-label">Экспорт данных</span>
+        </button>
+        <button class="setting-item" onclick="clearLocalData()">
+          <div class="setting-icon red">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6"/></svg>
+          </div>
+          <span class="setting-label">Очистить локальный кэш</span>
+        </button>
+      </div>
+    </div>
+
+    <div style="text-align:center;padding:24px;color:var(--text-tertiary);font-size:13px;display:flex;flex-direction:column;align-items:center;gap:8px;" class="animate-in stagger-5">
+      ${wemoji('sparkles', 'md')}
+      <div>MyDesk v1.0 • Liquid Glass Edition</div>
+    </div>
+  `;
+  el.innerHTML = html;
+}
+
+function cycleTheme() {
+  const themes = ['system', 'light', 'dark'];
+  const idx = themes.indexOf(App.settings.theme);
+  App.settings.theme = themes[(idx + 1) % themes.length];
+  Store.saveSettings();
+  Theme.apply();
+  renderSettings();
+  Sync.debounceSync();
+}
+
+function setAccentColor(color) {
+  App.settings.accentColor = color;
+  Store.saveSettings();
+  Theme.apply();
+  renderSettings();
+  Sync.debounceSync();
+}
+
+function toggleSetting(key) {
+  App.settings[key] = !App.settings[key];
+  Store.saveSettings();
+  renderSettings();
+  Sync.debounceSync();
+}
+
+function exportData() {
+  const data = {
+    notes: App.notes, tasks: App.tasks,
+    schedules: App.schedules, folders: App.folders,
+    settings: App.settings,
+    exportedAt: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `mydesk-export-${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Данные экспортированы', 'sparkles');
+}
+
+function clearLocalData() {
+  if (!confirm('Очистить все локальные данные? Данные в облаке останутся.')) return;
+  localStorage.clear();
+  location.reload();
+}
+
+// ============================================
+// AUTH
+// ============================================
+let authMode = 'login';
+
+function showAuth() {
+  document.getElementById('authScreen').classList.remove('hidden');
+  authMode = 'login';
+  updateAuthUI();
+}
+
+function hideAuth() {
+  document.getElementById('authScreen').classList.add('hidden');
+}
+
+function updateAuthUI() {
+  const nameGroup = document.getElementById('authNameGroup');
+  const passwordGroup = document.getElementById('authPasswordGroup');
+  const submit = document.getElementById('authSubmit');
+  const toggleText = document.getElementById('authToggleText');
+  const toggleLink = document.getElementById('authToggleLink');
+  const forgot = document.getElementById('authForgot');
+  const subtitle = document.getElementById('authSubtitle');
+
+  document.getElementById('authError').textContent = '';
+
+  if (authMode === 'login') {
+    nameGroup.style.display = 'none';
+    passwordGroup.style.display = '';
+    submit.textContent = 'Войти';
+    toggleText.textContent = 'Нет аккаунта?';
+    toggleLink.textContent = 'Создать';
+    forgot.style.display = '';
+    subtitle.textContent = 'Войдите, чтобы синхронизировать данные';
+  } else if (authMode === 'register') {
+    nameGroup.style.display = '';
+    passwordGroup.style.display = '';
+    submit.textContent = 'Создать аккаунт';
+    toggleText.textContent = 'Уже есть аккаунт?';
+    toggleLink.textContent = 'Войти';
+    forgot.style.display = 'none';
+    subtitle.textContent = 'Создайте аккаунт для синхронизации';
+  } else if (authMode === 'forgot') {
+    nameGroup.style.display = 'none';
+    passwordGroup.style.display = 'none';
+    submit.textContent = 'Отправить';
+    toggleText.textContent = '';
+    toggleLink.textContent = 'Назад ко входу';
+    forgot.style.display = 'none';
+    subtitle.textContent = 'Введите email для восстановления';
+  }
+}
+
+async function handleAuth() {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+  const name = document.getElementById('authName').value.trim();
+  const errorEl = document.getElementById('authError');
+  const submit = document.getElementById('authSubmit');
+
+  errorEl.textContent = '';
+  if (!email) { errorEl.textContent = 'Введите email'; return; }
+
+  submit.textContent = 'Загрузка...';
+  submit.disabled = true;
+
+  try {
+    if (authMode === 'login') {
+      await auth.signInWithEmailAndPassword(email, password);
+      showToast('Добро пожаловать!', 'wavingHand');
+    } else if (authMode === 'register') {
+      if (password.length < 6) {
+        errorEl.textContent = 'Пароль должен быть не менее 6 символов';
+        submit.disabled = false;
+        updateAuthUI();
+        return;
+      }
+      const cred = await auth.createUserWithEmailAndPassword(email, password);
+      if (name) await cred.user.updateProfile({ displayName: name });
+      showToast('Аккаунт создан!', 'confetti');
+    } else if (authMode === 'forgot') {
+      await auth.sendPasswordResetEmail(email);
+      showToast('Письмо отправлено', 'sparkles');
+      authMode = 'login';
+      updateAuthUI();
+      submit.disabled = false;
+      return;
+    }
+    hideAuth();
+  } catch (e) {
+    const messages = {
+      'auth/user-not-found': 'Пользователь не найден',
+      'auth/wrong-password': 'Неверный пароль',
+      'auth/email-already-in-use': 'Email уже используется',
+      'auth/invalid-email': 'Некорректный email',
+      'auth/weak-password': 'Слабый пароль',
+      'auth/too-many-requests': 'Слишком много попыток, попробуйте позже',
+      'auth/invalid-credential': 'Неверные данные для входа',
+      'auth/network-request-failed': 'Проблема с сетью'
+    };
+    errorEl.textContent = messages[e.code] || 'Произошла ошибка. Попробуйте позже.';
+  } finally {
+    submit.disabled = false;
+    updateAuthUI();
+  }
+}
+
+async function signOut() {
+  if (!confirm('Выйти из аккаунта?')) return;
+  try {
+    Sync.detach();
+    await auth.signOut();
+    App.user = null;
+    renderSettings();
+    showToast('Вы вышли из аккаунта');
+  } catch (e) {
+    showToast('Ошибка при выходе');
+  }
+}
+
+auth.onAuthStateChanged(async (user) => {
+  App.user = user;
+  if (user) {
+    hideAuth();
+    Sync.setupRefs();
+    await Sync.pullAll();
+  }
+  renderCurrentScreen();
+});
+
+// ============================================
+// MODALS
+// ============================================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-backdrop').forEach(modal => {
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal(modal.id);
+  });
+});
+
+// ============================================
+// FAB
+// ============================================
+function toggleFab() {
+  App.fabOpen = !App.fabOpen;
+  document.getElementById('fabMenu').classList.toggle('open', App.fabOpen);
+  document.getElementById('fab').style.transform = App.fabOpen ? 'rotate(45deg)' : '';
+}
+
+function closeFab() {
+  App.fabOpen = false;
+  document.getElementById('fabMenu').classList.remove('open');
+  document.getElementById('fab').style.transform = '';
+}
+
+// ============================================
+// EVENT LISTENERS
+// ============================================
+document.querySelectorAll('.tab-item').forEach(tab => {
+  tab.addEventListener('click', () => {
+    navigateTo(tab.dataset.tab);
+    closeFab();
+  });
+});
+
+document.getElementById('fab').addEventListener('click', toggleFab);
+
+document.querySelectorAll('.fab-menu-item').forEach(item => {
+  item.addEventListener('click', () => {
+    closeFab();
+    const action = item.dataset.action;
+    if (action === 'note') openNote(null);
+    else if (action === 'task') openTaskModal();
+    else if (action === 'schedule') openScheduleModal();
+  });
+});
+
+document.getElementById('editorClose').addEventListener('click', closeEditor);
+document.getElementById('editorTitle').addEventListener('input', autoSaveNote);
+document.getElementById('editorContent').addEventListener('input', autoSaveNote);
+document.getElementById('editorContent').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.max(200, this.scrollHeight) + 'px';
+});
+document.getElementById('editorPin').addEventListener('click', toggleCurrentNotePin);
+document.getElementById('editorMore').addEventListener('click', showNoteActions);
+document.getElementById('editorAddImage').addEventListener('click', () => {
+  document.getElementById('imageUploadInput').click();
+});
+document.getElementById('editorFolder').addEventListener('click', moveNoteToFolder);
+document.getElementById('imageUploadInput').addEventListener('change', (e) => {
+  if (e.target.files.length > 0) {
+    handleImageUpload(e.target.files);
+    e.target.value = '';
+  }
+});
+document.getElementById('editorAddLink').addEventListener('click', () => {
+  const url = prompt('Введите URL:');
+  if (url) {
+    const content = document.getElementById('editorContent');
+    content.value += (content.value ? '\n' : '') + url;
+    autoSaveNote();
+  }
+});
+
+document.querySelectorAll('[data-priority]').forEach(btn => {
+  btn.addEventListener('click', () => setTaskPriority(btn.dataset.priority));
+});
+document.getElementById('taskSave').addEventListener('click', saveTask);
+document.getElementById('schedAddEntry').addEventListener('click', addSchedEntry);
+document.getElementById('schedSave').addEventListener('click', saveSchedule);
+document.getElementById('folderSave').addEventListener('click', createFolder);
+
+document.getElementById('authSubmit').addEventListener('click', handleAuth);
+document.getElementById('authToggleLink').addEventListener('click', () => {
+  if (authMode === 'forgot') authMode = 'login';
+  else authMode = authMode === 'login' ? 'register' : 'login';
+  updateAuthUI();
+});
+document.getElementById('authForgot').addEventListener('click', () => {
+  authMode = 'forgot';
+  updateAuthUI();
+});
+document.getElementById('authSkip').addEventListener('click', () => {
+  hideAuth();
+  showToast('Войти можно позже в настройках');
+});
+document.getElementById('authPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') handleAuth();
+});
+document.getElementById('authEmail').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (authMode === 'forgot' || !document.getElementById('authPassword').value)) handleAuth();
+});
+
+document.getElementById('onboardingNext').addEventListener('click', () => {
+  App.onboardingStep++;
+  if (App.onboardingStep >= 4) finishOnboarding();
+  else updateOnboarding();
+});
+
+document.getElementById('onboardingSkip').addEventListener('click', finishOnboarding);
+
+function updateOnboarding() {
+  document.querySelectorAll('.onboarding-step').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.onboarding-dot').forEach(d => d.classList.remove('active'));
+  document.querySelector(`.onboarding-step[data-step="${App.onboardingStep}"]`)?.classList.add('active');
+  document.querySelector(`.onboarding-dot[data-dot="${App.onboardingStep}"]`)?.classList.add('active');
+  if (App.onboardingStep >= 3) {
+    document.getElementById('onboardingNext').textContent = 'Начать';
+  }
+}
+
+function finishOnboarding() {
+  document.getElementById('onboarding').classList.add('hidden');
+  Store.set('onboardingDone', true);
+  showAuth();
+}
+
+document.addEventListener('click', (e) => {
+  if (App.fabOpen && !e.target.closest('#fab') && !e.target.closest('#fabMenu')) {
+    closeFab();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('noteEditor').classList.contains('open')) closeEditor();
+    closeFab();
+    document.querySelectorAll('.modal-backdrop.open').forEach(m => closeModal(m.id));
+  }
+});
+
+// ============================================
+// PRELOAD WEBP EMOJI (critical assets)
+// ============================================
+Object.values(WEMOJI).forEach(url => {
+  const img = new Image();
+  img.src = url;
+});
+
+// ============================================
+// INIT
+// ============================================
+function init() {
+  Store.loadAll();
+  Theme.apply();
+  renderDashboard();
+
+  setTimeout(() => {
+    document.getElementById('loadingScreen').classList.add('hidden');
+    if (!Store.get('onboardingDone')) {
+      document.getElementById('onboarding').classList.remove('hidden');
+    }
+  }, 800);
+
+  if (!App.isOnline) {
+    setTimeout(() => showSync('Офлайн-режим'), 1000);
+  }
+}
+
+init();
+</script>
+</body>
+</html>
