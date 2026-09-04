@@ -4,11 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="MyDesk">
 <meta name="theme-color" content="#007AFF">
 <title>MyDesk</title>
-<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk15RGVzayIsICAic2hvcnRfbmFtZSI6ICJNeURlc2siLCAgInN0YXJ0X3VybCI6ICIuIiwgICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLCAgImJhY2tncm91bmRfY29sb3IiOiAiI0YyRjJGNyIsICAidGhlbWVfY29sb3IiOiAiIzAwN0FGRiIKfQ==">
+<link rel="icon" type="image/webp" href="https://i.ibb.co/LDGqYG69/Rocket.webp">
+<link rel="shortcut icon" type="image/webp" href="https://i.ibb.co/LDGqYG69/Rocket.webp">
+<link rel="apple-touch-icon" href="https://i.ibb.co/bM92wtTZ/editing-result-b354bffda85a11f1893972bf94faac54-1.jpg">
+<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjogIk15RGVzayIsICJzaG9ydF9uYW1lIjogIk15RGVzayIsICJkZXNjcmlwdGlvbiI6ICLQl9Cw0LzQtdGC0LrQuCwg0LfQsNC00LDRh9C4LCDRgNCw0YHQv9C40YHQsNC90LjQtSDQuCDQvNC40L3QuC1JREUg0LIg0L7QtNC90L7QvCDQv9GA0LjQu9C+0LbQtdC90LjQuCIsICJzdGFydF91cmwiOiAiLiIsICJzY29wZSI6ICIuIiwgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsICJvcmllbnRhdGlvbiI6ICJwb3J0cmFpdCIsICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNGMkYyRjciLCAidGhlbWVfY29sb3IiOiAiIzAwN0FGRiIsICJpY29ucyI6IFt7InNyYyI6ICJodHRwczovL2kuaWJiLmNvL2JNOTJ3dFRaL2VkaXRpbmctcmVzdWx0LWIzNTRiZmZkYTg1YTExZjE4OTM5NzJiZjk0ZmFhYzU0LTEuanBnIiwgInNpemVzIjogIjE5MngxOTIiLCAidHlwZSI6ICJpbWFnZS9qcGVnIiwgInB1cnBvc2UiOiAiYW55In0sIHsic3JjIjogImh0dHBzOi8vaS5pYmIuY28vYk05Mnd0VFovZWRpdGluZy1yZXN1bHQtYjM1NGJmZmRhODVhMTFmMTg5Mzk3MmJmOTRmYWFjNTQtMS5qcGciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL2pwZWciLCAicHVycG9zZSI6ICJhbnkifSwgeyJzcmMiOiAiaHR0cHM6Ly9pLmliYi5jby9iTTkyd3RUWi9lZGl0aW5nLXJlc3VsdC1iMzU0YmZmZGE4NWExMWYxODkzOTcyYmY5NGZhYWM1NC0xLmpwZyIsICJzaXplcyI6ICI1MTJ4NTEyIiwgInR5cGUiOiAiaW1hZ2UvanBlZyIsICJwdXJwb3NlIjogIm1hc2thYmxlIn1dfQ==">
 
 <style>
 :root {
@@ -429,6 +433,10 @@ img{display:block;max-width:100%}
 .tag-filter-chip.active{background:rgba(var(--accent-rgb),0.15);color:var(--accent)}
 .tag-filter-chip img{width:16px;height:16px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
 .sticker-inline{width:20px;height:20px;object-fit:contain;vertical-align:-5px;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
+.editor-content{outline:none;white-space:pre-wrap;word-break:break-word}
+.editor-content:empty:before,.editable-desc:empty:before{content:attr(data-placeholder);color:var(--text-tertiary);pointer-events:none}
+.editable-desc{outline:none;white-space:pre-wrap;word-break:break-word;min-height:52px;max-height:140px;overflow-y:auto}
+.lazy-sticker{background:transparent}
 </style>
 </head>
 <body>
@@ -524,7 +532,7 @@ img{display:block;max-width:100%}
 
   <div class="editor-overlay" id="noteEditor">
     <div class="editor-header"><button class="editor-back" id="editorClose"><div style="font-size:20px;font-weight:600;color:var(--accent);padding:0 8px;">←</div></button><div class="editor-status" id="editorStatus"></div><div class="editor-actions" id="editorActions"></div></div>
-    <div class="editor-body"><input type="text" class="editor-title-input" id="editorTitle" placeholder="Заголовок"><textarea class="editor-content" id="editorContent" placeholder="Начните писать..."></textarea><div class="tag-chip-row" id="editorTagRow" style="padding:0 20px 8px"></div><div class="editor-images" id="editorImages"></div></div>
+    <div class="editor-body"><input type="text" class="editor-title-input" id="editorTitle" placeholder="Заголовок"><div class="editor-content" id="editorContent" contenteditable="true" data-placeholder="Начните писать..." spellcheck="true"></div><div class="tag-chip-row" id="editorTagRow" style="padding:0 20px 8px"></div><div class="editor-images" id="editorImages"></div></div>
     <div class="editor-toolbar" id="editorToolbar"></div>
   </div>
 
@@ -558,7 +566,7 @@ img{display:block;max-width:100%}
 
   <div class="modal-backdrop" id="taskModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="taskModalHeader"></div><div style="display:flex;flex-direction:column;gap:12px;">
     <input type="text" class="input-field" id="taskTitle" placeholder="Название задачи">
-    <div style="position:relative;"><textarea class="input-field" id="taskDesc" placeholder="Описание (опционально)" rows="2" style="resize:none;padding-right:40px"></textarea><button class="header-btn" style="position:absolute;right:4px;bottom:4px;width:30px;height:30px" title="Вставить стикер" onclick="openStickerPicker('insert',{target:'taskDesc'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
+    <div style="position:relative;"><div class="input-field editable-desc" id="taskDesc" contenteditable="true" data-placeholder="Описание (опционально)" style="padding-right:40px"></div><button class="header-btn" style="position:absolute;right:4px;bottom:4px;width:30px;height:30px" title="Вставить стикер" onclick="openStickerPicker('insert',{target:'taskDesc'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
     <div style="display:flex;gap:8px;">
       <button class="picker-trigger" id="taskDueTrigger" style="flex:1;"><span class="picker-label">Дата</span><span class="picker-value" id="taskDueDisplay">Не выбрана</span></button>
       <button class="picker-trigger" id="taskTimeTrigger" style="flex:1;"><span class="picker-label">Время</span><span class="picker-value" id="taskTimeDisplay">—</span></button>
@@ -620,7 +628,7 @@ const STICKER_MAP={};Object.keys(STICKERS).forEach(c=>STICKERS[c].items.forEach(
 
 
 function icon(n,s=22,c=''){const u=ICONS[n];if(!u)return'';if(c.includes('accent'))return`<span class="ui-icon-mask ${c}" style="--icon-url:url('${u}');width:${s}px;height:${s}px;-webkit-mask-image:url('${u}');mask-image:url('${u}');"></span>`;return`<img class="ui-icon ${c}" src="${u}" width="${s}" height="${s}" alt="" draggable="false">`}
-function wemoji(k,s='sm'){const u=WEMOJI[k];return u?`<img class="wemoji wemoji-${s}" src="${u}" alt="" loading="eager">`:'';}
+function wemoji(k,s='sm'){const u=WEMOJI[k];return u?`<img class="wemoji wemoji-${s} lazy-sticker" data-src="${u}" alt="" loading="eager">`:'';}
 
 // ============================================
 // CUSTOM DATE PICKER ENGINE
@@ -934,14 +942,14 @@ el.innerHTML=h}
 // EDITOR
 // ============================================
 function openNote(id){let note;if(id){note=App.notes.find(n=>n.id===id);if(!note)return}else{note={id:uid(),title:'',content:'',created:Date.now(),modified:Date.now(),pinned:false,archived:false,folderId:null,images:[],tags:[],links:[]};App.notes.unshift(note);Store.saveNotes()}
-App.currentNote=note;document.getElementById('editorTitle').value=note.title||'';document.getElementById('editorContent').value=note.content||'';renderEditorImages();updateEditorStatus('Сохранено');renderNoteTagRow();
+App.currentNote=note;document.getElementById('editorTitle').value=note.title||'';document.getElementById('editorContent').innerHTML=contentToHtml(note.content||'');renderEditorImages();updateEditorStatus('Сохранено');renderNoteTagRow();
 document.getElementById('editorActions').innerHTML=`<button class="header-btn" id="editorPin">${icon('pin',22,note.pinned?'accent':'')}</button><button class="header-btn" id="editorMore">${icon('more',22)}</button>`;
 document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSticker">${wemoji('palette','sm')}</button><button class="toolbar-btn" id="eTag">${icon('tag',22)}</button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
-document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){document.getElementById('editorContent').value+='\n'+u;autoSaveNote()}};document.getElementById('eSticker').onclick=()=>openStickerPicker('insert',{target:'note'});document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;
+document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eSticker').onclick=()=>openStickerPicker('insert',{target:'note'});document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;
 document.getElementById('noteEditor').classList.add('open');setTimeout(()=>{if(!note.title)document.getElementById('editorTitle').focus();else document.getElementById('editorContent').focus()},300)}
 
 function closeEditor(){saveCurrentNote();document.getElementById('noteEditor').classList.remove('open');App.currentNote=null;renderCurrentScreen()}
-function saveCurrentNote(){if(!App.currentNote)return;const t=document.getElementById('editorTitle').value.trim(),c=document.getElementById('editorContent').value.trim();if(!t&&!c&&!App.currentNote.images?.length){App.notes=App.notes.filter(n=>n.id!==App.currentNote.id);Store.saveNotes();Sync.debounceSync();return}App.currentNote.title=t;App.currentNote.content=c;App.currentNote.modified=Date.now();const i=App.notes.findIndex(n=>n.id===App.currentNote.id);if(i>=0)App.notes[i]=App.currentNote;Store.saveNotes();Sync.debounceSync()}
+function saveCurrentNote(){if(!App.currentNote)return;const t=document.getElementById('editorTitle').value.trim(),c=htmlToContent(document.getElementById('editorContent')).trim();if(!t&&!c&&!App.currentNote.images?.length){App.notes=App.notes.filter(n=>n.id!==App.currentNote.id);Store.saveNotes();Sync.debounceSync();return}App.currentNote.title=t;App.currentNote.content=c;App.currentNote.modified=Date.now();const i=App.notes.findIndex(n=>n.id===App.currentNote.id);if(i>=0)App.notes[i]=App.currentNote;Store.saveNotes();Sync.debounceSync()}
 function autoSaveNote(){if(!App.settings.autoSave||!App.currentNote)return;clearTimeout(App.saveTimer);updateEditorStatus('...',true);App.saveTimer=setTimeout(()=>{saveCurrentNote();updateEditorStatus('Сохранено')},500)}
 function updateEditorStatus(t,s=false){document.getElementById('editorStatus').innerHTML=s?`<div class="sync-spinner" style="width:12px;height:12px"></div><span>${t}</span>`:`${wemoji('check','xs')}<span>${t}</span>`}
 function toggleCurrentNotePin(){if(!App.currentNote)return;App.currentNote.pinned=!App.currentNote.pinned;App.currentNote.modified=Date.now();document.getElementById('editorPin').innerHTML=icon('pin',22,App.currentNote.pinned?'accent':'');saveCurrentNote();showToast(App.currentNote.pinned?'Закреплено':'Откреплено','star')}
@@ -969,7 +977,7 @@ function toggleTask(id){const t=App.tasks.find(x=>x.id===id);if(!t)return;t.done
 
 function openTaskModal(tid=null){document.getElementById('taskModalHeader').innerHTML=`${icon('tasks',20)} <span>${tid?'Редактировать':'Новая задача'}</span>`;
 const ti=document.getElementById('taskTitle'),de=document.getElementById('taskDesc');
-if(tid){const t=App.tasks.find(x=>x.id===tid);if(!t)return;ti.value=t.title||'';de.value=t.description||'';document.getElementById('taskDue').value=t.due||'';document.getElementById('taskTime').value=t.time||'';document.getElementById('taskDueDisplay').textContent=t.due?formatDateShort(t.due):'Не выбрана';document.getElementById('taskTimeDisplay').textContent=t.time||'—';App.editingTaskId=tid;App.editingTaskTags=(t.tags||[]).slice();setTaskPriority(t.priority||'low')}else{ti.value='';de.value='';const today=new Date().toISOString().split('T')[0];document.getElementById('taskDue').value=today;document.getElementById('taskTime').value='';document.getElementById('taskDueDisplay').textContent=formatDateShort(today);document.getElementById('taskTimeDisplay').textContent='—';App.editingTaskId=null;App.editingTaskTags=[];setTaskPriority('low')}
+if(tid){const t=App.tasks.find(x=>x.id===tid);if(!t)return;ti.value=t.title||'';de.innerHTML=contentToHtml(t.description||'');document.getElementById('taskDue').value=t.due||'';document.getElementById('taskTime').value=t.time||'';document.getElementById('taskDueDisplay').textContent=t.due?formatDateShort(t.due):'Не выбрана';document.getElementById('taskTimeDisplay').textContent=t.time||'—';App.editingTaskId=tid;App.editingTaskTags=(t.tags||[]).slice();setTaskPriority(t.priority||'low')}else{ti.value='';de.innerHTML='';const today=new Date().toISOString().split('T')[0];document.getElementById('taskDue').value=today;document.getElementById('taskTime').value='';document.getElementById('taskDueDisplay').textContent=formatDateShort(today);document.getElementById('taskTimeDisplay').textContent='—';App.editingTaskId=null;App.editingTaskTags=[];setTaskPriority('low')}
 renderTaskTagRow();
 openModal('taskModal');setTimeout(()=>ti.focus(),300)}
 
@@ -989,7 +997,7 @@ document.getElementById('taskTimeTrigger').addEventListener('click', () => {
 });
 
 function setTaskPriority(p){document.querySelectorAll('[data-priority]').forEach(b=>b.classList.toggle('active',b.dataset.priority===p));App.taskPriority=p}
-function saveTask(){const t=document.getElementById('taskTitle').value.trim();if(!t){showToast('Введите название');return}const d={title:t,description:document.getElementById('taskDesc').value.trim(),due:document.getElementById('taskDue').value,time:document.getElementById('taskTime').value,priority:App.taskPriority,tags:(App.editingTaskTags||[]).slice(),modified:Date.now()};if(App.editingTaskId){const i=App.tasks.findIndex(x=>x.id===App.editingTaskId);if(i>=0)App.tasks[i]={...App.tasks[i],...d}}else App.tasks.unshift({id:uid(),...d,done:false,archived:false,created:Date.now()});Store.saveTasks();Sync.debounceSync();closeModal('taskModal');renderCurrentScreen();showToast('Сохранено','sparkles')}
+function saveTask(){const t=document.getElementById('taskTitle').value.trim();if(!t){showToast('Введите название');return}const d={title:t,description:htmlToContent(document.getElementById('taskDesc')).trim(),due:document.getElementById('taskDue').value,time:document.getElementById('taskTime').value,priority:App.taskPriority,tags:(App.editingTaskTags||[]).slice(),modified:Date.now()};if(App.editingTaskId){const i=App.tasks.findIndex(x=>x.id===App.editingTaskId);if(i>=0)App.tasks[i]={...App.tasks[i],...d}}else App.tasks.unshift({id:uid(),...d,done:false,archived:false,created:Date.now()});Store.saveTasks();Sync.debounceSync();closeModal('taskModal');renderCurrentScreen();showToast('Сохранено','sparkles')}
 
 // ============================================
 // SCHEDULE — using custom pickers for time
@@ -1241,8 +1249,73 @@ function pjLog(level,text){const el=document.getElementById('pjConsole');if(!el)
 window.addEventListener('message',e=>{if(e.data&&e.data.__pj)pjLog(e.data.level,e.data.text)});
 
 // ============================================
+// LAZY STICKER LOADING (perf: don't decode/animate offscreen webp stickers)
+// ============================================
+const stickerIO=new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    const img=entry.target;
+    if(entry.isIntersecting){
+      const src=img.dataset.src;
+      if(src&&img.getAttribute('src')!==src)img.setAttribute('src',src);
+    }else if(img.hasAttribute('src')){
+      img.dataset.src=img.dataset.src||img.getAttribute('src');
+      img.removeAttribute('src');
+    }
+  });
+},{root:null,rootMargin:'200px 0px',threshold:0.01});
+function observeLazyStickers(root){
+  const scope=(root&&root.querySelectorAll)?root:document;
+  scope.querySelectorAll('.lazy-sticker').forEach(img=>{if(!img.dataset.ioBound){img.dataset.ioBound='1';stickerIO.observe(img)}});
+}
+new MutationObserver(muts=>{
+  for(const m of muts)m.addedNodes.forEach(n=>{
+    if(n.nodeType!==1)return;
+    if(n.classList&&n.classList.contains('lazy-sticker')&&!n.dataset.ioBound){n.dataset.ioBound='1';stickerIO.observe(n)}
+    if(n.querySelectorAll)observeLazyStickers(n);
+  });
+}).observe(document.body,{childList:true,subtree:true});
+observeLazyStickers(document);
+
+// ============================================
 // STICKERS: tags for notes/tasks/projects + insert-into-text
 // ============================================
+function contentToHtml(text){
+  const esc=escHtml(text||'');
+  const withImgs=esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline" data-key="${k}" src="${it.u}" alt="${escHtml(it.n)}" contenteditable="false">`:m});
+  return withImgs.replace(/\n/g,'<br>');
+}
+function htmlToContent(el){
+  let out='';
+  function walk(node){
+    if(node.nodeType===3){out+=node.nodeValue;return}
+    if(node.nodeType!==1)return;
+    const tag=node.tagName;
+    if(tag==='IMG'&&node.classList.contains('sticker-inline')){out+=`[[s:${node.dataset.key}]]`;return}
+    if(tag==='BR'){out+='\n';return}
+    const isBlock=tag==='DIV'||tag==='P';
+    if(isBlock&&out&&!out.endsWith('\n'))out+='\n';
+    node.childNodes.forEach(walk);
+    if(isBlock&&!out.endsWith('\n'))out+='\n';
+  }
+  el.childNodes.forEach(walk);
+  return out.replace(/\n+$/,'');
+}
+function insertStickerNode(container,key){
+  const it=STICKER_MAP[key];if(!it)return;
+  container.focus();
+  const sel=window.getSelection();let range;
+  if(sel.rangeCount&&container.contains(sel.anchorNode))range=sel.getRangeAt(0);
+  else{range=document.createRange();range.selectNodeContents(container);range.collapse(false)}
+  const img=document.createElement('img');
+  img.className='sticker-inline';img.dataset.key=key;img.src=it.u;img.alt=it.n;img.setAttribute('contenteditable','false');
+  range.deleteContents();range.insertNode(img);
+  range.setStartAfter(img);range.setEndAfter(img);range.collapse(true);
+  sel.removeAllRanges();sel.addRange(range);
+}
+function insertPlainTextAtEnd(container,text){
+  if(container.childNodes.length)container.appendChild(document.createElement('br'));
+  container.appendChild(document.createTextNode(text));
+}
 function openStickerPicker(mode,ctx){
   App.stickerCtx={mode,...ctx};
   document.getElementById('stickerModalTitle').textContent=mode==='tag'?'Выберите метку':'Вставить стикер';
@@ -1263,7 +1336,7 @@ function renderStickerGrid(){
   if(q){items=[];Object.values(STICKERS).forEach(cat=>cat.items.forEach(it=>{if(it.n.toLowerCase().includes(q))items.push(it)}))}
   else items=STICKERS[App.stickerCat].items;
   const activeTags=currentItemTags();
-  el.innerHTML=items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')"><img src="${it.u}" alt=""><span class="sticker-cell-name">${escHtml(it.n)}</span></div>`).join('');
+  el.innerHTML=items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')"><img class="lazy-sticker" data-src="${it.u}" alt=""><span class="sticker-cell-name">${escHtml(it.n)}</span></div>`).join('');
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='stickerSearch')renderStickerGrid()});
 function pickSticker(key){
@@ -1276,23 +1349,23 @@ function toggleItemTag(itemType,id,key){
   else if(itemType==='task'){App.editingTaskTags=App.editingTaskTags||[];const i=App.editingTaskTags.indexOf(key);if(i>=0)App.editingTaskTags.splice(i,1);else App.editingTaskTags.push(key);renderTaskTagRow()}
   else if(itemType==='project'){const p=App.projects.find(x=>x.id===id);if(!p)return;p.tags=p.tags||[];const i=p.tags.indexOf(key);if(i>=0)p.tags.splice(i,1);else p.tags.push(key);p.modified=Date.now();Store.saveProjects();renderProjects()}
 }
-function renderTagChips(tags){return(tags||[]).map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip" title="${escHtml(it.n)}"><img src="${it.u}" alt=""></span>`:''}).join('')}
-function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img src="${it.u}" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'note',id:'${App.currentNote.id}'})">+</span>`}
-function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img src="${it.u}" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'task',id:null})">+</span>`}
+function renderTagChips(tags){return(tags||[]).map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" alt=""></span>`:''}).join('')}
+function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img class="lazy-sticker" data-src="${it.u}" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'note',id:'${App.currentNote.id}'})">+</span>`}
+function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img class="lazy-sticker" data-src="${it.u}" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'task',id:null})">+</span>`}
 function renderTagFilterBar(kind,items){
   const tagSet=new Set();items.forEach(it=>(it.tags||[]).forEach(k=>tagSet.add(k)));
   if(!tagSet.size)return'';
   const filterVar=kind+'TagFilter';const current=App[filterVar];
   let h=`<div class="tag-filter-bar"><div class="tag-filter-chip ${!current?'active':''}" onclick="setTagFilter('${kind}',null)">Все</div>`;
-  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')"><img src="${it.u}" alt="">${escHtml(it.n)}</div>`});
+  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')"><img class="lazy-sticker" data-src="${it.u}" alt="">${escHtml(it.n)}</div>`});
   h+='</div>';return h;
 }
 function setTagFilter(kind,key){App[kind+'TagFilter']=key;renderCurrentScreen()}
-function renderStickerText(text){const esc=escHtml(text||'');return esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline" src="${it.u}" alt="${escHtml(it.n)}">`:m})}
+function renderStickerText(text){const esc=escHtml(text||'');return esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline lazy-sticker" data-src="${it.u}" alt="${escHtml(it.n)}">`:m})}
 function insertStickerIntoEditor(key,target){
   const it=STICKER_MAP[key];if(!it)return;
-  if(target==='note'){const ta=document.getElementById('editorContent');const code=`[[s:${key}]]`;const start=ta.selectionStart||ta.value.length,end=ta.selectionEnd||ta.value.length;ta.value=ta.value.slice(0,start)+code+ta.value.slice(end);ta.focus();ta.selectionStart=ta.selectionEnd=start+code.length;autoSaveNote()}
-  else if(target==='taskDesc'){const ta=document.getElementById('taskDesc');const code=`[[s:${key}]]`;const start=ta.selectionStart||ta.value.length,end=ta.selectionEnd||ta.value.length;ta.value=ta.value.slice(0,start)+code+ta.value.slice(end);ta.focus();ta.selectionStart=ta.selectionEnd=start+code.length}
+  if(target==='note'){insertStickerNode(document.getElementById('editorContent'),key);autoSaveNote()}
+  else if(target==='taskDesc'){insertStickerNode(document.getElementById('taskDesc'),key)}
   else if(target==='project'){
     const f=App.currentProjectId&&App.currentFilePath?App.projects.find(x=>x.id===App.currentProjectId)?.files.find(x=>x.path===App.currentFilePath):null;
     const ext=f?fileExt(f.path):'';
@@ -1315,7 +1388,9 @@ function init(){Object.values(ICONS).forEach(u=>{const i=new Image();i.src=u});O
 document.getElementById('fab').innerHTML=icon('plus',26);document.getElementById('fab').addEventListener('click',toggleFab);
 document.getElementById('fabMenuNote').innerHTML=`${icon('notesOutline',20)} <span>Заметка</span>`;document.getElementById('fabMenuTask').innerHTML=`${icon('tasks',20)} <span>Задача</span>`;document.getElementById('fabMenuSchedule').innerHTML=`${icon('calendarOutline',20)} <span>Расписание</span>`;
 document.querySelectorAll('.fab-menu-item').forEach(i=>i.addEventListener('click',()=>{closeFab();const a=i.dataset.action;if(a==='note')openNote(null);else if(a==='task')openTaskModal();else if(a==='schedule')openScheduleModal()}));
-document.getElementById('editorClose').addEventListener('click',closeEditor);document.getElementById('editorTitle').addEventListener('input',autoSaveNote);document.getElementById('editorContent').addEventListener('input',autoSaveNote);document.getElementById('editorContent').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.max(200,this.scrollHeight)+'px'});
+document.getElementById('editorClose').addEventListener('click',closeEditor);document.getElementById('editorTitle').addEventListener('input',autoSaveNote);document.getElementById('editorContent').addEventListener('input',autoSaveNote);
+function forcePlainPaste(e){e.preventDefault();const text=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,text)}
+document.getElementById('editorContent').addEventListener('paste',forcePlainPaste);document.getElementById('taskDesc').addEventListener('paste',forcePlainPaste);
 document.getElementById('imageUploadInput').addEventListener('change',e=>{if(e.target.files.length){handleImageUpload(e.target.files);e.target.value=''}});
 document.querySelectorAll('[data-priority]').forEach(b=>b.addEventListener('click',()=>setTaskPriority(b.dataset.priority)));
 document.getElementById('taskSave').addEventListener('click',saveTask);document.getElementById('schedAddEntry').addEventListener('click',addSchedEntry);document.getElementById('schedSave').addEventListener('click',saveSchedule);document.getElementById('folderSave').addEventListener('click',createFolder);
