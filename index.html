@@ -437,6 +437,15 @@ img{display:block;max-width:100%}
 .editor-content:empty:before,.editable-desc:empty:before{content:attr(data-placeholder);color:var(--text-tertiary);pointer-events:none}
 .editable-desc{outline:none;white-space:pre-wrap;word-break:break-word;min-height:52px;max-height:140px;overflow-y:auto}
 .lazy-sticker{background:transparent}
+@media(max-width:480px){
+  .tag-chip{width:20px;height:20px}
+  .tag-chip img{width:14px;height:14px}
+  .tag-filter-chip img{width:14px;height:14px}
+  .tag-filter-chip{padding:5px 10px;font-size:11px}
+  .sticker-inline{width:16px;height:16px;vertical-align:-4px}
+  .sticker-cell img{width:30px;height:30px}
+  .task-item .tag-chip-row{gap:4px}
+}
 </style>
 </head>
 <body>
@@ -628,7 +637,8 @@ const STICKER_MAP={};Object.keys(STICKERS).forEach(c=>STICKERS[c].items.forEach(
 
 
 function icon(n,s=22,c=''){const u=ICONS[n];if(!u)return'';if(c.includes('accent'))return`<span class="ui-icon-mask ${c}" style="--icon-url:url('${u}');width:${s}px;height:${s}px;-webkit-mask-image:url('${u}');mask-image:url('${u}');"></span>`;return`<img class="ui-icon ${c}" src="${u}" width="${s}" height="${s}" alt="" draggable="false">`}
-function wemoji(k,s='sm'){const u=WEMOJI[k];return u?`<img class="wemoji wemoji-${s} lazy-sticker" data-src="${u}" alt="" loading="eager">`:'';}
+const WEMOJI_PX={xs:16,sm:22,md:28,lg:48,xl:72,'2xl':100};
+function wemoji(k,s='sm'){const u=WEMOJI[k];const px=WEMOJI_PX[s]||22;return u?`<img class="wemoji wemoji-${s} lazy-sticker" data-src="${u}" width="${px}" height="${px}" alt="" loading="eager">`:'';}
 
 // ============================================
 // CUSTOM DATE PICKER ENGINE
@@ -890,7 +900,9 @@ function showSync(t){const el=document.getElementById('syncIndicator');document.
 const Theme={apply(){const{theme,accentColor}=App.settings;let e=theme;if(theme==='system')e=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',e);const r=document.documentElement.style;r.setProperty('--accent',accentColor);const h=accentColor.replace('#','');r.setProperty('--accent-rgb',`${parseInt(h.substr(0,2),16)},${parseInt(h.substr(2,2),16)},${parseInt(h.substr(4,2),16)}`);document.querySelector('meta[name="theme-color"]')?.setAttribute('content',e==='dark'?'#000000':'#F2F2F7')}};
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(App.settings.theme==='system')Theme.apply()});
 
-const Sync={refs:{},setupRefs(){if(!App.user)return;const u=App.user.uid;this.refs={data:rtdb.ref(`users/${u}`)}},detach(){Object.values(this.refs).forEach(r=>r.off&&r.off());this.refs={}},async pushAll(){if(!App.user||!App.isOnline)return;showSync('Синхронизация...');try{await rtdb.ref(`users/${App.user.uid}`).update({notes:App.notes,tasks:App.tasks,schedules:App.schedules,folders:App.folders,settings:App.settings,lastSync:firebase.database.ServerValue.TIMESTAMP});App.lastSync=Date.now();Store.set('lastSync',App.lastSync);showSync('Синхронизировано')}catch(e){showSync('Ошибка')}},async pullAll(){if(!App.user||!App.isOnline)return;showSync('Загрузка...');try{const snap=await rtdb.ref(`users/${App.user.uid}`).once('value');const d=snap.val();if(d){if(d.notes)App.notes=this.merge(App.notes,d.notes);if(d.tasks)App.tasks=this.merge(App.tasks,d.tasks);if(d.schedules)App.schedules=this.merge(App.schedules,d.schedules);if(d.folders)App.folders=this.merge(App.folders,d.folders);if(d.settings)App.settings={...App.settings,...d.settings};Store.saveNotes();Store.saveTasks();Store.saveSchedules();Store.saveFolders();Store.saveSettings();Theme.apply();renderCurrentScreen()}showSync('Синхронизировано')}catch(e){showSync('Локально')}},merge(local,remote){const m=new Map();const arr=Array.isArray(remote)?remote:Object.values(remote||{});arr.forEach(i=>{if(i&&i.id)m.set(i.id,i)});local.forEach(i=>{if(!i||!i.id)return;const ex=m.get(i.id);if(!ex||(i.modified&&(!ex.modified||i.modified>ex.modified)))m.set(i.id,i)});return Array.from(m.values())},debounceSync(){if(!App.user)return;clearTimeout(this._t);this._t=setTimeout(()=>this.pushAll(),2000)}};
+const Sync={refs:{},setupRefs(){if(!App.user)return;const u=App.user.uid;this.refs={data:rtdb.ref(`users/${u}`)}},detach(){Object.values(this.refs).forEach(r=>r.off&&r.off());this.refs={}},async pushAll(silent){if(!App.user||!App.isOnline)return;if(!silent)showSync('Синхронизация...');try{await rtdb.ref(`users/${App.user.uid}`).update({notes:App.notes,tasks:App.tasks,schedules:App.schedules,folders:App.folders,projects:App.projects,settings:App.settings,lastSync:firebase.database.ServerValue.TIMESTAMP});App.lastSync=Date.now();Store.set('lastSync',App.lastSync);if(!silent)showSync('Синхронизировано')}catch(e){if(!silent)showSync('Ошибка')}},async pullAll(){if(!App.user||!App.isOnline)return;showSync('Загрузка...');try{const snap=await rtdb.ref(`users/${App.user.uid}`).once('value');const d=snap.val();if(d){if(d.notes)App.notes=this.merge(App.notes,d.notes);if(d.tasks)App.tasks=this.merge(App.tasks,d.tasks);if(d.schedules)App.schedules=this.merge(App.schedules,d.schedules);if(d.folders)App.folders=this.merge(App.folders,d.folders);if(d.projects)App.projects=this.merge(App.projects,d.projects);if(d.settings)App.settings={...App.settings,...d.settings};Store.saveNotes();Store.saveTasks();Store.saveSchedules();Store.saveFolders();Store.saveProjects();Store.saveSettings();Theme.apply();renderCurrentScreen();this.pushAll(true)}showSync('Синхронизировано')}catch(e){showSync('Локально')}},merge(local,remote){const m=new Map();const arr=Array.isArray(remote)?remote:Object.values(remote||{});arr.forEach(i=>{if(i&&i.id)m.set(i.id,i)});local.forEach(i=>{if(!i||!i.id)return;const ex=m.get(i.id);if(!ex||(i.modified&&(!ex.modified||i.modified>ex.modified)))m.set(i.id,i)});return Array.from(m.values())},debounceSync(){if(!App.user)return;clearTimeout(this._t);this._t=setTimeout(()=>this.pushAll(),2000)}};
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&App.user&&App.isOnline)Sync.pullAll()});
+window.addEventListener('focus',()=>{if(App.user&&App.isOnline)Sync.pullAll()});
 
 window.addEventListener('online',()=>{App.isOnline=true;showSync('Подключено');Sync.pushAll()});
 window.addEventListener('offline',()=>{App.isOnline=false;showSync('Офлайн')});
@@ -900,7 +912,7 @@ async function uploadImage(f){const fd=new FormData();fd.append('image',f);try{c
 // ============================================
 // NAVIGATION
 // ============================================
-function navigateTo(s){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));const tab=document.querySelector(`.tab-item[data-tab="${s}"]`);if(tab)tab.classList.add('active');const el=document.getElementById('screen'+s.charAt(0).toUpperCase()+s.slice(1));if(el){el.classList.add('active');App.currentScreen=s;renderCurrentScreen()}renderTabBar()}
+function navigateTo(s){if(s==='notes')App.notesTagFilter=null;if(s==='tasks')App.tasksTagFilter=null;if(s==='projects')App.projectsTagFilter=null;document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('active'));const tab=document.querySelector(`.tab-item[data-tab="${s}"]`);if(tab)tab.classList.add('active');const el=document.getElementById('screen'+s.charAt(0).toUpperCase()+s.slice(1));if(el){el.classList.add('active');App.currentScreen=s;renderCurrentScreen()}renderTabBar()}
 
 function renderTabBar(){const b=document.getElementById('tabBar');const tabs=[['dashboard','Главная','homeOutline','homeFilled'],['notes','Заметки','notesOutline','notesFilled'],['tasks','Задачи','tasks','tasks'],['projects','Проекты','projectsOutline','projectsFilled'],['calendar','Календарь','calendarOutline','calendarFilled'],['settings','Ещё','menu','menu']];b.innerHTML=tabs.map(([id,l,oi,fi])=>{const a=App.currentScreen===id;return`<button class="tab-item ${a?'active':''}" data-tab="${id}">${icon(a?fi:oi,24,a?'accent':'')}<span>${l}</span></button>`}).join('');document.querySelectorAll('.tab-item').forEach(t=>t.addEventListener('click',()=>{navigateTo(t.dataset.tab);closeFab()}))}
 
@@ -1172,10 +1184,10 @@ function createProject(){
     {path:'style.css',content:'body{font-family:sans-serif;background:#f2f2f7;color:#1c1c1e;padding:40px;text-align:center}'},
     {path:'script.js',content:'console.log("Проект запущен!");'}
   ]};
-  App.projects.unshift(proj);Store.saveProjects();openProject(proj.id);showToast('Проект создан','sparkles');
+  App.projects.unshift(proj);Store.saveProjects();Sync.debounceSync();openProject(proj.id);showToast('Проект создан','sparkles');
 }
-function deleteProject(){if(!confirm('Удалить проект целиком?'))return;App.projects=App.projects.filter(x=>x.id!==App.currentProjectId);Store.saveProjects();closeProjectWorkspace();showToast('Проект удалён')}
-function pjRenameProject(){const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;const n=prompt('Название проекта:',p.name);if(!n)return;p.name=n.trim()||p.name;p.modified=Date.now();Store.saveProjects();document.getElementById('pjTitle').textContent=p.name;renderProjects()}
+function deleteProject(){if(!confirm('Удалить проект целиком?'))return;App.projects=App.projects.filter(x=>x.id!==App.currentProjectId);Store.saveProjects();Sync.debounceSync();closeProjectWorkspace();showToast('Проект удалён')}
+function pjRenameProject(){const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;const n=prompt('Название проекта:',p.name);if(!n)return;p.name=n.trim()||p.name;p.modified=Date.now();Store.saveProjects();Sync.debounceSync();document.getElementById('pjTitle').textContent=p.name;renderProjects()}
 
 function openProject(id){
   const p=App.projects.find(x=>x.id===id);if(!p)return;
@@ -1223,13 +1235,13 @@ async function loadIntoEditor(f){
 }
 function savePjCurrentFile(){if(!App.currentProjectId||!App.currentFilePath)return;const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;const f=p.files.find(x=>x.path===App.currentFilePath);if(!f)return;if(f.dataUrl)return;let val;if(cmInstance&&cmInstance.getWrapperElement().style.display!=='none')val=cmInstance.getValue();else val=document.getElementById('pjRawEditor').value;f.content=val;p.modified=Date.now();Store.saveProjects()}
 
-function pjNewFile(){const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;const path=prompt('Путь и имя файла (например src/app.js):','newfile.txt');if(!path)return;const clean=path.replace(/^\/+/,'').trim();if(!clean)return;if(p.files.some(f=>f.path===clean)){showToast('Файл уже существует');return}p.files.push({path:clean,content:''});p.modified=Date.now();Store.saveProjects();renderPjSidebar();openPjFile(clean)}
-function deletePjFile(path){if(!confirm('Удалить файл '+path+'?'))return;const p=App.projects.find(x=>x.id===App.currentProjectId);p.files=p.files.filter(f=>f.path!==path);p.modified=Date.now();Store.saveProjects();App.openFiles=App.openFiles.filter(x=>x!==path);if(App.currentFilePath===path)App.currentFilePath=App.openFiles[0]||null;renderPjSidebar();renderPjFileTabs();if(App.currentFilePath)loadIntoEditor(p.files.find(f=>f.path===App.currentFilePath));else{document.getElementById('pjEditorEmpty').style.display='flex';if(cmInstance)cmInstance.getWrapperElement().style.display='none';document.getElementById('pjRawEditor').style.display='none'}}
+function pjNewFile(){const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;const path=prompt('Путь и имя файла (например src/app.js):','newfile.txt');if(!path)return;const clean=path.replace(/^\/+/,'').trim();if(!clean)return;if(p.files.some(f=>f.path===clean)){showToast('Файл уже существует');return}p.files.push({path:clean,content:''});p.modified=Date.now();Store.saveProjects();Sync.debounceSync();renderPjSidebar();openPjFile(clean)}
+function deletePjFile(path){if(!confirm('Удалить файл '+path+'?'))return;const p=App.projects.find(x=>x.id===App.currentProjectId);p.files=p.files.filter(f=>f.path!==path);p.modified=Date.now();Store.saveProjects();Sync.debounceSync();App.openFiles=App.openFiles.filter(x=>x!==path);if(App.currentFilePath===path)App.currentFilePath=App.openFiles[0]||null;renderPjSidebar();renderPjFileTabs();if(App.currentFilePath)loadIntoEditor(p.files.find(f=>f.path===App.currentFilePath));else{document.getElementById('pjEditorEmpty').style.display='flex';if(cmInstance)cmInstance.getWrapperElement().style.display='none';document.getElementById('pjRawEditor').style.display='none'}}
 
-async function handleProjectUpload(fileList){const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p||!fileList.length)return;for(const file of Array.from(fileList)){const ext=fileExt(file.name);try{if(isImageExt(ext)){const dataUrl=await readAsDataURL(file);p.files.push({path:file.name,content:'',dataUrl})}else{const text=await readAsText(file);p.files.push({path:file.name,content:text})}}catch(e){console.warn(e)}}p.modified=Date.now();Store.saveProjects();renderPjSidebar();showToast('Файлы загружены','sparkles')}
+async function handleProjectUpload(fileList){const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p||!fileList.length)return;for(const file of Array.from(fileList)){const ext=fileExt(file.name);try{if(isImageExt(ext)){const dataUrl=await readAsDataURL(file);p.files.push({path:file.name,content:'',dataUrl})}else{const text=await readAsText(file);p.files.push({path:file.name,content:text})}}catch(e){console.warn(e)}}p.modified=Date.now();Store.saveProjects();Sync.debounceSync();renderPjSidebar();showToast('Файлы загружены','sparkles')}
 
 async function ensureJSZip(){if(window.JSZip)return true;try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');return true}catch(e){showToast('Не удалось загрузить ZIP-модуль');return false}}
-async function handleProjectZipImport(file){const ok=await ensureJSZip();if(!ok)return;const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;const zip=await JSZip.loadAsync(file);const entries=Object.values(zip.files).filter(f=>!f.dir);for(const entry of entries){const ext=fileExt(entry.name);try{if(isImageExt(ext)){const b64=await entry.async('base64');const mime='image/'+(ext==='jpg'?'jpeg':ext);p.files.push({path:entry.name,content:'',dataUrl:`data:${mime};base64,${b64}`})}else{const text=await entry.async('string');p.files.push({path:entry.name,content:text})}}catch(e){console.warn(e)}}p.modified=Date.now();Store.saveProjects();renderPjSidebar();showToast('ZIP импортирован','sparkles')}
+async function handleProjectZipImport(file){const ok=await ensureJSZip();if(!ok)return;const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;const zip=await JSZip.loadAsync(file);const entries=Object.values(zip.files).filter(f=>!f.dir);for(const entry of entries){const ext=fileExt(entry.name);try{if(isImageExt(ext)){const b64=await entry.async('base64');const mime='image/'+(ext==='jpg'?'jpeg':ext);p.files.push({path:entry.name,content:'',dataUrl:`data:${mime};base64,${b64}`})}else{const text=await entry.async('string');p.files.push({path:entry.name,content:text})}}catch(e){console.warn(e)}}p.modified=Date.now();Store.saveProjects();Sync.debounceSync();renderPjSidebar();showToast('ZIP импортирован','sparkles')}
 async function exportProjectZip(){const ok=await ensureJSZip();if(!ok)return;const p=App.projects.find(x=>x.id===App.currentProjectId);if(!p)return;savePjCurrentFile();const zip=new JSZip();p.files.forEach(f=>{if(f.dataUrl)zip.file(f.path,f.dataUrl.split(',')[1],{base64:true});else zip.file(f.path,f.content||'')});const blob=await zip.generateAsync({type:'blob'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=(p.name||'project')+'.zip';a.click();URL.revokeObjectURL(url);showToast('Экспортировано','sparkles')}
 
 function pjFindFile(p,name){const clean=name.replace(/^\.?\//,'');return p.files.find(f=>f.path===clean)||p.files.find(f=>f.path.endsWith('/'+clean))||p.files.find(f=>f.path.split('/').pop()===clean.split('/').pop())}
@@ -1281,7 +1293,7 @@ observeLazyStickers(document);
 // ============================================
 function contentToHtml(text){
   const esc=escHtml(text||'');
-  const withImgs=esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline" data-key="${k}" src="${it.u}" alt="${escHtml(it.n)}" contenteditable="false">`:m});
+  const withImgs=esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline" data-key="${k}" width="20" height="20" src="${it.u}" alt="${escHtml(it.n)}" contenteditable="false">`:m});
   return withImgs.replace(/\n/g,'<br>');
 }
 function htmlToContent(el){
@@ -1307,7 +1319,7 @@ function insertStickerNode(container,key){
   if(sel.rangeCount&&container.contains(sel.anchorNode))range=sel.getRangeAt(0);
   else{range=document.createRange();range.selectNodeContents(container);range.collapse(false)}
   const img=document.createElement('img');
-  img.className='sticker-inline';img.dataset.key=key;img.src=it.u;img.alt=it.n;img.setAttribute('contenteditable','false');
+  img.className='sticker-inline';img.dataset.key=key;img.src=it.u;img.alt=it.n;img.width=20;img.height=20;img.setAttribute('contenteditable','false');
   range.deleteContents();range.insertNode(img);
   range.setStartAfter(img);range.setEndAfter(img);range.collapse(true);
   sel.removeAllRanges();sel.addRange(range);
@@ -1336,7 +1348,7 @@ function renderStickerGrid(){
   if(q){items=[];Object.values(STICKERS).forEach(cat=>cat.items.forEach(it=>{if(it.n.toLowerCase().includes(q))items.push(it)}))}
   else items=STICKERS[App.stickerCat].items;
   const activeTags=currentItemTags();
-  el.innerHTML=items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')"><img class="lazy-sticker" data-src="${it.u}" alt=""><span class="sticker-cell-name">${escHtml(it.n)}</span></div>`).join('');
+  el.innerHTML=items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')"><img class="lazy-sticker" data-src="${it.u}" width="36" height="36" alt=""><span class="sticker-cell-name">${escHtml(it.n)}</span></div>`).join('');
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='stickerSearch')renderStickerGrid()});
 function pickSticker(key){
@@ -1347,21 +1359,21 @@ function pickSticker(key){
 function toggleItemTag(itemType,id,key){
   if(itemType==='note'){const n=App.notes.find(x=>x.id===id);if(!n)return;n.tags=n.tags||[];const i=n.tags.indexOf(key);if(i>=0)n.tags.splice(i,1);else n.tags.push(key);n.modified=Date.now();Store.saveNotes();Sync.debounceSync();renderNoteTagRow();renderCurrentScreen()}
   else if(itemType==='task'){App.editingTaskTags=App.editingTaskTags||[];const i=App.editingTaskTags.indexOf(key);if(i>=0)App.editingTaskTags.splice(i,1);else App.editingTaskTags.push(key);renderTaskTagRow()}
-  else if(itemType==='project'){const p=App.projects.find(x=>x.id===id);if(!p)return;p.tags=p.tags||[];const i=p.tags.indexOf(key);if(i>=0)p.tags.splice(i,1);else p.tags.push(key);p.modified=Date.now();Store.saveProjects();renderProjects()}
+  else if(itemType==='project'){const p=App.projects.find(x=>x.id===id);if(!p)return;p.tags=p.tags||[];const i=p.tags.indexOf(key);if(i>=0)p.tags.splice(i,1);else p.tags.push(key);p.modified=Date.now();Store.saveProjects();Sync.debounceSync();renderProjects()}
 }
-function renderTagChips(tags){return(tags||[]).map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" alt=""></span>`:''}).join('')}
-function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img class="lazy-sticker" data-src="${it.u}" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'note',id:'${App.currentNote.id}'})">+</span>`}
-function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img class="lazy-sticker" data-src="${it.u}" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'task',id:null})">+</span>`}
+function renderTagChips(tags){return(tags||[]).map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" width="17" height="17" alt=""></span>`:''}).join('')}
+function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img class="lazy-sticker" data-src="${it.u}" width="17" height="17" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'note',id:'${App.currentNote.id}'})">+</span>`}
+function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img class="lazy-sticker" data-src="${it.u}" width="17" height="17" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'task',id:null})">+</span>`}
 function renderTagFilterBar(kind,items){
   const tagSet=new Set();items.forEach(it=>(it.tags||[]).forEach(k=>tagSet.add(k)));
   if(!tagSet.size)return'';
   const filterVar=kind+'TagFilter';const current=App[filterVar];
   let h=`<div class="tag-filter-bar"><div class="tag-filter-chip ${!current?'active':''}" onclick="setTagFilter('${kind}',null)">Все</div>`;
-  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')"><img class="lazy-sticker" data-src="${it.u}" alt="">${escHtml(it.n)}</div>`});
+  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')"><img class="lazy-sticker" data-src="${it.u}" width="16" height="16" alt="">${escHtml(it.n)}</div>`});
   h+='</div>';return h;
 }
 function setTagFilter(kind,key){App[kind+'TagFilter']=key;renderCurrentScreen()}
-function renderStickerText(text){const esc=escHtml(text||'');return esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline lazy-sticker" data-src="${it.u}" alt="${escHtml(it.n)}">`:m})}
+function renderStickerText(text){const esc=escHtml(text||'');return esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline lazy-sticker" data-src="${it.u}" width="20" height="20" alt="${escHtml(it.n)}">`:m})}
 function insertStickerIntoEditor(key,target){
   const it=STICKER_MAP[key];if(!it)return;
   if(target==='note'){insertStickerNode(document.getElementById('editorContent'),key);autoSaveNote()}
