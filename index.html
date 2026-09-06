@@ -443,6 +443,9 @@ img{display:block;max-width:100%}
 .editor-content:empty:before,.editable-desc:empty:before{content:attr(data-placeholder);color:var(--text-tertiary);pointer-events:none}
 .editable-desc{outline:none;white-space:pre-wrap;word-break:break-word;min-height:52px;max-height:140px;overflow-y:auto}
 .lazy-sticker{background:transparent}
+.mic-btn.recording{animation:micPulse 1s ease-in-out infinite;color:#ff453a}
+.mic-btn.recording img{filter:drop-shadow(0 0 4px rgba(255,69,58,0.7))}
+@keyframes micPulse{0%,100%{opacity:1}50%{opacity:0.4}}
 @media(max-width:480px){
   .tag-chip{width:20px;height:20px}
   .tag-chip img{width:14px;height:14px}
@@ -565,7 +568,7 @@ img{display:block;max-width:100%}
     <div class="pj-body" id="pjBody" data-active="files">
       <div class="pj-sidebar" id="pjSidebar"></div>
       <div class="pj-editor-pane" id="pjEditorPane">
-        <div style="display:flex;align-items:center;border-bottom:1px solid var(--glass-border)"><div class="pj-file-tabs" id="pjFileTabs" style="border-bottom:none;flex:1"></div><button class="header-btn" style="flex-shrink:0;margin-right:6px" title="Вставить стикер" onclick="openStickerPicker('insert',{target:'project'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:18px;height:18px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
+        <div style="display:flex;align-items:center;border-bottom:1px solid var(--glass-border)"><div class="pj-file-tabs" id="pjFileTabs" style="border-bottom:none;flex:1"></div><button class="header-btn mic-btn" style="flex-shrink:0" title="Голосовой ввод" onclick="startVoiceInput('project')"><img src="https://i.ibb.co/fdJPgTsL/free-icon-font-microphone-3917695.png" style="width:18px;height:18px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button><button class="header-btn" style="flex-shrink:0;margin-right:6px" title="Вставить стикер" onclick="openStickerPicker('insert',{target:'project'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:18px;height:18px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
         <div class="pj-editor-host" id="pjEditorHost"><div class="pj-editor-empty" id="pjEditorEmpty">Выберите файл слева</div><textarea id="pjRawEditor" spellcheck="false" style="display:none"></textarea></div>
       </div>
       <div class="pj-preview-pane" id="pjPreviewPane">
@@ -580,8 +583,8 @@ img{display:block;max-width:100%}
   </div>
 
   <div class="modal-backdrop" id="taskModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="taskModalHeader"></div><div style="display:flex;flex-direction:column;gap:12px;">
-    <input type="text" class="input-field" id="taskTitle" placeholder="Название задачи">
-    <div style="position:relative;"><div class="input-field editable-desc" id="taskDesc" contenteditable="true" data-placeholder="Описание (опционально)" style="padding-right:40px"></div><button class="header-btn" style="position:absolute;right:4px;bottom:4px;width:30px;height:30px" title="Вставить стикер" onclick="openStickerPicker('insert',{target:'taskDesc'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
+    <div style="position:relative;"><input type="text" class="input-field" id="taskTitle" placeholder="Название задачи" style="padding-right:40px"><button class="header-btn mic-btn" id="taskTitleMic" style="position:absolute;right:4px;top:4px;width:30px;height:30px" title="Голосовой ввод" onclick="startVoiceInput('taskTitle')"><img src="https://i.ibb.co/fdJPgTsL/free-icon-font-microphone-3917695.png" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
+    <div style="position:relative;"><div class="input-field editable-desc" id="taskDesc" contenteditable="true" data-placeholder="Описание (опционально)" style="padding-right:76px"></div><button class="header-btn mic-btn" id="taskDescMic" style="position:absolute;right:40px;bottom:4px;width:30px;height:30px" title="Голосовой ввод" onclick="startVoiceInput('taskDesc')"><img src="https://i.ibb.co/fdJPgTsL/free-icon-font-microphone-3917695.png" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button><button class="header-btn" style="position:absolute;right:4px;bottom:4px;width:30px;height:30px" title="Вставить стикер" onclick="openStickerPicker('insert',{target:'taskDesc'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
     <div style="display:flex;gap:8px;">
       <button class="picker-trigger" id="taskDueTrigger" style="flex:1;"><span class="picker-label">Дата</span><span class="picker-value" id="taskDueDisplay">Не выбрана</span></button>
       <button class="picker-trigger" id="taskTimeTrigger" style="flex:1;"><span class="picker-label">Время</span><span class="picker-value" id="taskTimeDisplay">—</span></button>
@@ -627,6 +630,7 @@ img{display:block;max-width:100%}
 </div>
 <input type="file" id="imageUploadInput" accept="image/*" style="display:none;" multiple>
 <input type="file" id="docImportInput" accept=".txt,.md,.fb2,.doc,.docx,.pdf" style="display:none;" multiple>
+<input type="file" id="scanInput" accept="image/*" style="display:none;">
 <input type="file" id="projectFileInput" style="display:none;" multiple>
 <input type="file" id="projectZipInput" accept=".zip" style="display:none;">
 
@@ -964,8 +968,8 @@ el.innerHTML=h}
 function openNote(id){let note;if(id){note=App.notes.find(n=>n.id===id);if(!note)return}else{note={id:uid(),title:'',content:'',created:Date.now(),modified:Date.now(),pinned:false,archived:false,folderId:null,images:[],tags:[],links:[]};App.notes.unshift(note);Store.saveNotes()}
 App.currentNote=note;document.getElementById('editorTitle').value=note.title||'';document.getElementById('editorContent').innerHTML=contentToHtml(note.content||'');renderEditorImages();updateEditorStatus('Сохранено');renderNoteTagRow();
 document.getElementById('editorActions').innerHTML=`<button class="header-btn" id="editorPin">${icon('pin',22,note.pinned?'accent':'')}</button><button class="header-btn" id="editorMore">${icon('more',22)}</button>`;
-document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSticker">${wemoji('palette','sm')}</button><button class="toolbar-btn" id="eTag">${icon('tag',22)}</button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
-document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eSticker').onclick=()=>openStickerPicker('insert',{target:'note'});document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;
+document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn mic-btn" id="eMic">${icon('mic',22)}</button><button class="toolbar-btn" id="eScan">${icon('scan',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSticker">${wemoji('palette','sm')}</button><button class="toolbar-btn" id="eTag">${icon('tag',22)}</button><button class="toolbar-btn" id="eSpeak"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/></svg></button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
+document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eSticker').onclick=()=>openStickerPicker('insert',{target:'note'});document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;document.getElementById('eMic').onclick=()=>startVoiceInput('note');document.getElementById('eScan').onclick=()=>document.getElementById('scanInput').click();document.getElementById('eSpeak').onclick=speakCurrentNote;
 document.getElementById('noteEditor').classList.add('open');setTimeout(()=>{if(!note.title)document.getElementById('editorTitle').focus();else document.getElementById('editorContent').focus()},300)}
 
 function closeEditor(){saveCurrentNote();document.getElementById('noteEditor').classList.remove('open');App.currentNote=null;renderCurrentScreen()}
@@ -1085,7 +1089,7 @@ function restoreNote(id){const n=App.notes.find(x=>x.id===id);if(n){n.archived=f
 function permDeleteNote(id){if(!confirm('Удалить навсегда?'))return;App.notes=App.notes.filter(n=>n.id!==id);Store.saveNotes();Sync.debounceSync();renderArchive();showToast('Удалено')}
 function restoreTask(id){const t=App.tasks.find(x=>x.id===id);if(t){t.archived=false;t.modified=Date.now();Store.saveTasks();Sync.debounceSync();renderArchive();showToast('Восстановлено','sparkles')}}
 
-function renderSearch(){const el=document.getElementById('searchContent');el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px" class="animate-in"><h1 style="font-size:28px;font-weight:800;flex:1">Поиск</h1></div><div class="search-bar animate-in stagger-1">${icon('search',18)}<input type="text" placeholder="Заметки, задачи, папки..." id="searchInput" oninput="performSearch(this.value)"></div><div id="searchResults"><div class="empty-state">${wemoji('search','2xl')}<div class="empty-state-title">Что ищем?</div></div></div>`;setTimeout(()=>document.getElementById('searchInput')?.focus(),300)}
+function renderSearch(){const el=document.getElementById('searchContent');el.innerHTML=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px" class="animate-in"><h1 style="font-size:28px;font-weight:800;flex:1">Поиск</h1></div><div class="search-bar animate-in stagger-1">${icon('search',18)}<input type="text" placeholder="Заметки, задачи, папки..." id="searchInput" oninput="performSearch(this.value)"><button class="header-btn mic-btn" style="width:30px;height:30px;flex-shrink:0" title="Голосовой поиск" onclick="startVoiceInput('search')">${icon('mic',18)}</button></div><div id="searchResults"><div class="empty-state">${wemoji('search','2xl')}<div class="empty-state-title">Что ищем?</div></div></div>`;setTimeout(()=>document.getElementById('searchInput')?.focus(),300)}
 function performSearch(q){const r=document.getElementById('searchResults');if(!q.trim()){r.innerHTML=`<div class="empty-state">${wemoji('search','2xl')}<div class="empty-state-title">Что ищем?</div></div>`;return}const ql=q.toLowerCase();let h='';const mn=App.notes.filter(n=>!n.archived&&((n.title||'').toLowerCase().includes(ql)||(n.content||'').toLowerCase().includes(ql)));const mt=App.tasks.filter(t=>!t.archived&&(t.title||'').toLowerCase().includes(ql));const mf=App.folders.filter(f=>(f.name||'').toLowerCase().includes(ql));
 if(mn.length){h+=`<div class="section-header"><div class="section-title">${icon('notesOutline',16)} Заметки</div></div><div class="notes-grid">`;mn.slice(0,10).forEach(n=>h+=rNC(n));h+='</div>'}if(mt.length){h+=`<div class="section-header"><div class="section-title">${icon('tasks',16)} Задачи</div></div>`;mt.slice(0,10).forEach(t=>h+=rTI(t))}if(mf.length){h+=`<div class="section-header"><div class="section-title">${icon('foldersOutline',16)} Папки</div></div><div class="folder-list">`;mf.forEach(f=>{h+=`<div class="folder-item" onclick="openFolder('${f.id}')"><div class="folder-icon">${icon('foldersOutline',22,'accent')}</div><div class="folder-info"><div class="folder-name">${escHtml(f.name)}</div></div></div>`});h+='</div>'}
 if(!h)h=`<div class="empty-state">${wemoji('search','2xl')}<div class="empty-state-title">Ничего не найдено</div></div>`;r.innerHTML=h}
@@ -1430,6 +1434,97 @@ function insertStickerIntoEditor(key,target){
 }
 document.addEventListener('contextmenu',e=>{if(e.target.closest('.sticker-cell,.tag-chip,.sticker-inline,.wemoji,.tag-filter-chip img')||e.target.classList.contains('sticker-inline')||e.target.classList.contains('wemoji'))e.preventDefault()});
 
+// ============================================
+// VOICE INPUT (Web Speech API)
+// ============================================
+function startVoiceInput(target){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){showToast('Голосовой ввод не поддерживается в этом браузере');return}
+  if(App.recognition){App.recognition.stop();return}
+  const rec=new SR();
+  rec.lang='ru-RU';rec.interimResults=false;rec.maxAlternatives=1;rec.continuous=false;
+  rec.onresult=e=>{const text=Array.from(e.results).map(r=>r[0].transcript).join(' ');insertVoiceText(target,text)};
+  rec.onerror=()=>{showToast('Не удалось распознать речь')};
+  rec.onend=()=>{App.recognition=null;setMicActive(false)};
+  App.recognition=rec;
+  setMicActive(true);
+  showToast('Говорите...','sparkles');
+  try{rec.start()}catch(e){App.recognition=null;setMicActive(false)}
+}
+function setMicActive(active){document.querySelectorAll('.mic-btn').forEach(b=>b.classList.toggle('recording',active))}
+function insertVoiceText(target,text){
+  if(!text)return;
+  if(target==='note'){insertPlainTextAtEnd(document.getElementById('editorContent'),text);autoSaveNote()}
+  else if(target==='taskDesc'){insertPlainTextAtEnd(document.getElementById('taskDesc'),text)}
+  else if(target==='taskTitle'){const el=document.getElementById('taskTitle');el.value=(el.value?el.value+' ':'')+text}
+  else if(target==='search'){const el=document.getElementById('searchInput');if(el){el.value=text;performSearch(text)}}
+  else if(target==='project'){
+    if(cmInstance&&cmInstance.getWrapperElement().style.display!=='none')cmInstance.replaceSelection(text);
+    else{const ta=document.getElementById('pjRawEditor');const start=ta.selectionStart||ta.value.length;ta.value=ta.value.slice(0,start)+text+ta.value.slice(start)}
+    clearTimeout(App.pjSaveTimer);App.pjSaveTimer=setTimeout(savePjCurrentFile,300);
+  }
+}
+
+// ============================================
+// DOCUMENT SCAN + PHOTO-TO-TEXT (OCR)
+// ============================================
+function enhanceScanImage(dataUrl){
+  return new Promise(res=>{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const canvas=document.createElement('canvas');
+        const maxW=1600;const scale=Math.min(1,maxW/img.naturalWidth);
+        canvas.width=Math.round(img.naturalWidth*scale);canvas.height=Math.round(img.naturalHeight*scale);
+        const ctx=canvas.getContext('2d');
+        ctx.filter='grayscale(1) contrast(1.35) brightness(1.08)';
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        res(canvas.toDataURL('image/jpeg',0.85));
+      }catch(e){res(dataUrl)}
+    };
+    img.onerror=()=>res(dataUrl);
+    img.src=dataUrl;
+  });
+}
+async function ensureTesseract(){
+  if(window.Tesseract)return true;
+  try{await loadScript('https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js');return true}catch(e){return false}
+}
+async function runOCR(dataUrl){
+  const ok=await ensureTesseract();
+  if(!ok){showToast('Распознавание текста недоступно (нет сети?)');return null}
+  showToast('Распознаём текст...');
+  try{const{data:{text}}=await Tesseract.recognize(dataUrl,'rus+eng');return(text||'').trim()}
+  catch(e){showToast('Не удалось распознать текст');return null}
+}
+async function handleScanInput(file){
+  if(!file||!App.currentNote)return;
+  const raw=await readAsDataURL(file);
+  const enhanced=await enhanceScanImage(raw);
+  App.currentNote.images=App.currentNote.images||[];
+  App.currentNote.images.push(enhanced);
+  renderEditorImages();
+  saveCurrentNote();
+  const text=await runOCR(enhanced);
+  if(text){insertPlainTextAtEnd(document.getElementById('editorContent'),text);autoSaveNote();showToast('Текст распознан и добавлен','sparkles')}
+  else showToast('Скан сохранён как изображение');
+}
+
+// ============================================
+// TEXT-TO-SPEECH
+// ============================================
+function speakCurrentNote(){
+  if(!window.speechSynthesis){showToast('Синтез речи не поддерживается');return}
+  if(window.speechSynthesis.speaking){window.speechSynthesis.cancel();return}
+  const title=document.getElementById('editorTitle').value.trim();
+  const body=htmlToContent(document.getElementById('editorContent')).replace(/\[\[s:[a-zA-Z0-9]+\]\]/g,'').trim();
+  const text=(title+'. '+body).trim();
+  if(!text){showToast('Нечего читать');return}
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);u.lang='ru-RU';
+  window.speechSynthesis.speak(u);
+}
+
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
@@ -1450,6 +1545,7 @@ document.getElementById('taskSave').addEventListener('click',saveTask);document.
 document.getElementById('authSubmit').addEventListener('click',handleAuth);document.getElementById('authToggleLink').addEventListener('click',()=>{authMode=authMode==='forgot'?'login':authMode==='login'?'register':'login';updateAuthUI()});document.getElementById('authForgot').addEventListener('click',()=>{authMode='forgot';updateAuthUI()});document.getElementById('authSkip').addEventListener('click',()=>{hideAuth();showToast('Войти можно позже')});document.getElementById('authPassword').addEventListener('keydown',e=>{if(e.key==='Enter')handleAuth()});
 document.getElementById('onboardingNext').addEventListener('click',()=>{App.onboardingStep++;if(App.onboardingStep>=4)finishOnboarding();else updateOnboarding()});document.getElementById('onboardingSkip').addEventListener('click',finishOnboarding);
 document.getElementById('docImportInput').addEventListener('change',e=>{if(e.target.files.length)handleDocImport(e.target.files);e.target.value=''});
+document.getElementById('scanInput').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)handleScanInput(f)});
 document.getElementById('pjClose').addEventListener('click',closeProjectWorkspace);
 document.getElementById('pjRun').addEventListener('click',runProject);
 document.getElementById('pjClearConsole').addEventListener('click',()=>{document.getElementById('pjConsole').innerHTML=''});
