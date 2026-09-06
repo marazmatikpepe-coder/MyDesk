@@ -590,6 +590,19 @@ img{display:block;max-width:100%}
       <button class="picker-trigger" id="taskTimeTrigger" style="flex:1;"><span class="picker-label">Время</span><span class="picker-value" id="taskTimeDisplay">—</span></button>
     </div>
     <div class="tag-chip-row" id="taskTagRow"></div>
+    <div style="display:flex;align-items:center;gap:10px;padding:2px 2px">
+      <label style="display:flex;align-items:center;gap:8px;flex:1;cursor:pointer">
+        <input type="checkbox" id="taskReminderToggle" style="width:20px;height:20px;accent-color:var(--accent)">
+        <span style="font-size:14px;color:var(--text-primary)">Напомнить</span>
+      </label>
+      <select id="taskReminderOffset" class="input-field" style="width:auto;padding:8px 12px;font-size:13px">
+        <option value="0">Вовремя</option>
+        <option value="10">За 10 минут</option>
+        <option value="30">За 30 минут</option>
+        <option value="60">За 1 час</option>
+        <option value="1440">За 1 день</option>
+      </select>
+    </div>
     <input type="hidden" id="taskDue"><input type="hidden" id="taskTime">
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
       <span style="font-size:14px;color:var(--text-secondary);min-width:80px;">Приоритет:</span>
@@ -616,6 +629,17 @@ img{display:block;max-width:100%}
     </div>
     <div class="sticker-grid" id="stickerGrid"></div>
     <div class="sticker-cat-tabs" id="stickerCatTabs"></div>
+  </div></div>
+
+  <div class="modal-backdrop" id="versionHistoryModal"><div class="modal-sheet" style="max-height:75vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div class="modal-title">История версий</div>
+    <div id="versionHistoryList" style="display:flex;flex-direction:column;gap:8px"></div>
+  </div></div>
+  <div class="modal-backdrop" id="collabModal"><div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Совместный доступ</div>
+    <div id="collabContent"></div>
   </div></div>
 
   <div class="modal-backdrop" id="noteActionsModal"><div class="modal-sheet" id="noteActionsSheet"></div></div>
@@ -948,7 +972,7 @@ if(recent.length>0){h+=`<div class="section-header animate-in stagger-4"><div cl
 if(!App.notes.length&&!App.tasks.length&&!App.schedules.length)h+=`<div class="empty-state animate-in">${wemoji('sparkles','2xl')}<div class="empty-state-title">Чистый лист</div><div class="empty-state-desc">Нажмите + чтобы начать</div></div>`;
 el.innerHTML=h}
 
-function rTI(t){return`<div class="task-item animate-in" onclick="toggleTask('${t.id}')"><div class="task-check ${t.done?'done':''}"></div><div class="task-text ${t.done?'done':''}">${escHtml(t.title)}</div>${t.tags&&t.tags.length?`<div class="tag-chip-row" onclick="event.stopPropagation()">${renderTagChips(t.tags)}</div>`:''}${t.priority?`<div class="task-priority ${t.priority}"></div>`:''}${t.due?`<div class="task-due">${icon('clock',12)} ${formatDate(t.due)}</div>`:''}</div>`}
+function rTI(t){return`<div class="task-item animate-in" onclick="toggleTask('${t.id}')"><div class="task-check ${t.done?'done':''}"></div><div class="task-text ${t.done?'done':''}">${escHtml(t.title)}</div>${t.reminderOn?icon('alarm',14,'accent'):''}${t.tags&&t.tags.length?`<div class="tag-chip-row" onclick="event.stopPropagation()">${renderTagChips(t.tags)}</div>`:''}${t.priority?`<div class="task-priority ${t.priority}"></div>`:''}${t.due?`<div class="task-due">${icon('clock',12)} ${formatDate(t.due)}</div>`:''}</div>`}
 
 function rNC(n){const f=n.folderId?App.folders.find(x=>x.id===n.folderId):null;const img=n.images?.length?n.images[0]:null;return`<div class="note-card ${n.pinned?'pinned':''}" onclick="openNote('${n.id}')">${n.pinned?`<div style="position:absolute;top:8px;right:8px;opacity:0.6">${icon('pin',14,'accent')}</div>`:''}${img?`<img class="note-img-preview" src="${img}" alt="" loading="lazy">`:''}<div class="note-title">${escHtml(n.title||'Без названия')}</div><div class="note-preview">${renderStickerText((n.content||'').substring(0,120))}</div>${n.tags&&n.tags.length?`<div class="tag-chip-row" onclick="event.stopPropagation()">${renderTagChips(n.tags)}</div>`:''}<div class="note-meta"><span class="note-date">${formatDate(n.modified)}</span>${f?`<span class="note-folder-badge">${escHtml(f.name)}</span>`:''}</div></div>`}
 
@@ -965,22 +989,30 @@ el.innerHTML=h}
 // ============================================
 // EDITOR
 // ============================================
-function openNote(id){let note;if(id){note=App.notes.find(n=>n.id===id);if(!note)return}else{note={id:uid(),title:'',content:'',created:Date.now(),modified:Date.now(),pinned:false,archived:false,folderId:null,images:[],tags:[],links:[]};App.notes.unshift(note);Store.saveNotes()}
+function openNote(id,presetNote){let note;if(presetNote){note=presetNote}else if(id){note=App.notes.find(n=>n.id===id);if(!note)return}else{note={id:uid(),title:'',content:'',created:Date.now(),modified:Date.now(),pinned:false,archived:false,folderId:null,images:[],tags:[],links:[]};App.notes.unshift(note);Store.saveNotes()}
 App.currentNote=note;document.getElementById('editorTitle').value=note.title||'';document.getElementById('editorContent').innerHTML=contentToHtml(note.content||'');renderEditorImages();updateEditorStatus('Сохранено');renderNoteTagRow();
 document.getElementById('editorActions').innerHTML=`<button class="header-btn" id="editorPin">${icon('pin',22,note.pinned?'accent':'')}</button><button class="header-btn" id="editorMore">${icon('more',22)}</button>`;
 document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn mic-btn" id="eMic">${icon('mic',22)}</button><button class="toolbar-btn" id="eScan">${icon('scan',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSticker">${wemoji('palette','sm')}</button><button class="toolbar-btn" id="eTag">${icon('tag',22)}</button><button class="toolbar-btn" id="eSpeak"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/></svg></button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
 document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eSticker').onclick=()=>openStickerPicker('insert',{target:'note'});document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;document.getElementById('eMic').onclick=()=>startVoiceInput('note');document.getElementById('eScan').onclick=()=>document.getElementById('scanInput').click();document.getElementById('eSpeak').onclick=speakCurrentNote;
-document.getElementById('noteEditor').classList.add('open');setTimeout(()=>{if(!note.title)document.getElementById('editorTitle').focus();else document.getElementById('editorContent').focus()},300)}
+document.getElementById('noteEditor').classList.add('open');setTimeout(()=>{if(!note.title)document.getElementById('editorTitle').focus();else document.getElementById('editorContent').focus()},300);
+if(note.shareId)attachCollabListener(note.shareId);else detachCollabListener();}
 
-function closeEditor(){saveCurrentNote();document.getElementById('noteEditor').classList.remove('open');App.currentNote=null;renderCurrentScreen()}
-function saveCurrentNote(){if(!App.currentNote)return;const t=document.getElementById('editorTitle').value.trim(),c=htmlToContent(document.getElementById('editorContent')).trim();if(!t&&!c&&!App.currentNote.images?.length){App.notes=App.notes.filter(n=>n.id!==App.currentNote.id);Store.saveNotes();Sync.debounceSync();return}App.currentNote.title=t;App.currentNote.content=c;App.currentNote.modified=Date.now();const i=App.notes.findIndex(n=>n.id===App.currentNote.id);if(i>=0)App.notes[i]=App.currentNote;Store.saveNotes();Sync.debounceSync()}
+function closeEditor(){saveCurrentNote();detachCollabListener();document.getElementById('noteEditor').classList.remove('open');App.currentNote=null;renderCurrentScreen()}
+function saveCurrentNote(){if(!App.currentNote)return;const t=document.getElementById('editorTitle').value.trim(),c=htmlToContent(document.getElementById('editorContent')).trim();if(!t&&!c&&!App.currentNote.images?.length){App.notes=App.notes.filter(n=>n.id!==App.currentNote.id);Store.saveNotes();Sync.debounceSync();return}
+const prevTitle=App.currentNote.title,prevContent=App.currentNote.content;
+if((prevTitle||prevContent)&&(prevTitle!==t||prevContent!==c)){
+  App.currentNote.versions=App.currentNote.versions||[];
+  const last=App.currentNote.versions[App.currentNote.versions.length-1];
+  if(!last||(Date.now()-last.ts)>60000){App.currentNote.versions.push({title:prevTitle,content:prevContent,ts:App.currentNote.modified||Date.now()});if(App.currentNote.versions.length>30)App.currentNote.versions=App.currentNote.versions.slice(-30)}
+}
+App.currentNote.title=t;App.currentNote.content=c;App.currentNote.modified=Date.now();const i=App.notes.findIndex(n=>n.id===App.currentNote.id);if(i>=0)App.notes[i]=App.currentNote;Store.saveNotes();Sync.debounceSync();pushCollabUpdate()}
 function autoSaveNote(){if(!App.settings.autoSave||!App.currentNote)return;clearTimeout(App.saveTimer);updateEditorStatus('...',true);App.saveTimer=setTimeout(()=>{saveCurrentNote();updateEditorStatus('Сохранено')},500)}
 function updateEditorStatus(t,s=false){document.getElementById('editorStatus').innerHTML=s?`<div class="sync-spinner" style="width:12px;height:12px"></div><span>${t}</span>`:`${wemoji('check','xs')}<span>${t}</span>`}
 function toggleCurrentNotePin(){if(!App.currentNote)return;App.currentNote.pinned=!App.currentNote.pinned;App.currentNote.modified=Date.now();document.getElementById('editorPin').innerHTML=icon('pin',22,App.currentNote.pinned?'accent':'');saveCurrentNote();showToast(App.currentNote.pinned?'Закреплено':'Откреплено','star')}
 function renderEditorImages(){const c=document.getElementById('editorImages');if(!App.currentNote||!App.currentNote.images?.length){c.innerHTML='';return}c.innerHTML=App.currentNote.images.map((u,i)=>`<div style="position:relative;display:inline-block"><img class="editor-img" src="${u}" alt="" loading="lazy"><button onclick="removeNoteImage(${i})" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--color-danger);color:white;font-size:14px;display:flex;align-items:center;justify-content:center">×</button></div>`).join('')}
 function removeNoteImage(i){if(!App.currentNote)return;App.currentNote.images.splice(i,1);App.currentNote.modified=Date.now();renderEditorImages();saveCurrentNote()}
 async function handleImageUpload(files){if(!App.currentNote||!files.length)return;showToast('Загрузка...');for(const f of files){const u=await uploadImage(f);if(u){if(!App.currentNote.images)App.currentNote.images=[];App.currentNote.images.push(u)}}renderEditorImages();saveCurrentNote();showToast('Добавлено','sparkles')}
-function showNoteActions(){if(!App.currentNote)return;const n=App.currentNote;document.getElementById('noteActionsSheet').innerHTML=`<div class="modal-handle"></div><div class="modal-title">Действия</div><div style="display:flex;flex-direction:column;gap:4px"><button class="setting-item" onclick="toggleCurrentNotePin();closeModal('noteActionsModal')">${icon('pin',18)} <span class="setting-label">${n.pinned?'Открепить':'Закрепить'}</span></button><button class="setting-item" onclick="moveNoteToFolder()">${icon('foldersOutline',18)} <span class="setting-label">В папку</span></button><button class="setting-item" onclick="archiveCurrentNote()">${icon('archive',18)} <span class="setting-label">Архивировать</span></button><button class="setting-item" onclick="shareCurrentNote()">${icon('share',18)} <span class="setting-label">Поделиться</span></button><button class="setting-item" onclick="deleteCurrentNote()">${icon('delete',18)} <span class="setting-label" style="color:var(--color-danger)">Удалить</span></button></div>`;openModal('noteActionsModal')}
+function showNoteActions(){if(!App.currentNote)return;const n=App.currentNote;document.getElementById('noteActionsSheet').innerHTML=`<div class="modal-handle"></div><div class="modal-title">Действия</div><div style="display:flex;flex-direction:column;gap:4px"><button class="setting-item" onclick="toggleCurrentNotePin();closeModal('noteActionsModal')">${icon('pin',18)} <span class="setting-label">${n.pinned?'Открепить':'Закрепить'}</span></button><button class="setting-item" onclick="moveNoteToFolder()">${icon('foldersOutline',18)} <span class="setting-label">В папку</span></button><button class="setting-item" onclick="openVersionHistory()">${icon('clock',18)} <span class="setting-label">История версий</span></button><button class="setting-item" onclick="openCollabShare()">${icon('share',18)} <span class="setting-label">Совместный доступ</span></button><button class="setting-item" onclick="archiveCurrentNote()">${icon('archive',18)} <span class="setting-label">Архивировать</span></button><button class="setting-item" onclick="shareCurrentNote()">${icon('outboxTray',18)} <span class="setting-label">Поделиться как текст</span></button><button class="setting-item" onclick="deleteCurrentNote()">${icon('delete',18)} <span class="setting-label" style="color:var(--color-danger)">Удалить</span></button></div>`;openModal('noteActionsModal')}
 function archiveCurrentNote(){if(!App.currentNote)return;App.currentNote.archived=true;App.currentNote.modified=Date.now();saveCurrentNote();closeModal('noteActionsModal');closeEditor();showToast('Архивировано')}
 function deleteCurrentNote(){if(!App.currentNote||!confirm('Удалить?'))return;App.notes=App.notes.filter(n=>n.id!==App.currentNote.id);Store.saveNotes();Sync.debounceSync();closeModal('noteActionsModal');closeEditor();showToast('Удалено')}
 function shareCurrentNote(){if(!App.currentNote)return;const t=`${App.currentNote.title||''}\n\n${App.currentNote.content||''}`;if(navigator.share)navigator.share({title:App.currentNote.title||'',text:t}).catch(()=>{});else navigator.clipboard.writeText(t).then(()=>showToast('Скопировано','sparkles'));closeModal('noteActionsModal')}
@@ -1001,7 +1033,7 @@ function toggleTask(id){const t=App.tasks.find(x=>x.id===id);if(!t)return;t.done
 
 function openTaskModal(tid=null){document.getElementById('taskModalHeader').innerHTML=`${icon('tasks',20)} <span>${tid?'Редактировать':'Новая задача'}</span>`;
 const ti=document.getElementById('taskTitle'),de=document.getElementById('taskDesc');
-if(tid){const t=App.tasks.find(x=>x.id===tid);if(!t)return;ti.value=t.title||'';de.innerHTML=contentToHtml(t.description||'');document.getElementById('taskDue').value=t.due||'';document.getElementById('taskTime').value=t.time||'';document.getElementById('taskDueDisplay').textContent=t.due?formatDateShort(t.due):'Не выбрана';document.getElementById('taskTimeDisplay').textContent=t.time||'—';App.editingTaskId=tid;App.editingTaskTags=(t.tags||[]).slice();setTaskPriority(t.priority||'low')}else{ti.value='';de.innerHTML='';const today=new Date().toISOString().split('T')[0];document.getElementById('taskDue').value=today;document.getElementById('taskTime').value='';document.getElementById('taskDueDisplay').textContent=formatDateShort(today);document.getElementById('taskTimeDisplay').textContent='—';App.editingTaskId=null;App.editingTaskTags=[];setTaskPriority('low')}
+if(tid){const t=App.tasks.find(x=>x.id===tid);if(!t)return;ti.value=t.title||'';de.innerHTML=contentToHtml(t.description||'');document.getElementById('taskDue').value=t.due||'';document.getElementById('taskTime').value=t.time||'';document.getElementById('taskDueDisplay').textContent=t.due?formatDateShort(t.due):'Не выбрана';document.getElementById('taskTimeDisplay').textContent=t.time||'—';App.editingTaskId=tid;App.editingTaskTags=(t.tags||[]).slice();setTaskPriority(t.priority||'low');document.getElementById('taskReminderToggle').checked=!!t.reminderOn;document.getElementById('taskReminderOffset').value=t.reminderOffset!=null?t.reminderOffset:10}else{ti.value='';de.innerHTML='';const today=new Date().toISOString().split('T')[0];document.getElementById('taskDue').value=today;document.getElementById('taskTime').value='';document.getElementById('taskDueDisplay').textContent=formatDateShort(today);document.getElementById('taskTimeDisplay').textContent='—';App.editingTaskId=null;App.editingTaskTags=[];setTaskPriority('low');document.getElementById('taskReminderToggle').checked=false;document.getElementById('taskReminderOffset').value='10'}
 renderTaskTagRow();
 openModal('taskModal');setTimeout(()=>ti.focus(),300)}
 
@@ -1021,7 +1053,7 @@ document.getElementById('taskTimeTrigger').addEventListener('click', () => {
 });
 
 function setTaskPriority(p){document.querySelectorAll('[data-priority]').forEach(b=>b.classList.toggle('active',b.dataset.priority===p));App.taskPriority=p}
-function saveTask(){const t=document.getElementById('taskTitle').value.trim();if(!t){showToast('Введите название');return}const d={title:t,description:htmlToContent(document.getElementById('taskDesc')).trim(),due:document.getElementById('taskDue').value,time:document.getElementById('taskTime').value,priority:App.taskPriority,tags:(App.editingTaskTags||[]).slice(),modified:Date.now()};if(App.editingTaskId){const i=App.tasks.findIndex(x=>x.id===App.editingTaskId);if(i>=0)App.tasks[i]={...App.tasks[i],...d}}else App.tasks.unshift({id:uid(),...d,done:false,archived:false,created:Date.now()});Store.saveTasks();Sync.debounceSync();closeModal('taskModal');renderCurrentScreen();showToast('Сохранено','sparkles')}
+function saveTask(){const t=document.getElementById('taskTitle').value.trim();if(!t){showToast('Введите название');return}const reminderOn=document.getElementById('taskReminderToggle').checked;if(reminderOn&&'Notification'in window&&Notification.permission==='default')Notification.requestPermission();const d={title:t,description:htmlToContent(document.getElementById('taskDesc')).trim(),due:document.getElementById('taskDue').value,time:document.getElementById('taskTime').value,priority:App.taskPriority,tags:(App.editingTaskTags||[]).slice(),reminderOn,reminderOffset:parseInt(document.getElementById('taskReminderOffset').value,10),modified:Date.now()};if(App.editingTaskId){const i=App.tasks.findIndex(x=>x.id===App.editingTaskId);if(i>=0)App.tasks[i]={...App.tasks[i],...d}}else App.tasks.unshift({id:uid(),...d,done:false,archived:false,created:Date.now()});Store.saveTasks();Sync.debounceSync();closeModal('taskModal');renderCurrentScreen();showToast('Сохранено','sparkles')}
 
 // ============================================
 // SCHEDULE — using custom pickers for time
@@ -1525,6 +1557,115 @@ function speakCurrentNote(){
   window.speechSynthesis.speak(u);
 }
 
+// ============================================
+// NOTE VERSION HISTORY
+// ============================================
+function openVersionHistory(){
+  if(!App.currentNote)return;
+  const versions=(App.currentNote.versions||[]).slice().reverse();
+  const el=document.getElementById('versionHistoryList');
+  if(!versions.length)el.innerHTML=`<div class="empty-state"><div class="empty-state-title">История пуста</div><div class="empty-state-desc">Версии появляются по мере редактирования</div></div>`;
+  else el.innerHTML=versions.map((v,i)=>{
+    const realIdx=App.currentNote.versions.length-1-i;
+    const preview=(v.content||'').replace(/\[\[s:[a-zA-Z0-9]+\]\]/g,'').substring(0,90);
+    return `<div class="settings-card" style="padding:12px;cursor:pointer" onclick="restoreVersion(${realIdx})"><div style="font-weight:600;font-size:13px;margin-bottom:4px">${escHtml(v.title||'Без названия')}</div><div style="font-size:12px;color:var(--text-tertiary);margin-bottom:4px">${new Date(v.ts).toLocaleString('ru-RU')}</div><div style="font-size:12px;color:var(--text-secondary)">${escHtml(preview)}${preview.length===90?'…':''}</div></div>`;
+  }).join('');
+  closeModal('noteActionsModal');
+  openModal('versionHistoryModal');
+}
+function restoreVersion(idx){
+  const v=App.currentNote.versions[idx];if(!v)return;
+  if(!confirm('Восстановить эту версию?\n\n«'+(v.title||'Без названия')+'»\n'+new Date(v.ts).toLocaleString('ru-RU')))return;
+  App.currentNote.versions.push({title:App.currentNote.title,content:App.currentNote.content,ts:Date.now()});
+  document.getElementById('editorTitle').value=v.title||'';
+  document.getElementById('editorContent').innerHTML=contentToHtml(v.content||'');
+  saveCurrentNote();
+  closeModal('versionHistoryModal');
+  showToast('Версия восстановлена','sparkles');
+}
+
+// ============================================
+// COLLABORATIVE SHARING (live link-based co-editing via Firebase)
+// ============================================
+let collabRef=null,collabApplyingRemote=false;
+function attachCollabListener(shareId){
+  detachCollabListener();
+  collabRef=rtdb.ref('shared_notes/'+shareId);
+  collabRef.on('value',snap=>{
+    const d=snap.val();if(!d)return;
+    if(!App.currentNote||App.currentNote.shareId!==shareId)return;
+    const localTitle=document.getElementById('editorTitle').value;
+    const localContent=htmlToContent(document.getElementById('editorContent'));
+    if(d.title===localTitle&&d.content===localContent)return;
+    collabApplyingRemote=true;
+    document.getElementById('editorTitle').value=d.title||'';
+    document.getElementById('editorContent').innerHTML=contentToHtml(d.content||'');
+    App.currentNote.title=d.title||'';App.currentNote.content=d.content||'';
+    if(App.currentNote.id!=='shared')Store.saveNotes();
+    collabApplyingRemote=false;
+  });
+}
+function detachCollabListener(){if(collabRef){collabRef.off();collabRef=null}}
+function pushCollabUpdate(){
+  if(!App.currentNote||!App.currentNote.shareId||collabApplyingRemote)return;
+  rtdb.ref('shared_notes/'+App.currentNote.shareId).update({title:App.currentNote.title||'',content:App.currentNote.content||'',updated:firebase.database.ServerValue.TIMESTAMP}).catch(()=>{});
+}
+function openCollabShare(){if(!App.currentNote)return;closeModal('noteActionsModal');renderCollabModal();openModal('collabModal')}
+function renderCollabModal(){
+  const n=App.currentNote;const el=document.getElementById('collabContent');
+  if(n.shareId){
+    const link=location.href.split('?')[0].split('#')[0]+'?share='+n.shareId;
+    el.innerHTML=`<div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">Ссылка активна — у всех, кто её откроет, будет доступ на просмотр и совместное редактирование этой заметки в реальном времени, без входа в аккаунт.</div><div class="input-field" style="word-break:break-all;font-size:12px;margin-bottom:14px;cursor:pointer" onclick="copyCollabLink('${link}')">${link}</div><button class="btn-primary" onclick="copyCollabLink('${link}')">Скопировать ссылку</button><button class="btn-secondary" style="margin-top:8px;width:100%" onclick="disableCollabShare()">Отключить доступ</button>`;
+  }else{
+    el.innerHTML=`<div style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;line-height:1.5">Создайте ссылку — любой человек с этой ссылкой сможет читать и редактировать заметку вместе с вами в реальном времени.</div><button class="btn-primary" onclick="enableCollabShare()">Включить совместный доступ</button>`;
+  }
+}
+async function enableCollabShare(){
+  const n=App.currentNote;if(!n)return;
+  const shareId=uid()+uid();
+  try{
+    await rtdb.ref('shared_notes/'+shareId).set({title:n.title||'',content:n.content||'',updated:firebase.database.ServerValue.TIMESTAMP,ownerUid:App.user?App.user.uid:null});
+    n.shareId=shareId;saveCurrentNote();attachCollabListener(shareId);renderCollabModal();showToast('Доступ включён','sparkles');
+  }catch(e){showToast('Не удалось включить доступ — проверьте правила Firebase')}
+}
+async function disableCollabShare(){
+  const n=App.currentNote;if(!n||!n.shareId)return;
+  try{await rtdb.ref('shared_notes/'+n.shareId).remove()}catch(e){}
+  detachCollabListener();n.shareId=null;saveCurrentNote();renderCollabModal();showToast('Доступ отключён');
+}
+function copyCollabLink(link){navigator.clipboard.writeText(link).then(()=>showToast('Ссылка скопирована','sparkles')).catch(()=>showToast('Не удалось скопировать'))}
+function checkSharedLink(){
+  const params=new URLSearchParams(location.search);const shareId=params.get('share');if(!shareId)return;
+  rtdb.ref('shared_notes/'+shareId).once('value').then(snap=>{
+    const d=snap.val();
+    if(!d){showToast('Ссылка недействительна или доступ отключён');return}
+    const fakeNote={id:'shared',shareId,title:d.title||'',content:d.content||'',images:[],tags:[],pinned:false,archived:false,created:Date.now(),modified:Date.now()};
+    openNote(null,fakeNote);
+  }).catch(()=>showToast('Не удалось загрузить общую заметку — проверьте правила Firebase'));
+}
+
+// ============================================
+// TASK REMINDERS (Notification API — works while the app tab is open)
+// ============================================
+function checkReminders(){
+  if(!('Notification'in window))return;
+  const now=Date.now();const fired=Store.get('firedReminders')||[];let changed=false;
+  App.tasks.forEach(t=>{
+    if(!t.reminderOn||t.done||!t.due)return;
+    const dueMs=new Date(t.due+'T'+(t.time||'00:00')).getTime();if(isNaN(dueMs))return;
+    const remindAt=dueMs-(t.reminderOffset||0)*60000;const key=t.id+'_'+remindAt;
+    if(remindAt<=now&&remindAt>now-5*60000&&!fired.includes(key)){showTaskNotification(t);fired.push(key);changed=true}
+  });
+  if(changed){if(fired.length>200)fired.splice(0,fired.length-200);Store.set('firedReminders',fired)}
+}
+function showTaskNotification(t){
+  const body=(t.description||'').replace(/\[\[s:[a-zA-Z0-9]+\]\]/g,'').trim()||'Напоминание о задаче';
+  if('Notification'in window&&Notification.permission==='granted'){
+    try{const n=new Notification(t.title,{body,icon:'https://i.ibb.co/bM92wtTZ/editing-result-b354bffda85a11f1893972bf94faac54-1.jpg',tag:'task-'+t.id});n.onclick=()=>{window.focus();navigateTo('tasks');n.close()}}catch(e){showToast('⏰ '+t.title)}
+  }else showToast('⏰ '+t.title);
+}
+setInterval(checkReminders,20000);
+
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
@@ -1556,6 +1697,7 @@ document.getElementById('pjRawEditor').addEventListener('input',()=>{clearTimeou
 document.addEventListener('click',e=>{if(App.fabOpen&&!e.target.closest('#fab')&&!e.target.closest('#fabMenu'))closeFab()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('noteEditor').classList.contains('open'))closeEditor();if(document.getElementById('projectWorkspace').classList.contains('open'))closeProjectWorkspace();closeFab();document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id));DatePicker.close();TimePicker.close()}});
 renderTabBar();renderDashboard();
+checkSharedLink();checkReminders();
 setTimeout(()=>{document.getElementById('loadingScreen').classList.add('hidden');if(!Store.get('onboardingDone'))document.getElementById('onboarding').classList.remove('hidden')},800)}
 
 function updateOnboarding(){document.querySelectorAll('.onboarding-step').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.onboarding-dot').forEach(d=>d.classList.remove('active'));document.querySelector(`.onboarding-step[data-step="${App.onboardingStep}"]`)?.classList.add('active');document.querySelector(`.onboarding-dot[data-dot="${App.onboardingStep}"]`)?.classList.add('active');if(App.onboardingStep>=3)document.getElementById('onboardingNext').textContent='Начать'}
