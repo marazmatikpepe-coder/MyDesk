@@ -413,29 +413,31 @@ img{display:block;max-width:100%}
   .editor-overlay{margin-left:96px;width:calc(100% - 96px)}
   .pj-sidebar{width:260px}
 /* Stickers: Telegram-style picker, tag chips, inline, filter bar */
-.sticker-sheet{border-radius:20px 20px 0 0 !important}
+.sticker-sheet{border-radius:20px 20px 0 0 !important;height:65vh;max-height:65vh;height:65dvh;max-height:65dvh}
 .sticker-search-bar{display:flex;align-items:center;gap:8px;margin:8px 14px 6px;padding:9px 14px;background:var(--glass-bg);border-radius:999px;flex-shrink:0;color:var(--text-secondary)}
 .sticker-search-bar input{border:none;background:transparent;outline:none;flex:1;font-size:15px;color:var(--text-primary);min-width:0}
 .sticker-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:0;padding:4px 8px;align-content:start;-webkit-overflow-scrolling:touch}
 .sticker-cell{display:flex;align-items:center;justify-content:center;padding:6px;border-radius:14px;cursor:pointer;transition:background var(--duration-fast) var(--spring),transform var(--duration-fast) var(--spring)}
 .sticker-cell:active{background:var(--glass-bg);transform:scale(0.85)}
 .sticker-cell.selected{background:rgba(var(--accent-rgb),0.15)}
-.sticker-cell img{width:48px;height:48px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
+.sticker-cell img,.sticker-cell canvas{width:48px;height:48px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
 .sticker-empty-hint{grid-column:1/-1;text-align:center;padding:30px 10px;color:var(--text-tertiary);font-size:13px}
 .sticker-cat-tabs{display:flex;gap:2px;overflow-x:auto;padding:6px 8px;border-top:1px solid var(--glass-border);flex-shrink:0;background:var(--glass-bg-heavy);padding-bottom:calc(var(--safe-bottom) + 6px);-webkit-overflow-scrolling:touch}
 .sticker-cat-tab{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--duration-fast) var(--spring)}
 .sticker-cat-tab.active{background:rgba(var(--accent-rgb),0.15)}
-.sticker-cat-tab img{width:22px;height:22px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
+.sticker-cat-tab img,.sticker-cat-tab canvas{width:22px;height:22px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
 .tag-chip-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .tag-chip{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--glass-bg);overflow:hidden;flex-shrink:0;position:relative}
 .tag-chip img{width:17px;height:17px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
 .tag-chip.removable{cursor:pointer}
 .tag-chip.removable:after{content:'×';position:absolute;top:-3px;right:-3px;width:13px;height:13px;background:#ff453a;color:#fff;border-radius:50%;font-size:9px;line-height:13px;text-align:center;font-weight:700}
 .add-tag-btn{width:24px;height:24px;border-radius:50%;background:var(--glass-bg);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--text-secondary);flex-shrink:0}
-.tag-filter-bar{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;margin-bottom:4px}
-.tag-filter-chip{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;background:var(--glass-bg);font-size:12px;font-weight:600;color:var(--text-secondary);white-space:nowrap;flex-shrink:0}
-.tag-filter-chip.active{background:rgba(var(--accent-rgb),0.15);color:var(--accent)}
-.tag-filter-chip img{width:16px;height:16px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
+.tag-filter-bar{display:flex;gap:6px;overflow-x:auto;padding:2px 2px 10px;margin-bottom:2px;-webkit-overflow-scrolling:touch}
+.tag-filter-chip{width:32px;height:32px;border-radius:10px;background:var(--glass-bg);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all var(--duration-fast) var(--spring);font-size:14px;color:var(--text-secondary)}
+.tag-filter-chip:active{transform:scale(0.9)}
+.tag-filter-chip.active{background:rgba(var(--accent-rgb),0.18)}
+.tag-filter-chip.clear{color:#ff453a;font-weight:700}
+.tag-filter-chip img{width:18px;height:18px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
 .sticker-inline{width:20px;height:20px;object-fit:contain;vertical-align:-5px;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
 .editor-content{outline:none;white-space:pre-wrap;word-break:break-word}
 .editor-content:empty:before,.editable-desc:empty:before{content:attr(data-placeholder);color:var(--text-tertiary);pointer-events:none}
@@ -444,10 +446,10 @@ img{display:block;max-width:100%}
 @media(max-width:480px){
   .tag-chip{width:20px;height:20px}
   .tag-chip img{width:14px;height:14px}
-  .tag-filter-chip img{width:14px;height:14px}
-  .tag-filter-chip{padding:5px 10px;font-size:11px}
+  .tag-filter-chip img{width:15px;height:15px}
+  .tag-filter-chip{width:28px;height:28px;border-radius:9px}
   .sticker-inline{width:16px;height:16px;vertical-align:-4px}
-  .sticker-cell img{width:30px;height:30px}
+  .sticker-cell img,.sticker-cell canvas{width:30px;height:30px}
   .task-item .tag-chip-row{gap:4px}
 }
 </style>
@@ -603,7 +605,7 @@ img{display:block;max-width:100%}
   </div></div></div>
 
   <div class="modal-backdrop" id="folderModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="folderModalHeader"></div><div style="display:flex;flex-direction:column;gap:12px;"><input type="text" class="input-field" id="folderName" placeholder="Название папки"><button class="btn-primary" id="folderSave">Создать</button></div></div></div>
-  <div class="modal-backdrop" id="stickerModal"><div class="modal-sheet sticker-sheet" style="max-width:520px;height:65vh;max-height:65vh;display:flex;flex-direction:column;padding:0;overflow:hidden">
+  <div class="modal-backdrop" id="stickerModal"><div class="modal-sheet sticker-sheet" style="max-width:520px;display:flex;flex-direction:column;padding:0;overflow:hidden">
     <div class="modal-handle" style="margin-top:10px"></div>
     <div class="sticker-search-bar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:0.45"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -1271,24 +1273,44 @@ window.addEventListener('message',e=>{if(e.data&&e.data.__pj)pjLog(e.data.level,
 // ============================================
 const stickerIO=new IntersectionObserver(entries=>{
   entries.forEach(entry=>{
-    const img=entry.target;
+    const el=entry.target;
+    if(el.tagName==='CANVAS'){
+      if(entry.isIntersecting)loadStaticIntoCanvas(el);
+      return;
+    }
     if(entry.isIntersecting){
-      const src=img.dataset.src;
-      if(src&&img.getAttribute('src')!==src)img.setAttribute('src',src);
-    }else if(img.hasAttribute('src')){
-      img.dataset.src=img.dataset.src||img.getAttribute('src');
-      img.removeAttribute('src');
+      const src=el.dataset.src;
+      if(src&&el.getAttribute('src')!==src)el.setAttribute('src',src);
+    }else if(el.hasAttribute('src')){
+      el.dataset.src=el.dataset.src||el.getAttribute('src');
+      el.removeAttribute('src');
     }
   });
 },{root:null,rootMargin:'200px 0px',threshold:0.01});
+function loadStaticIntoCanvas(canvas){
+  if(canvas.dataset.loaded||!canvas.dataset.src)return;
+  canvas.dataset.loaded='pending';
+  const img=new Image();
+  img.onload=()=>{
+    try{
+      const ctx=canvas.getContext('2d');const w=canvas.width,h=canvas.height;
+      const scale=Math.min(w/img.naturalWidth,h/img.naturalHeight);
+      const dw=img.naturalWidth*scale,dh=img.naturalHeight*scale;
+      ctx.clearRect(0,0,w,h);ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
+      canvas.dataset.loaded='1';
+    }catch(e){canvas.dataset.loaded=''}
+  };
+  img.onerror=()=>{canvas.dataset.loaded=''};
+  img.src=canvas.dataset.src;
+}
 function observeLazyStickers(root){
   const scope=(root&&root.querySelectorAll)?root:document;
-  scope.querySelectorAll('.lazy-sticker').forEach(img=>{if(!img.dataset.ioBound){img.dataset.ioBound='1';stickerIO.observe(img)}});
+  scope.querySelectorAll('.lazy-sticker,.sticker-canvas').forEach(el=>{if(!el.dataset.ioBound){el.dataset.ioBound='1';stickerIO.observe(el)}});
 }
 new MutationObserver(muts=>{
   for(const m of muts)m.addedNodes.forEach(n=>{
     if(n.nodeType!==1)return;
-    if(n.classList&&n.classList.contains('lazy-sticker')&&!n.dataset.ioBound){n.dataset.ioBound='1';stickerIO.observe(n)}
+    if(n.classList&&(n.classList.contains('lazy-sticker')||n.classList.contains('sticker-canvas'))&&!n.dataset.ioBound){n.dataset.ioBound='1';stickerIO.observe(n)}
     if(n.querySelectorAll)observeLazyStickers(n);
   });
 }).observe(document.body,{childList:true,subtree:true});
@@ -1352,7 +1374,7 @@ function renderStickerCatTabs(){
   if(recents.length)h+=`<div class="sticker-cat-tab ${App.stickerCat==='recent'?'active':''}" onclick="setStickerCat('recent')" title="Недавние">${icon('clock',20)}</div>`;
   Object.keys(STICKERS).forEach(c=>{
     const rep=STICKERS[c].items[0];
-    h+=`<div class="sticker-cat-tab ${App.stickerCat===c?'active':''}" onclick="setStickerCat('${c}')" title="${escHtml(STICKERS[c].label)}"><img class="lazy-sticker" data-src="${rep.u}" width="22" height="22" alt=""></div>`;
+    h+=`<div class="sticker-cat-tab ${App.stickerCat===c?'active':''}" onclick="setStickerCat('${c}')" title="${escHtml(STICKERS[c].label)}"><canvas class="sticker-canvas" data-src="${rep.u}" width="44" height="44"></canvas></div>`;
   });
   el.innerHTML=h;
 }
@@ -1365,7 +1387,7 @@ function renderStickerGrid(){
   else if(App.stickerCat==='recent')items=getStickerRecents().map(k=>STICKER_MAP[k]).filter(Boolean);
   else items=STICKERS[App.stickerCat].items;
   const activeTags=currentItemTags();
-  el.innerHTML=items.length?items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" width="48" height="48" alt=""></div>`).join(''):`<div class="sticker-empty-hint">Ничего не найдено</div>`;
+  el.innerHTML=items.length?items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')" title="${escHtml(it.n)}"><canvas class="sticker-canvas" data-src="${it.u}" width="96" height="96"></canvas></div>`).join(''):`<div class="sticker-empty-hint">Ничего не найдено</div>`;
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='stickerSearch')renderStickerGrid()});
 function pickSticker(key){
@@ -1385,9 +1407,10 @@ function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!e
 function renderTagFilterBar(kind,items){
   const tagSet=new Set();items.forEach(it=>(it.tags||[]).forEach(k=>tagSet.add(k)));
   if(!tagSet.size)return'';
-  const filterVar=kind+'TagFilter';const current=App[filterVar];
-  let h=`<div class="tag-filter-bar"><div class="tag-filter-chip ${!current?'active':''}" onclick="setTagFilter('${kind}',null)">Все</div>`;
-  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')"><img class="lazy-sticker" data-src="${it.u}" width="16" height="16" alt="">${escHtml(it.n)}</div>`});
+  const current=App[kind+'TagFilter'];
+  let h='<div class="tag-filter-bar">';
+  if(current)h+=`<div class="tag-filter-chip clear" onclick="setTagFilter('${kind}',null)" title="Сбросить фильтр">✕</div>`;
+  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" width="18" height="18" alt=""></div>`});
   h+='</div>';return h;
 }
 function setTagFilter(kind,key){App[kind+'TagFilter']=key;renderCurrentScreen()}
