@@ -1,9 +1,0 @@
-{
-  "name": "mydesk-reminders",
-  "version": "1.0.0",
-  "private": true,
-  "main": "check-reminders.js",
-  "dependencies": {
-    "firebase-admin": "^12.1.0"
-  }
-}
