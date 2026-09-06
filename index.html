@@ -412,16 +412,20 @@ img{display:block;max-width:100%}
   .tab-item{width:68px}
   .editor-overlay{margin-left:96px;width:calc(100% - 96px)}
   .pj-sidebar{width:260px}
-/* Stickers: picker, tag chips, inline, filter bar */
-.sticker-cat-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:8px;flex-shrink:0}
-.sticker-cat-tab{padding:6px 12px;border-radius:999px;background:var(--glass-bg);font-size:12px;font-weight:600;white-space:nowrap;color:var(--text-secondary)}
-.sticker-cat-tab.active{background:rgba(var(--accent-rgb),0.15);color:var(--accent)}
-.sticker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px;overflow-y:auto;flex:1;padding-bottom:8px;min-height:200px}
-.sticker-cell{display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px;border-radius:var(--radius-md);cursor:pointer;transition:all var(--duration-fast) var(--spring)}
-.sticker-cell:active{background:var(--glass-bg);transform:scale(0.92)}
-.sticker-cell.selected{background:rgba(var(--accent-rgb),0.18)}
-.sticker-cell img{width:36px;height:36px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
-.sticker-cell .sticker-cell-name{font-size:9px;color:var(--text-tertiary);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
+/* Stickers: Telegram-style picker, tag chips, inline, filter bar */
+.sticker-sheet{border-radius:20px 20px 0 0 !important}
+.sticker-search-bar{display:flex;align-items:center;gap:8px;margin:8px 14px 6px;padding:9px 14px;background:var(--glass-bg);border-radius:999px;flex-shrink:0;color:var(--text-secondary)}
+.sticker-search-bar input{border:none;background:transparent;outline:none;flex:1;font-size:15px;color:var(--text-primary);min-width:0}
+.sticker-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:0;padding:4px 8px;align-content:start;-webkit-overflow-scrolling:touch}
+.sticker-cell{display:flex;align-items:center;justify-content:center;padding:6px;border-radius:14px;cursor:pointer;transition:background var(--duration-fast) var(--spring),transform var(--duration-fast) var(--spring)}
+.sticker-cell:active{background:var(--glass-bg);transform:scale(0.85)}
+.sticker-cell.selected{background:rgba(var(--accent-rgb),0.15)}
+.sticker-cell img{width:48px;height:48px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
+.sticker-empty-hint{grid-column:1/-1;text-align:center;padding:30px 10px;color:var(--text-tertiary);font-size:13px}
+.sticker-cat-tabs{display:flex;gap:2px;overflow-x:auto;padding:6px 8px;border-top:1px solid var(--glass-border);flex-shrink:0;background:var(--glass-bg-heavy);padding-bottom:calc(var(--safe-bottom) + 6px);-webkit-overflow-scrolling:touch}
+.sticker-cat-tab{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--duration-fast) var(--spring)}
+.sticker-cat-tab.active{background:rgba(var(--accent-rgb),0.15)}
+.sticker-cat-tab img{width:22px;height:22px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
 .tag-chip-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .tag-chip{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--glass-bg);overflow:hidden;flex-shrink:0;position:relative}
 .tag-chip img{width:17px;height:17px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
@@ -599,12 +603,14 @@ img{display:block;max-width:100%}
   </div></div></div>
 
   <div class="modal-backdrop" id="folderModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="folderModalHeader"></div><div style="display:flex;flex-direction:column;gap:12px;"><input type="text" class="input-field" id="folderName" placeholder="Название папки"><button class="btn-primary" id="folderSave">Создать</button></div></div></div>
-  <div class="modal-backdrop" id="stickerModal"><div class="modal-sheet" style="max-width:520px;max-height:80vh;display:flex;flex-direction:column">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="stickerModalTitle">Стикеры</div>
-    <input type="text" class="input-field" id="stickerSearch" placeholder="Поиск стикера..." style="margin-bottom:10px">
-    <div class="sticker-cat-tabs" id="stickerCatTabs"></div>
+  <div class="modal-backdrop" id="stickerModal"><div class="modal-sheet sticker-sheet" style="max-width:520px;height:65vh;max-height:65vh;display:flex;flex-direction:column;padding:0;overflow:hidden">
+    <div class="modal-handle" style="margin-top:10px"></div>
+    <div class="sticker-search-bar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;opacity:0.45"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input type="text" id="stickerSearch" placeholder="Поиск стикеров">
+    </div>
     <div class="sticker-grid" id="stickerGrid"></div>
+    <div class="sticker-cat-tabs" id="stickerCatTabs"></div>
   </div></div>
 
   <div class="modal-backdrop" id="noteActionsModal"><div class="modal-sheet" id="noteActionsSheet"></div></div>
@@ -1328,31 +1334,43 @@ function insertPlainTextAtEnd(container,text){
   if(container.childNodes.length)container.appendChild(document.createElement('br'));
   container.appendChild(document.createTextNode(text));
 }
+function getStickerRecents(){return Store.get('stickerRecent')||[]}
+function addStickerRecent(key){let r=getStickerRecents().filter(k=>k!==key);r.unshift(key);r=r.slice(0,32);Store.set('stickerRecent',r)}
 function openStickerPicker(mode,ctx){
   App.stickerCtx={mode,...ctx};
-  document.getElementById('stickerModalTitle').textContent=mode==='tag'?'Выберите метку':'Вставить стикер';
   document.getElementById('stickerSearch').value='';
+  document.getElementById('stickerSearch').placeholder=mode==='tag'?'Поиск меток':'Поиск стикеров';
+  App.stickerCat=getStickerRecents().length?'recent':(STICKERS[App.stickerCat]?App.stickerCat:'activity');
   renderStickerCatTabs();
   renderStickerGrid();
   openModal('stickerModal');
 }
 function renderStickerCatTabs(){
   const el=document.getElementById('stickerCatTabs');
-  el.innerHTML=Object.keys(STICKERS).map(c=>`<div class="sticker-cat-tab ${c===App.stickerCat?'active':''}" onclick="setStickerCat('${c}')">${STICKERS[c].label}</div>`).join('');
+  const recents=getStickerRecents();
+  let h='';
+  if(recents.length)h+=`<div class="sticker-cat-tab ${App.stickerCat==='recent'?'active':''}" onclick="setStickerCat('recent')" title="Недавние">${icon('clock',20)}</div>`;
+  Object.keys(STICKERS).forEach(c=>{
+    const rep=STICKERS[c].items[0];
+    h+=`<div class="sticker-cat-tab ${App.stickerCat===c?'active':''}" onclick="setStickerCat('${c}')" title="${escHtml(STICKERS[c].label)}"><img class="lazy-sticker" data-src="${rep.u}" width="22" height="22" alt=""></div>`;
+  });
+  el.innerHTML=h;
 }
-function setStickerCat(c){App.stickerCat=c;renderStickerCatTabs();renderStickerGrid()}
+function setStickerCat(c){App.stickerCat=c;document.getElementById('stickerSearch').value='';renderStickerCatTabs();renderStickerGrid();document.getElementById('stickerGrid').scrollTop=0}
 function currentItemTags(){if(!App.stickerCtx||App.stickerCtx.mode!=='tag')return[];const{itemType,id}=App.stickerCtx;if(itemType==='note'){const n=App.notes.find(x=>x.id===id);return n?n.tags||[]:[]}if(itemType==='task')return App.editingTaskTags||[];if(itemType==='project'){const p=App.projects.find(x=>x.id===id);return p?p.tags||[]:[]}return[]}
 function renderStickerGrid(){
   const el=document.getElementById('stickerGrid');const q=document.getElementById('stickerSearch').value.trim().toLowerCase();
   let items;
   if(q){items=[];Object.values(STICKERS).forEach(cat=>cat.items.forEach(it=>{if(it.n.toLowerCase().includes(q))items.push(it)}))}
+  else if(App.stickerCat==='recent')items=getStickerRecents().map(k=>STICKER_MAP[k]).filter(Boolean);
   else items=STICKERS[App.stickerCat].items;
   const activeTags=currentItemTags();
-  el.innerHTML=items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')"><img class="lazy-sticker" data-src="${it.u}" width="36" height="36" alt=""><span class="sticker-cell-name">${escHtml(it.n)}</span></div>`).join('');
+  el.innerHTML=items.length?items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" width="48" height="48" alt=""></div>`).join(''):`<div class="sticker-empty-hint">Ничего не найдено</div>`;
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='stickerSearch')renderStickerGrid()});
 function pickSticker(key){
   const ctx=App.stickerCtx;if(!ctx)return;
+  addStickerRecent(key);
   if(ctx.mode==='tag'){toggleItemTag(ctx.itemType,ctx.id,key);renderStickerGrid()}
   else{insertStickerIntoEditor(key,ctx.target);closeModal('stickerModal')}
 }
