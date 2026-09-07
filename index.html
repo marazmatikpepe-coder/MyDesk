@@ -1691,6 +1691,7 @@ async function enablePushNotifications(){
     const perm=await Notification.requestPermission();
     if(perm!=='granted'){showToast('Разрешение не дано');renderSettings();return}
     const reg=await navigator.serviceWorker.register('firebase-messaging-sw.js');
+    await navigator.serviceWorker.ready;
     if(!messaging)messaging=firebase.messaging();
     const token=await messaging.getToken({vapidKey:VAPID_KEY,serviceWorkerRegistration:reg});
     if(token){await rtdb.ref(`users/${App.user.uid}/fcmTokens/${token}`).set(true);Store.set('fcmToken',token);showToast('Push-уведомления включены','sparkles')}
