@@ -1,5 +1,5 @@
 // firebase-messaging-sw.js
-// ВАЖНО: этот файл должен лежать в ТОЙ ЖЕ папке, что и MyDesk.html, на реальном хостинге (не локально).
+// ВАЖНО: этот файл должен лежать в ТОЙ ЖЕ папке, что и index.html, на реальном хостинге (не локально).
 importScripts('https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.14.0/firebase-messaging-compat.js');
 
@@ -37,5 +37,46 @@ self.addEventListener('notificationclick', (event) => {
       }
       if (clients.openWindow) return clients.openWindow('./');
     })
+  );
+});
+
+// ============================================
+// КЕШИРОВАНИЕ КАРТИНОК (иконки + стикеры)
+// Стратегия "cache-first": если картинка уже скачивалась хоть раз —
+// отдаём её мгновенно из кеша, без обращения к сети вообще.
+// Работает даже офлайн.
+// ============================================
+const IMAGE_CACHE = 'mydesk-images-v1';
+
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  if (req.method !== 'GET') return;
+
+  const isImageHost = req.url.includes('i.ibb.co');
+  if (!isImageHost) return; // остальные запросы (сама база, API) не трогаем
+
+  event.respondWith(
+    caches.open(IMAGE_CACHE).then(async (cache) => {
+      const cached = await cache.match(req);
+      if (cached) return cached;
+      try {
+        const response = await fetch(req);
+        if (response && response.ok) {
+          cache.put(req, response.clone());
+        }
+        return response;
+      } catch (err) {
+        return cached || new Response('', { status: 504, statusText: 'Offline' });
+      }
+    })
+  );
+});
+
+// Не даём кешу расти вечно — раз в активацию подчищаем старые версии кеша
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) =>
+      Promise.all(keys.filter((k) => k !== IMAGE_CACHE).map((k) => caches.delete(k)))
+    )
   );
 });
