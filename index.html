@@ -413,19 +413,20 @@ img{display:block;max-width:100%}
   .editor-overlay{margin-left:96px;width:calc(100% - 96px)}
   .pj-sidebar{width:260px}
 /* Stickers: Telegram-style picker, tag chips, inline, filter bar */
-.sticker-sheet{border-radius:20px 20px 0 0 !important;height:65vh;max-height:65vh;height:65dvh;max-height:65dvh}
+.sticker-sheet{border-radius:20px 20px 0 0 !important;height:40vh;max-height:40vh;height:40dvh;max-height:40dvh;min-height:280px}
+@media(min-width:768px){.sticker-sheet{height:360px;max-height:360px}}
 .sticker-search-bar{display:flex;align-items:center;gap:8px;margin:8px 14px 6px;padding:9px 14px;background:var(--glass-bg);border-radius:999px;flex-shrink:0;color:var(--text-secondary)}
 .sticker-search-bar input{border:none;background:transparent;outline:none;flex:1;font-size:15px;color:var(--text-primary);min-width:0}
-.sticker-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:0;padding:4px 8px;align-content:start;-webkit-overflow-scrolling:touch}
+.sticker-grid{flex:1;overflow-y:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:0;padding:4px 8px;align-content:start;-webkit-overflow-scrolling:touch}
 .sticker-cell{display:flex;align-items:center;justify-content:center;padding:6px;border-radius:14px;cursor:pointer;transition:background var(--duration-fast) var(--spring),transform var(--duration-fast) var(--spring)}
 .sticker-cell:active{background:var(--glass-bg);transform:scale(0.85)}
 .sticker-cell.selected{background:rgba(var(--accent-rgb),0.15)}
-.sticker-cell img,.sticker-cell canvas{width:48px;height:48px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
+.sticker-cell img{width:40px;height:40px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
 .sticker-empty-hint{grid-column:1/-1;text-align:center;padding:30px 10px;color:var(--text-tertiary);font-size:13px}
 .sticker-cat-tabs{display:flex;gap:2px;overflow-x:auto;padding:6px 8px;border-top:1px solid var(--glass-border);flex-shrink:0;background:var(--glass-bg-heavy);padding-bottom:calc(var(--safe-bottom) + 6px);-webkit-overflow-scrolling:touch}
 .sticker-cat-tab{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--duration-fast) var(--spring)}
 .sticker-cat-tab.active{background:rgba(var(--accent-rgb),0.15)}
-.sticker-cat-tab img,.sticker-cat-tab canvas{width:22px;height:22px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
+.sticker-cat-tab img{width:22px;height:22px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
 .tag-chip-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .tag-chip{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--glass-bg);overflow:hidden;flex-shrink:0;position:relative}
 .tag-chip img{width:17px;height:17px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none}
@@ -442,7 +443,6 @@ img{display:block;max-width:100%}
 .editor-content{outline:none;white-space:pre-wrap;word-break:break-word}
 .editor-content:empty:before,.editable-desc:empty:before{content:attr(data-placeholder);color:var(--text-tertiary);pointer-events:none}
 .editable-desc{outline:none;white-space:pre-wrap;word-break:break-word;min-height:52px;max-height:140px;overflow-y:auto}
-.lazy-sticker{background:transparent}
 .mic-btn.recording{animation:micPulse 1s ease-in-out infinite;color:#ff453a}
 .mic-btn.recording img{filter:drop-shadow(0 0 4px rgba(255,69,58,0.7))}
 @keyframes micPulse{0%,100%{opacity:1}50%{opacity:0.4}}
@@ -452,7 +452,7 @@ img{display:block;max-width:100%}
   .tag-filter-chip img{width:15px;height:15px}
   .tag-filter-chip{width:28px;height:28px;border-radius:9px}
   .sticker-inline{width:16px;height:16px;vertical-align:-4px}
-  .sticker-cell img,.sticker-cell canvas{width:30px;height:30px}
+  .sticker-cell img{width:28px;height:28px}
   .task-item .tag-chip-row{gap:4px}
 }
 </style>
@@ -675,7 +675,7 @@ const STICKER_MAP={};Object.keys(STICKERS).forEach(c=>STICKERS[c].items.forEach(
 
 function icon(n,s=22,c=''){const u=ICONS[n];if(!u)return'';if(c.includes('accent'))return`<span class="ui-icon-mask ${c}" style="--icon-url:url('${u}');width:${s}px;height:${s}px;-webkit-mask-image:url('${u}');mask-image:url('${u}');"></span>`;return`<img class="ui-icon ${c}" src="${u}" width="${s}" height="${s}" alt="" draggable="false">`}
 const WEMOJI_PX={xs:16,sm:22,md:28,lg:48,xl:72,'2xl':100};
-function wemoji(k,s='sm'){const u=WEMOJI[k];const px=WEMOJI_PX[s]||22;return u?`<img class="wemoji wemoji-${s} lazy-sticker" data-src="${u}" width="${px}" height="${px}" alt="" loading="eager">`:'';}
+function wemoji(k,s='sm'){const u=WEMOJI[k];const px=WEMOJI_PX[s]||22;return u?`<img class="wemoji wemoji-${s}" src="${u}" width="${px}" height="${px}" alt="" loading="lazy" decoding="async">`:'';}
 
 // ============================================
 // CUSTOM DATE PICKER ENGINE
@@ -919,7 +919,7 @@ const IMGBB_KEY='d8a9dad272290e9bd78173da55a97d77';
 // ============================================
 // APP STATE
 // ============================================
-const App={user:null,currentScreen:'dashboard',currentNote:null,fabOpen:false,onboardingStep:0,calendarDate:new Date(),selectedCalDate:null,settings:{theme:'system',accentColor:'#007AFF',autoSave:true,animations:true},notes:[],tasks:[],schedules:[],folders:[],projects:[],isOnline:navigator.onLine,isSyncing:false,lastSync:null,saveTimer:null,taskPriority:'low',editingTaskId:null,editingScheduleId:null,scheduleEntries:[],currentProjectId:null,currentFilePath:null,openFiles:[],pjView:'code',pjSaveTimer:null,editingTaskTags:[],notesTagFilter:null,tasksTagFilter:null,projectsTagFilter:null,stickerCtx:null,stickerCat:'activity'};
+const App={user:null,currentScreen:'dashboard',currentNote:null,fabOpen:false,onboardingStep:0,calendarDate:new Date(),selectedCalDate:new Date().toISOString().split('T')[0],settings:{theme:'system',accentColor:'#007AFF',autoSave:true,animations:true},notes:[],tasks:[],schedules:[],folders:[],projects:[],isOnline:navigator.onLine,isSyncing:false,lastSync:null,saveTimer:null,taskPriority:'low',editingTaskId:null,editingScheduleId:null,scheduleEntries:[],currentProjectId:null,currentFilePath:null,openFiles:[],pjView:'code',pjSaveTimer:null,editingTaskTags:[],notesTagFilter:null,tasksTagFilter:null,projectsTagFilter:null,stickerCtx:null,stickerCat:'activity'};
 
 const Store={get(k){try{const v=localStorage.getItem('mydesk_'+k);return v?JSON.parse(v):null}catch{return null}},set(k,v){try{localStorage.setItem('mydesk_'+k,JSON.stringify(v))}catch(e){console.warn(e)}},loadAll(){App.notes=this.get('notes')||[];App.tasks=this.get('tasks')||[];App.schedules=this.get('schedules')||[];App.folders=this.get('folders')||[];App.projects=this.get('projects')||[];App.lastSync=this.get('lastSync');const s=this.get('settings');if(s)App.settings={...App.settings,...s}},saveNotes(){this.set('notes',App.notes)},saveTasks(){this.set('tasks',App.tasks)},saveSchedules(){this.set('schedules',App.schedules)},saveFolders(){this.set('folders',App.folders)},saveProjects(){this.set('projects',App.projects)},saveSettings(){this.set('settings',App.settings)}};
 
@@ -1102,7 +1102,7 @@ const tc=sd+dim,rem=(7-(tc%7))%7;for(let i=1;i<=rem;i++)h+=`<div class="cal-day 
 if(App.selectedCalDate){const sd2=new Date(App.selectedCalDate+'T00:00:00'),dn=getDayName(sd2.getDay()),st=App.tasks.filter(t=>t.due===App.selectedCalDate&&!t.archived);h+=`<div class="section-header animate-in"><div class="section-title">${sd2.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}</div></div>`;let any=false;App.schedules.forEach(s=>{const de=(s.entries||[]).filter(e=>e.day===dn);if(de.length){any=true;h+=`<div style="font-size:14px;color:var(--text-secondary);margin-bottom:8px">${escHtml(s.name)}</div>`;de.sort((a,b)=>(a.time||'').localeCompare(b.time||'')).forEach(e=>{h+=`<div class="schedule-entry" style="margin-bottom:4px"><div class="schedule-entry-color" style="background:${s.color||'var(--accent)'}"></div><div class="schedule-entry-time">${e.time||''}</div><div class="schedule-entry-name">${escHtml(e.name)}</div></div>`})}});if(st.length){any=true;h+='<div style="font-size:14px;color:var(--text-secondary);margin:12px 0 8px">Задачи:</div>';st.forEach(t=>h+=rTI(t))}if(!any)h+='<div style="text-align:center;padding:20px;color:var(--text-tertiary)">Нет событий</div>'}
 el.innerHTML=h}
 function changeMonth(d){App.calendarDate.setMonth(App.calendarDate.getMonth()+d);renderCalendar()}
-function selectCalDate(d){App.selectedCalDate=App.selectedCalDate===d?null:d;renderCalendar()}
+function selectCalDate(d){App.selectedCalDate=d;renderCalendar()}
 
 // ============================================
 // FOLDERS / ARCHIVE / SEARCH / SETTINGS
@@ -1307,54 +1307,6 @@ function pjLog(level,text){const el=document.getElementById('pjConsole');if(!el)
 window.addEventListener('message',e=>{if(e.data&&e.data.__pj)pjLog(e.data.level,e.data.text)});
 
 // ============================================
-// LAZY STICKER LOADING (perf: don't decode/animate offscreen webp stickers)
-// ============================================
-const stickerIO=new IntersectionObserver(entries=>{
-  entries.forEach(entry=>{
-    const el=entry.target;
-    if(el.tagName==='CANVAS'){
-      if(entry.isIntersecting)loadStaticIntoCanvas(el);
-      return;
-    }
-    if(entry.isIntersecting){
-      const src=el.dataset.src;
-      if(src&&el.getAttribute('src')!==src)el.setAttribute('src',src);
-    }else if(el.hasAttribute('src')){
-      el.dataset.src=el.dataset.src||el.getAttribute('src');
-      el.removeAttribute('src');
-    }
-  });
-},{root:null,rootMargin:'200px 0px',threshold:0.01});
-function loadStaticIntoCanvas(canvas){
-  if(canvas.dataset.loaded||!canvas.dataset.src)return;
-  canvas.dataset.loaded='pending';
-  const img=new Image();
-  img.onload=()=>{
-    try{
-      const ctx=canvas.getContext('2d');const w=canvas.width,h=canvas.height;
-      const scale=Math.min(w/img.naturalWidth,h/img.naturalHeight);
-      const dw=img.naturalWidth*scale,dh=img.naturalHeight*scale;
-      ctx.clearRect(0,0,w,h);ctx.drawImage(img,(w-dw)/2,(h-dh)/2,dw,dh);
-      canvas.dataset.loaded='1';
-    }catch(e){canvas.dataset.loaded=''}
-  };
-  img.onerror=()=>{canvas.dataset.loaded=''};
-  img.src=canvas.dataset.src;
-}
-function observeLazyStickers(root){
-  const scope=(root&&root.querySelectorAll)?root:document;
-  scope.querySelectorAll('.lazy-sticker,.sticker-canvas').forEach(el=>{if(!el.dataset.ioBound){el.dataset.ioBound='1';stickerIO.observe(el)}});
-}
-new MutationObserver(muts=>{
-  for(const m of muts)m.addedNodes.forEach(n=>{
-    if(n.nodeType!==1)return;
-    if(n.classList&&(n.classList.contains('lazy-sticker')||n.classList.contains('sticker-canvas'))&&!n.dataset.ioBound){n.dataset.ioBound='1';stickerIO.observe(n)}
-    if(n.querySelectorAll)observeLazyStickers(n);
-  });
-}).observe(document.body,{childList:true,subtree:true});
-observeLazyStickers(document);
-
-// ============================================
 // STICKERS: tags for notes/tasks/projects + insert-into-text
 // ============================================
 function contentToHtml(text){
@@ -1412,7 +1364,7 @@ function renderStickerCatTabs(){
   if(recents.length)h+=`<div class="sticker-cat-tab ${App.stickerCat==='recent'?'active':''}" onclick="setStickerCat('recent')" title="Недавние">${icon('clock',20)}</div>`;
   Object.keys(STICKERS).forEach(c=>{
     const rep=STICKERS[c].items[0];
-    h+=`<div class="sticker-cat-tab ${App.stickerCat===c?'active':''}" onclick="setStickerCat('${c}')" title="${escHtml(STICKERS[c].label)}"><canvas class="sticker-canvas" data-src="${rep.u}" width="44" height="44"></canvas></div>`;
+    h+=`<div class="sticker-cat-tab ${App.stickerCat===c?'active':''}" onclick="setStickerCat('${c}')" title="${escHtml(STICKERS[c].label)}"><img src="${rep.u}" width="22" height="22" alt="" loading="lazy" decoding="async"></div>`;
   });
   el.innerHTML=h;
 }
@@ -1425,7 +1377,7 @@ function renderStickerGrid(){
   else if(App.stickerCat==='recent')items=getStickerRecents().map(k=>STICKER_MAP[k]).filter(Boolean);
   else items=STICKERS[App.stickerCat].items;
   const activeTags=currentItemTags();
-  el.innerHTML=items.length?items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')" title="${escHtml(it.n)}"><canvas class="sticker-canvas" data-src="${it.u}" width="96" height="96"></canvas></div>`).join(''):`<div class="sticker-empty-hint">Ничего не найдено</div>`;
+  el.innerHTML=items.length?items.map(it=>`<div class="sticker-cell ${activeTags.includes(it.k)?'selected':''}" onclick="pickSticker('${it.k}')" title="${escHtml(it.n)}"><img src="${it.u}" width="48" height="48" alt="" loading="lazy" decoding="async"></div>`).join(''):`<div class="sticker-empty-hint">Ничего не найдено</div>`;
 }
 document.addEventListener('input',e=>{if(e.target&&e.target.id==='stickerSearch')renderStickerGrid()});
 function pickSticker(key){
@@ -1439,20 +1391,20 @@ function toggleItemTag(itemType,id,key){
   else if(itemType==='task'){App.editingTaskTags=App.editingTaskTags||[];const i=App.editingTaskTags.indexOf(key);if(i>=0)App.editingTaskTags.splice(i,1);else App.editingTaskTags.push(key);renderTaskTagRow()}
   else if(itemType==='project'){const p=App.projects.find(x=>x.id===id);if(!p)return;p.tags=p.tags||[];const i=p.tags.indexOf(key);if(i>=0)p.tags.splice(i,1);else p.tags.push(key);p.modified=Date.now();Store.saveProjects();Sync.debounceSync();renderProjects()}
 }
-function renderTagChips(tags){return(tags||[]).map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" width="17" height="17" alt=""></span>`:''}).join('')}
-function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img class="lazy-sticker" data-src="${it.u}" width="17" height="17" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'note',id:'${App.currentNote.id}'})">+</span>`}
-function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img class="lazy-sticker" data-src="${it.u}" width="17" height="17" alt=""></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'task',id:null})">+</span>`}
+function renderTagChips(tags){return(tags||[]).map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip" title="${escHtml(it.n)}"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')}
+function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'note',id:'${App.currentNote.id}'})">+</span>`}
+function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'task',id:null})">+</span>`}
 function renderTagFilterBar(kind,items){
   const tagSet=new Set();items.forEach(it=>(it.tags||[]).forEach(k=>tagSet.add(k)));
   if(!tagSet.size)return'';
   const current=App[kind+'TagFilter'];
   let h='<div class="tag-filter-bar">';
   if(current)h+=`<div class="tag-filter-chip clear" onclick="setTagFilter('${kind}',null)" title="Сбросить фильтр">✕</div>`;
-  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')" title="${escHtml(it.n)}"><img class="lazy-sticker" data-src="${it.u}" width="18" height="18" alt=""></div>`});
+  tagSet.forEach(k=>{const it=STICKER_MAP[k];if(!it)return;h+=`<div class="tag-filter-chip ${current===k?'active':''}" onclick="setTagFilter('${kind}','${k}')" title="${escHtml(it.n)}"><img src="${it.u}" width="18" height="18" alt="" loading="lazy" decoding="async"></div>`});
   h+='</div>';return h;
 }
 function setTagFilter(kind,key){App[kind+'TagFilter']=key;renderCurrentScreen()}
-function renderStickerText(text){const esc=escHtml(text||'');return esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline lazy-sticker" data-src="${it.u}" width="20" height="20" alt="${escHtml(it.n)}">`:m})}
+function renderStickerText(text){const esc=escHtml(text||'');return esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline" src="${it.u}" width="20" height="20" alt="${escHtml(it.n)}" loading="lazy" decoding="async">`:m})}
 function insertStickerIntoEditor(key,target){
   const it=STICKER_MAP[key];if(!it)return;
   if(target==='note'){insertStickerNode(document.getElementById('editorContent'),key);autoSaveNote()}
@@ -1710,7 +1662,7 @@ document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('clic
 function toggleFab(){App.fabOpen=!App.fabOpen;document.getElementById('fabMenu').classList.toggle('open',App.fabOpen);document.getElementById('fab').style.transform=App.fabOpen?'rotate(45deg)':''}
 function closeFab(){App.fabOpen=false;document.getElementById('fabMenu').classList.remove('open');document.getElementById('fab').style.transform=''}
 
-function init(){Object.values(ICONS).forEach(u=>{const i=new Image();i.src=u});Object.values(WEMOJI).forEach(u=>{const i=new Image();i.src=u});Store.loadAll();Theme.apply();
+function init(){Store.loadAll();Theme.apply();
 document.getElementById('fab').innerHTML=icon('plus',26);document.getElementById('fab').addEventListener('click',toggleFab);
 document.getElementById('fabMenuNote').innerHTML=`${icon('notesOutline',20)} <span>Заметка</span>`;document.getElementById('fabMenuTask').innerHTML=`${icon('tasks',20)} <span>Задача</span>`;document.getElementById('fabMenuSchedule').innerHTML=`${icon('calendarOutline',20)} <span>Расписание</span>`;
 document.querySelectorAll('.fab-menu-item').forEach(i=>i.addEventListener('click',()=>{closeFab();const a=i.dataset.action;if(a==='note')openNote(null);else if(a==='task')openTaskModal();else if(a==='schedule')openScheduleModal()}));
