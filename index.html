@@ -1687,7 +1687,33 @@ document.addEventListener('click',e=>{if(App.fabOpen&&!e.target.closest('#fab')&
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('noteEditor').classList.contains('open'))closeEditor();if(document.getElementById('projectWorkspace').classList.contains('open'))closeProjectWorkspace();closeFab();document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id));DatePicker.close();TimePicker.close()}});
 renderTabBar();renderDashboard();
 checkSharedLink();checkReminders();initForegroundMessaging();
-setTimeout(()=>{document.getElementById('loadingScreen').classList.add('hidden');if(!Store.get('onboardingDone'))document.getElementById('onboarding').classList.remove('hidden')},800)}
+registerCachingServiceWorker();
+setTimeout(()=>{document.getElementById('loadingScreen').classList.add('hidden');if(!Store.get('onboardingDone'))document.getElementById('onboarding').classList.remove('hidden');warmStickerCache()},800)}
+
+// ============================================
+// IMAGE CACHING (service worker) + background warm-up
+// Registers the SW early (no permission needed just to cache),
+// so every icon/sticker gets stored in Cache Storage after first use
+// and loads instantly (even offline) from then on.
+// ============================================
+function registerCachingServiceWorker(){
+  if(!('serviceWorker'in navigator))return;
+  navigator.serviceWorker.register('firebase-messaging-sw.js').catch(()=>{});
+}
+function warmStickerCache(){
+  const urls=[];
+  Object.values(ICONS).forEach(u=>urls.push(u));
+  Object.values(WEMOJI).forEach(u=>urls.push(u));
+  Object.values(STICKERS).forEach(cat=>cat.items.forEach(it=>urls.push(it.u)));
+  let i=0;
+  function loadBatch(){
+    const batch=urls.slice(i,i+12);i+=12;
+    batch.forEach(u=>{const img=new Image();img.decoding='async';img.src=u});
+    if(i<urls.length)schedule(loadBatch);
+  }
+  function schedule(fn){if('requestIdleCallback'in window)requestIdleCallback(fn,{timeout:2000});else setTimeout(fn,250)}
+  schedule(loadBatch);
+}
 
 function updateOnboarding(){document.querySelectorAll('.onboarding-step').forEach(s=>s.classList.remove('active'));document.querySelectorAll('.onboarding-dot').forEach(d=>d.classList.remove('active'));document.querySelector(`.onboarding-step[data-step="${App.onboardingStep}"]`)?.classList.add('active');document.querySelector(`.onboarding-dot[data-dot="${App.onboardingStep}"]`)?.classList.add('active');if(App.onboardingStep>=3)document.getElementById('onboardingNext').textContent='Начать'}
 function finishOnboarding(){document.getElementById('onboarding').classList.add('hidden');Store.set('onboardingDone',true);showAuth()}
