@@ -236,6 +236,10 @@ img{display:block;max-width:100%}
 .editor-content{font-size:16px;line-height:1.7;min-height:200px;width:100%;background:transparent;color:var(--text-primary);resize:none;font-family:var(--font)}
 .editor-content::placeholder{color:var(--text-tertiary)}
 .editor-images{display:flex;flex-wrap:wrap;gap:var(--space-sm);margin-top:var(--space-lg)}
+.editor-attachments{display:flex;flex-direction:column;gap:8px;margin-top:var(--space-md);padding:0 20px 12px}
+.doc-attachment-card{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--glass-bg);border:1px solid var(--glass-border);border-radius:var(--radius-lg);cursor:pointer}
+.doc-attachment-card .doc-name{flex:1;font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-attachment-card .doc-remove{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-tertiary);flex-shrink:0}
 .editor-img{width:100px;height:100px;object-fit:cover;border-radius:var(--radius-md)}
 .editor-toolbar{display:flex;align-items:center;gap:var(--space-sm);padding:var(--space-sm) var(--space-lg) calc(var(--safe-bottom) + var(--space-sm));background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy));-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border-top:1px solid var(--glass-border)}
 .toolbar-btn{width:40px;height:40px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;transition:all var(--duration-fast) var(--spring)}
@@ -311,7 +315,7 @@ img{display:block;max-width:100%}
 
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:600;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--duration-normal) var(--ease-out);padding:var(--space-lg)}
 .modal-backdrop.open{opacity:1;pointer-events:auto}
-.modal-sheet{width:100%;max-width:420px;max-height:85vh;background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy)) url(#liquidGlass);-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border:1px solid var(--glass-border);border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;overflow-y:auto;transform:translateY(100%);transition:transform var(--duration-normal) var(--ease-out);padding:var(--space-xl);padding-bottom:calc(var(--safe-bottom) + var(--space-xl));box-shadow:inset 0 1px 0 rgba(255,255,255,0.3)}
+.modal-sheet{width:100%;flex:0 1 100%;min-width:0;box-sizing:border-box;max-width:420px;max-height:85vh;background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy)) url(#liquidGlass);-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border:1px solid var(--glass-border);border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;overflow-y:auto;transform:translateY(100%);transition:transform var(--duration-normal) var(--ease-out);padding:var(--space-xl);padding-bottom:calc(var(--safe-bottom) + var(--space-xl));box-shadow:inset 0 1px 0 rgba(255,255,255,0.3)}
 .modal-backdrop.open .modal-sheet{transform:translateY(0)}
 .modal-handle{width:36px;height:5px;background:var(--text-tertiary);border-radius:3px;margin:0 auto var(--space-xl)}
 .modal-title{font-size:20px;font-weight:700;margin-bottom:var(--space-lg);text-align:center;display:flex;align-items:center;justify-content:center;gap:var(--space-sm)}
@@ -413,17 +417,17 @@ img{display:block;max-width:100%}
   .editor-overlay{margin-left:96px;width:calc(100% - 96px)}
   .pj-sidebar{width:260px}
 /* Stickers: Telegram-style picker, tag chips, inline, filter bar */
-.sticker-sheet{border-radius:20px 20px 0 0 !important;height:40vh;max-height:40vh;height:40dvh;max-height:40dvh;min-height:280px}
+.sticker-sheet{border-radius:20px 20px 0 0 !important;height:40vh;max-height:40vh;height:40dvh;max-height:40dvh;min-height:280px;width:100% !important;flex:0 1 100% !important;min-width:0 !important}
 @media(min-width:768px){.sticker-sheet{height:360px;max-height:360px}}
 .sticker-search-bar{display:flex;align-items:center;gap:8px;margin:8px 14px 6px;padding:9px 14px;background:var(--glass-bg);border-radius:999px;flex-shrink:0;color:var(--text-secondary)}
 .sticker-search-bar input{border:none;background:transparent;outline:none;flex:1;font-size:15px;color:var(--text-primary);min-width:0}
-.sticker-grid{flex:1;min-height:0;min-width:0;width:100%;box-sizing:border-box;overflow-y:auto;display:grid !important;grid-template-columns:repeat(auto-fill,minmax(52px,1fr)) !important;gap:0;padding:4px 8px;align-content:start;-webkit-overflow-scrolling:touch}
+.sticker-grid{flex:1 1 auto;min-height:0;min-width:0;width:100%;box-sizing:border-box;overflow-y:auto;display:grid !important;grid-template-columns:repeat(auto-fill,minmax(52px,1fr)) !important;gap:0;padding:4px 8px;align-content:start;-webkit-overflow-scrolling:touch}
 .sticker-cell{display:flex;align-items:center;justify-content:center;padding:6px;border-radius:14px;cursor:pointer;transition:background var(--duration-fast) var(--spring),transform var(--duration-fast) var(--spring)}
 .sticker-cell:active{background:var(--glass-bg);transform:scale(0.85)}
 .sticker-cell.selected{background:rgba(var(--accent-rgb),0.15)}
 .sticker-cell img{width:40px;height:40px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
 .sticker-empty-hint{grid-column:1/-1;text-align:center;padding:30px 10px;color:var(--text-tertiary);font-size:13px}
-.sticker-cat-tabs{display:flex;gap:2px;overflow-x:auto;padding:6px 8px;border-top:1px solid var(--glass-border);flex-shrink:0;background:var(--glass-bg-heavy);padding-bottom:calc(var(--safe-bottom) + 6px);-webkit-overflow-scrolling:touch}
+.sticker-cat-tabs{display:flex !important;flex-direction:row !important;flex-wrap:nowrap;width:100%;box-sizing:border-box;gap:2px;overflow-x:auto;padding:6px 8px;border-top:1px solid var(--glass-border);flex-shrink:0;background:var(--glass-bg-heavy);padding-bottom:calc(var(--safe-bottom) + 6px);-webkit-overflow-scrolling:touch}
 .sticker-cat-tab{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background var(--duration-fast) var(--spring)}
 .sticker-cat-tab.active{background:rgba(var(--accent-rgb),0.15)}
 .sticker-cat-tab img{width:22px;height:22px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;-webkit-touch-callout:none;user-select:none;display:block}
@@ -577,7 +581,7 @@ img{display:block;max-width:100%}
 
   <div class="editor-overlay" id="noteEditor">
     <div class="editor-header"><button class="editor-back" id="editorClose"><div style="font-size:20px;font-weight:600;color:var(--accent);padding:0 8px;">←</div></button><div class="editor-status" id="editorStatus"></div><div class="editor-actions" id="editorActions"></div></div>
-    <div class="editor-body"><input type="text" class="editor-title-input" id="editorTitle" placeholder="Заголовок"><div class="editor-content" id="editorContent" contenteditable="true" data-placeholder="Начните писать..." spellcheck="true"></div><div class="tag-chip-row" id="editorTagRow" style="padding:0 20px 8px"></div><div class="editor-images" id="editorImages"></div></div>
+    <div class="editor-body"><input type="text" class="editor-title-input" id="editorTitle" placeholder="Заголовок"><div class="editor-content" id="editorContent" contenteditable="true" data-placeholder="Начните писать..." spellcheck="true"></div><div class="tag-chip-row" id="editorTagRow" style="padding:0 20px 8px"></div><div class="editor-images" id="editorImages"></div><div class="editor-attachments" id="editorAttachments"></div></div>
     <div class="editor-toolbar" id="editorToolbar"></div>
   </div>
 
@@ -668,6 +672,10 @@ img{display:block;max-width:100%}
     <div class="modal-title">Совместный доступ</div>
     <div id="collabContent"></div>
   </div></div>
+  <div class="editor-overlay" id="docReaderOverlay">
+    <div class="editor-header"><button class="editor-back" id="docReaderClose"><div style="font-size:20px;font-weight:600;color:var(--accent);padding:0 8px;">←</div></button><div class="editor-status" id="docReaderTitle">Документ</div><div class="editor-actions"></div></div>
+    <div id="docReaderBody" style="flex:1;overflow:auto;padding:0"></div>
+  </div>
 
   <div class="modal-backdrop" id="noteActionsModal"><div class="modal-sheet" id="noteActionsSheet"></div></div>
 
@@ -682,6 +690,7 @@ img{display:block;max-width:100%}
 <input type="file" id="imageUploadInput" accept="image/*" style="display:none;" multiple>
 <input type="file" id="docImportInput" accept=".txt,.md,.fb2,.doc,.docx,.pdf" style="display:none;" multiple>
 <input type="file" id="scanInput" accept="image/*" style="display:none;">
+<input type="file" id="docAttachInput" accept=".txt,.md,.pdf" style="display:none;">
 <input type="file" id="projectFileInput" style="display:none;" multiple>
 <input type="file" id="projectZipInput" accept=".zip" style="display:none;">
 
@@ -964,7 +973,28 @@ function showSync(t){const el=document.getElementById('syncIndicator');document.
 const Theme={apply(){const{theme,accentColor}=App.settings;let e=theme;if(theme==='system')e=matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light';document.documentElement.setAttribute('data-theme',e);const r=document.documentElement.style;r.setProperty('--accent',accentColor);const h=accentColor.replace('#','');r.setProperty('--accent-rgb',`${parseInt(h.substr(0,2),16)},${parseInt(h.substr(2,2),16)},${parseInt(h.substr(4,2),16)}`);document.querySelector('meta[name="theme-color"]')?.setAttribute('content',e==='dark'?'#000000':'#F2F2F7')}};
 matchMedia('(prefers-color-scheme:dark)').addEventListener('change',()=>{if(App.settings.theme==='system')Theme.apply()});
 
-const Sync={refs:{},setupRefs(){if(!App.user)return;const u=App.user.uid;this.refs={data:rtdb.ref(`users/${u}`)}},detach(){Object.values(this.refs).forEach(r=>r.off&&r.off());this.refs={}},async pushAll(silent){if(!App.user||!App.isOnline)return;if(!silent)showSync('Синхронизация...');try{await rtdb.ref(`users/${App.user.uid}`).update({notes:App.notes,tasks:App.tasks,schedules:App.schedules,folders:App.folders,projects:App.projects,settings:App.settings,lastSync:firebase.database.ServerValue.TIMESTAMP});App.lastSync=Date.now();Store.set('lastSync',App.lastSync);if(!silent)showSync('Синхронизировано')}catch(e){if(!silent)showSync('Ошибка')}},async pullAll(){if(!App.user||!App.isOnline)return;showSync('Загрузка...');try{const snap=await rtdb.ref(`users/${App.user.uid}`).once('value');const d=snap.val();if(d){if(d.notes)App.notes=this.merge(App.notes,d.notes);if(d.tasks)App.tasks=this.merge(App.tasks,d.tasks);if(d.schedules)App.schedules=this.merge(App.schedules,d.schedules);if(d.folders)App.folders=this.merge(App.folders,d.folders);if(d.projects)App.projects=this.merge(App.projects,d.projects);if(d.settings)App.settings={...App.settings,...d.settings};Store.saveNotes();Store.saveTasks();Store.saveSchedules();Store.saveFolders();Store.saveProjects();Store.saveSettings();Theme.apply();renderCurrentScreen();this.pushAll(true)}showSync('Синхронизировано')}catch(e){showSync('Локально')}},merge(local,remote){const m=new Map();const arr=Array.isArray(remote)?remote:Object.values(remote||{});arr.forEach(i=>{if(i&&i.id)m.set(i.id,i)});local.forEach(i=>{if(!i||!i.id)return;const ex=m.get(i.id);if(!ex||(i.modified&&(!ex.modified||i.modified>ex.modified)))m.set(i.id,i)});return Array.from(m.values())},debounceSync(){if(!App.user)return;clearTimeout(this._t);this._t=setTimeout(()=>this.pushAll(),2000)}};
+const Sync={refs:{},liveRef:null,setupRefs(){if(!App.user)return;const u=App.user.uid;this.refs={data:rtdb.ref(`users/${u}`)}},detach(){Object.values(this.refs).forEach(r=>r.off&&r.off());this.refs={};this.detachLive()},async pushAll(silent){if(!App.user||!App.isOnline)return;if(!silent)showSync('Синхронизация...');try{await rtdb.ref(`users/${App.user.uid}`).update({notes:App.notes,tasks:App.tasks,schedules:App.schedules,folders:App.folders,projects:App.projects,settings:App.settings,lastSync:firebase.database.ServerValue.TIMESTAMP});App.lastSync=Date.now();Store.set('lastSync',App.lastSync);if(!silent)showSync('Синхронизировано')}catch(e){if(!silent)showSync('Ошибка')}},async pullAll(){if(!App.user||!App.isOnline)return;showSync('Загрузка...');try{const snap=await rtdb.ref(`users/${App.user.uid}`).once('value');const d=snap.val();if(d){if(d.notes)App.notes=this.merge(App.notes,d.notes);if(d.tasks)App.tasks=this.merge(App.tasks,d.tasks);if(d.schedules)App.schedules=this.merge(App.schedules,d.schedules);if(d.folders)App.folders=this.merge(App.folders,d.folders);if(d.projects)App.projects=this.merge(App.projects,d.projects);if(d.settings)App.settings={...App.settings,...d.settings};Store.saveNotes();Store.saveTasks();Store.saveSchedules();Store.saveFolders();Store.saveProjects();Store.saveSettings();Theme.apply();renderCurrentScreen();this.pushAll(true)}showSync('Синхронизировано')}catch(e){showSync('Локально')}},
+attachLive(){
+  if(!App.user)return;
+  this.detachLive();
+  this.liveRef=rtdb.ref(`users/${App.user.uid}`);
+  this.liveRef.on('value',snap=>{
+    const d=snap.val();if(!d)return;
+    if(d.notes)App.notes=this.merge(App.notes,d.notes);
+    if(d.tasks)App.tasks=this.merge(App.tasks,d.tasks);
+    if(d.schedules)App.schedules=this.merge(App.schedules,d.schedules);
+    if(d.folders)App.folders=this.merge(App.folders,d.folders);
+    if(d.projects)App.projects=this.merge(App.projects,d.projects);
+    if(d.settings)App.settings={...App.settings,...d.settings};
+    Store.saveNotes();Store.saveTasks();Store.saveSchedules();Store.saveFolders();Store.saveProjects();Store.saveSettings();
+    Theme.apply();
+    const editingOpen=document.getElementById('noteEditor').classList.contains('open')||document.getElementById('taskModal').classList.contains('open')||document.getElementById('projectWorkspace').classList.contains('open');
+    if(!editingOpen)renderCurrentScreen();
+    showSync('Синхронизировано');
+  });
+},
+detachLive(){if(this.liveRef){this.liveRef.off();this.liveRef=null}},
+merge(local,remote){const m=new Map();const arr=Array.isArray(remote)?remote:Object.values(remote||{});arr.forEach(i=>{if(i&&i.id)m.set(i.id,i)});local.forEach(i=>{if(!i||!i.id)return;const ex=m.get(i.id);if(!ex||(i.modified&&(!ex.modified||i.modified>ex.modified)))m.set(i.id,i)});return Array.from(m.values())},debounceSync(){if(!App.user)return;clearTimeout(this._t);this._t=setTimeout(()=>this.pushAll(),600)}};
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&App.user&&App.isOnline)Sync.pullAll()});
 window.addEventListener('focus',()=>{if(App.user&&App.isOnline)Sync.pullAll()});
 
@@ -1020,8 +1050,8 @@ el.innerHTML=h}
 function openNote(id,presetNote){let note;if(presetNote){note=presetNote}else if(id){note=App.notes.find(n=>n.id===id);if(!note)return}else{note={id:uid(),title:'',content:'',created:Date.now(),modified:Date.now(),pinned:false,archived:false,folderId:null,images:[],tags:[],links:[]};App.notes.unshift(note);Store.saveNotes()}
 App.currentNote=note;document.getElementById('editorTitle').value=note.title||'';document.getElementById('editorContent').innerHTML=contentToHtml(note.content||'');renderEditorImages();updateEditorStatus('Сохранено');renderNoteTagRow();
 document.getElementById('editorActions').innerHTML=`<button class="header-btn" id="editorPin">${icon('pin',22,note.pinned?'accent':'')}</button><button class="header-btn" id="editorMore">${icon('more',22)}</button>`;
-document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn mic-btn" id="eMic">${icon('mic',22)}</button><button class="toolbar-btn" id="eScan">${icon('scan',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSticker">${wemoji('palette','sm')}</button><button class="toolbar-btn" id="eTag">${icon('tag',22)}</button><button class="toolbar-btn" id="eSpeak"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/></svg></button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
-document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eSticker').onclick=()=>openStickerPicker('insert',{target:'note'});document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;document.getElementById('eMic').onclick=()=>startVoiceInput('note');document.getElementById('eScan').onclick=()=>document.getElementById('scanInput').click();document.getElementById('eSpeak').onclick=speakCurrentNote;
+document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn" id="eAttachDoc">${icon('attachFile',22)}</button><button class="toolbar-btn mic-btn" id="eMic">${icon('mic',22)}</button><button class="toolbar-btn" id="eScan">${icon('scan',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSticker">${wemoji('palette','sm')}</button><button class="toolbar-btn" id="eTag">${icon('tag',22)}</button><button class="toolbar-btn" id="eSpeak"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/></svg></button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
+document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eSticker').onclick=()=>openStickerPicker('insert',{target:'note'});document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;document.getElementById('eMic').onclick=()=>startVoiceInput('note');document.getElementById('eScan').onclick=()=>document.getElementById('scanInput').click();document.getElementById('eSpeak').onclick=speakCurrentNote;document.getElementById('eAttachDoc').onclick=()=>document.getElementById('docAttachInput').click();renderNoteAttachments();
 document.getElementById('noteEditor').classList.add('open');setTimeout(()=>{if(!note.title)document.getElementById('editorTitle').focus();else document.getElementById('editorContent').focus()},300);
 if(note.shareId)attachCollabListener(note.shareId);else detachCollabListener();}
 
@@ -1177,7 +1207,7 @@ function hideAuth(){document.getElementById('authScreen').classList.add('hidden'
 function updateAuthUI(){const ng=document.getElementById('authNameGroup'),pg=document.getElementById('authPasswordGroup'),sb=document.getElementById('authSubmit'),tt=document.getElementById('authToggleText'),tl=document.getElementById('authToggleLink'),fg=document.getElementById('authForgot'),st=document.getElementById('authSubtitle');document.getElementById('authError').textContent='';if(authMode==='login'){ng.style.display='none';pg.style.display='';sb.textContent='Войти';tt.textContent='Нет аккаунта?';tl.textContent='Создать';fg.style.display='';st.textContent='Войдите для синхронизации'}else if(authMode==='register'){ng.style.display='';pg.style.display='';sb.textContent='Создать аккаунт';tt.textContent='Есть аккаунт?';tl.textContent='Войти';fg.style.display='none';st.textContent='Создайте аккаунт'}else{ng.style.display='none';pg.style.display='none';sb.textContent='Отправить';tt.textContent='';tl.textContent='Назад';fg.style.display='none';st.textContent='Email для восстановления'}}
 async function handleAuth(){const em=document.getElementById('authEmail').value.trim(),pw=document.getElementById('authPassword').value,nm=document.getElementById('authName').value.trim(),er=document.getElementById('authError'),sb=document.getElementById('authSubmit');er.textContent='';if(!em){er.textContent='Введите email';return}sb.textContent='...';sb.disabled=true;try{if(authMode==='login'){await auth.signInWithEmailAndPassword(em,pw);showToast('С возвращением!','wavingHand')}else if(authMode==='register'){if(pw.length<6){er.textContent='Пароль: минимум 6 символов';sb.disabled=false;updateAuthUI();return}const c=await auth.createUserWithEmailAndPassword(em,pw);if(nm)await c.user.updateProfile({displayName:nm});showToast('Создано!','confetti')}else{await auth.sendPasswordResetEmail(em);showToast('Письмо отправлено','sparkles');authMode='login';updateAuthUI();sb.disabled=false;return}hideAuth()}catch(e){const m={'auth/user-not-found':'Не найден','auth/wrong-password':'Неверный пароль','auth/email-already-in-use':'Email занят','auth/invalid-email':'Неверный email','auth/weak-password':'Слабый пароль','auth/too-many-requests':'Подождите','auth/invalid-credential':'Неверные данные','auth/network-request-failed':'Нет сети'};er.textContent=m[e.code]||'Ошибка'}finally{sb.disabled=false;updateAuthUI()}}
 async function signOut(){if(!confirm('Выйти?'))return;Sync.detach();await auth.signOut();App.user=null;renderSettings();showToast('Вы вышли')}
-auth.onAuthStateChanged(async u=>{App.user=u;if(u){hideAuth();Sync.setupRefs();await Sync.pullAll()}renderCurrentScreen()});
+auth.onAuthStateChanged(async u=>{App.user=u;if(u){hideAuth();Sync.setupRefs();await Sync.pullAll();Sync.attachLive()}else{Sync.detachLive()}renderCurrentScreen()});
 
 // ============================================
 // FILE HELPERS (shared: import + projects)
@@ -1524,8 +1554,34 @@ async function handleScanInput(file){
 }
 
 // ============================================
-// TEXT-TO-SPEECH
+// DOCUMENT ATTACHMENTS + BUILT-IN READER (txt/md/pdf, kept as real files, not just extracted text)
 // ============================================
+function fileIconFor(name){const ext=(name.split('.').pop()||'').toLowerCase();return ext==='pdf'?'filePdf':'fileTxt'}
+function renderNoteAttachments(){
+  const el=document.getElementById('editorAttachments');if(!el||!App.currentNote)return;
+  const atts=App.currentNote.attachments||[];
+  el.innerHTML=atts.map((a,i)=>`<div class="doc-attachment-card" onclick="openDocReader(${i})">${icon(fileIconFor(a.name),22)}<span class="doc-name">${escHtml(a.name)}</span><span class="doc-remove" onclick="event.stopPropagation();removeNoteAttachment(${i})">✕</span></div>`).join('');
+}
+async function handleDocAttach(file){
+  if(!file||!App.currentNote)return;
+  const ext=(file.name.split('.').pop()||'').toLowerCase();
+  App.currentNote.attachments=App.currentNote.attachments||[];
+  try{
+    if(ext==='pdf'){const dataUrl=await readAsDataURL(file);App.currentNote.attachments.push({name:file.name,type:'pdf',dataUrl})}
+    else{const text=await readAsText(file);App.currentNote.attachments.push({name:file.name,type:'text',content:text})}
+    saveCurrentNote();renderNoteAttachments();showToast('Файл прикреплён','sparkles');
+  }catch(e){showToast('Не удалось прикрепить файл')}
+}
+function removeNoteAttachment(i){if(!App.currentNote)return;App.currentNote.attachments.splice(i,1);saveCurrentNote();renderNoteAttachments()}
+function openDocReader(i){
+  const a=App.currentNote&&App.currentNote.attachments&&App.currentNote.attachments[i];if(!a)return;
+  document.getElementById('docReaderTitle').textContent=a.name;
+  const body=document.getElementById('docReaderBody');
+  if(a.type==='pdf')body.innerHTML=`<iframe src="${a.dataUrl}" style="width:100%;height:100%;border:none;background:#525659"></iframe>`;
+  else body.innerHTML=`<div style="padding:24px;white-space:pre-wrap;line-height:1.6;font-size:15px">${escHtml(a.content||'')}</div>`;
+  document.getElementById('docReaderOverlay').classList.add('open');
+}
+function closeDocReader(){document.getElementById('docReaderOverlay').classList.remove('open');document.getElementById('docReaderBody').innerHTML=''}
 function speakCurrentNote(){
   if(!window.speechSynthesis){showToast('Синтез речи не поддерживается');return}
   if(window.speechSynthesis.speaking){window.speechSynthesis.cancel();return}
@@ -1763,6 +1819,8 @@ document.getElementById('authSubmit').addEventListener('click',handleAuth);docum
 document.getElementById('onboardingNext').addEventListener('click',()=>{App.onboardingStep++;if(App.onboardingStep>=4)finishOnboarding();else updateOnboarding()});document.getElementById('onboardingSkip').addEventListener('click',finishOnboarding);
 document.getElementById('docImportInput').addEventListener('change',e=>{if(e.target.files.length)handleDocImport(e.target.files);e.target.value=''});
 document.getElementById('scanInput').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)handleScanInput(f)});
+document.getElementById('docAttachInput').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(f)handleDocAttach(f)});
+document.getElementById('docReaderClose').addEventListener('click',closeDocReader);
 document.getElementById('pjClose').addEventListener('click',closeProjectWorkspace);
 document.getElementById('pjRun').addEventListener('click',runProject);
 document.getElementById('pjClearConsole').addEventListener('click',()=>{document.getElementById('pjConsole').innerHTML=''});
@@ -1771,7 +1829,7 @@ document.getElementById('projectFileInput').addEventListener('change',e=>{if(e.t
 document.getElementById('projectZipInput').addEventListener('change',e=>{if(e.target.files.length)handleProjectZipImport(e.target.files[0]);e.target.value=''});
 document.getElementById('pjRawEditor').addEventListener('input',()=>{clearTimeout(App.pjSaveTimer);App.pjSaveTimer=setTimeout(savePjCurrentFile,400)});
 document.addEventListener('click',e=>{if(App.fabOpen&&!e.target.closest('#fab')&&!e.target.closest('#fabMenu'))closeFab()});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('noteEditor').classList.contains('open'))closeEditor();if(document.getElementById('projectWorkspace').classList.contains('open'))closeProjectWorkspace();closeFab();document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id));DatePicker.close();TimePicker.close()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('noteEditor').classList.contains('open'))closeEditor();if(document.getElementById('projectWorkspace').classList.contains('open'))closeProjectWorkspace();if(document.getElementById('docReaderOverlay').classList.contains('open'))closeDocReader();closeFab();document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id));DatePicker.close();TimePicker.close()}});
 renderTabBar();renderDashboard();
 checkSharedLink();checkReminders();initForegroundMessaging();
 registerCachingServiceWorker();
