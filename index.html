@@ -83,7 +83,7 @@ img{display:block;max-width:100%}
 
 #app{width:100%;height:100%;display:flex;flex-direction:column;position:relative;overflow:hidden}
 
-.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:var(--space-sm) var(--space-lg) calc(var(--safe-bottom) + var(--space-sm));display:flex;align-items:center;justify-content:space-around;background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy));-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border-top:1px solid var(--glass-border)}
+.tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:200;padding:var(--space-sm) var(--space-lg) calc(var(--safe-bottom) + var(--space-sm));display:flex;align-items:center;justify-content:space-around;background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy)) url(#liquidGlass);-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border-top:1px solid var(--glass-border);box-shadow:inset 0 1px 0 rgba(255,255,255,0.25)}
 .tab-item{display:flex;flex-direction:column;align-items:center;gap:4px;padding:var(--space-xs) var(--space-md);border-radius:var(--radius-md);transition:all var(--duration-fast) var(--spring);min-width:56px}
 .tab-item span{font-size:10px;font-weight:500;color:var(--text-secondary);transition:color var(--duration-fast) var(--spring)}
 .tab-item.active span{color:var(--accent)}
@@ -213,7 +213,7 @@ img{display:block;max-width:100%}
 .task-due{font-size:12px;color:var(--text-secondary);flex-shrink:0;display:flex;align-items:center;gap:4px}
 
 .notes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--space-md)}
-.note-card{background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:var(--space-lg);min-height:120px;display:flex;flex-direction:column;gap:var(--space-sm);box-shadow:0 2px 12px var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,0.12);transition:all var(--duration-normal) var(--spring);cursor:pointer;position:relative;overflow:hidden}
+.note-card{background:var(--glass-bg);backdrop-filter:blur(var(--glass-blur));-webkit-backdrop-filter:blur(var(--glass-blur));border:1px solid var(--glass-border);border-radius:var(--radius-xl);padding:var(--space-lg);min-height:120px;display:flex;flex-direction:column;gap:var(--space-sm);box-shadow:0 2px 12px var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,0.35),inset 0 -1px 0 rgba(0,0,0,0.1);transition:all var(--duration-normal) var(--spring);cursor:pointer;position:relative;overflow:hidden}
 .note-card:active{transform:scale(0.96)}
 .note-card.pinned{border-color:rgba(var(--accent-rgb),0.3)}
 .note-title{font-size:15px;font-weight:600;letter-spacing:-0.2px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -225,7 +225,7 @@ img{display:block;max-width:100%}
 
 .editor-overlay{position:fixed;inset:0;z-index:500;background:var(--bg-primary);display:flex;flex-direction:column;transition:all var(--duration-normal) var(--ease-out);transform:translateY(100%);opacity:0}
 .editor-overlay.open{transform:translateY(0);opacity:1}
-.editor-header{display:flex;align-items:center;gap:var(--space-md);padding:calc(var(--safe-top) + var(--space-sm)) var(--space-lg) var(--space-sm);background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy));-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border-bottom:1px solid var(--glass-border);min-height:var(--header-height)}
+.editor-header{display:flex;align-items:center;gap:var(--space-md);padding:calc(var(--safe-top) + var(--space-sm)) var(--space-lg) var(--space-sm);background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy)) url(#liquidGlass);-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border-bottom:1px solid var(--glass-border);min-height:var(--header-height);box-shadow:inset 0 1px 0 rgba(255,255,255,0.25)}
 .editor-back{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius-full);transition:all var(--duration-fast) var(--spring)}
 .editor-back:active{transform:scale(0.9);background:rgba(var(--accent-rgb),0.1)}
 .editor-status{flex:1;text-align:center;font-size:13px;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;gap:6px}
@@ -241,7 +241,7 @@ img{display:block;max-width:100%}
 .toolbar-btn{width:40px;height:40px;border-radius:var(--radius-md);display:flex;align-items:center;justify-content:center;transition:all var(--duration-fast) var(--spring)}
 .toolbar-btn:active{transform:scale(0.9);background:rgba(var(--accent-rgb),0.1)}
 
-.fab{position:fixed;bottom:calc(var(--tab-height) + var(--safe-bottom) + var(--space-lg));right:var(--space-xl);width:56px;height:56px;border-radius:var(--radius-full);background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(var(--accent-rgb),0.4),0 8px 32px rgba(0,0,0,0.1);z-index:150;transition:all var(--duration-fast) var(--spring-bounce)}
+.fab{position:fixed;bottom:calc(var(--tab-height) + var(--safe-bottom) + var(--space-lg));right:var(--space-xl);width:56px;height:56px;border-radius:var(--radius-full);background:var(--accent);color:white;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(var(--accent-rgb),0.4),0 8px 32px rgba(0,0,0,0.1),inset 0 1px 0 rgba(255,255,255,0.4);z-index:150;transition:box-shadow var(--duration-fast) var(--spring-bounce);will-change:transform}
 .fab:active{transform:scale(0.9)}
 .fab-menu{position:fixed;bottom:calc(var(--tab-height) + var(--safe-bottom) + var(--space-lg) + 64px);right:var(--space-xl);z-index:149;display:flex;flex-direction:column-reverse;gap:var(--space-sm);opacity:0;transform:translateY(20px) scale(0.8);pointer-events:none;transition:all var(--duration-normal) var(--spring-bounce)}
 .fab-menu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
@@ -288,7 +288,7 @@ img{display:block;max-width:100%}
 
 .settings-group{margin-bottom:var(--space-2xl)}
 .settings-group-title{font-size:13px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:var(--space-sm);padding-left:var(--space-sm)}
-.settings-card{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius-xl);overflow:hidden}
+.settings-card{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius-xl);overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,0.3)}
 .setting-item{display:flex;align-items:center;gap:var(--space-md);padding:var(--space-lg);transition:all var(--duration-fast) var(--spring);cursor:pointer;width:100%;text-align:left}
 .setting-item+.setting-item{border-top:1px solid rgba(128,128,128,0.08)}
 .setting-item:active{background:rgba(128,128,128,0.05)}
@@ -311,7 +311,7 @@ img{display:block;max-width:100%}
 
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:600;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity var(--duration-normal) var(--ease-out);padding:var(--space-lg)}
 .modal-backdrop.open{opacity:1;pointer-events:auto}
-.modal-sheet{width:100%;max-width:420px;max-height:85vh;background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy));-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border:1px solid var(--glass-border);border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;overflow-y:auto;transform:translateY(100%);transition:transform var(--duration-normal) var(--ease-out);padding:var(--space-xl);padding-bottom:calc(var(--safe-bottom) + var(--space-xl))}
+.modal-sheet{width:100%;max-width:420px;max-height:85vh;background:var(--glass-bg-heavy);backdrop-filter:blur(var(--glass-blur-heavy)) url(#liquidGlass);-webkit-backdrop-filter:blur(var(--glass-blur-heavy));border:1px solid var(--glass-border);border-radius:var(--radius-2xl) var(--radius-2xl) 0 0;overflow-y:auto;transform:translateY(100%);transition:transform var(--duration-normal) var(--ease-out);padding:var(--space-xl);padding-bottom:calc(var(--safe-bottom) + var(--space-xl));box-shadow:inset 0 1px 0 rgba(255,255,255,0.3)}
 .modal-backdrop.open .modal-sheet{transform:translateY(0)}
 .modal-handle{width:36px;height:5px;background:var(--text-tertiary);border-radius:3px;margin:0 auto var(--space-xl)}
 .modal-title{font-size:20px;font-weight:700;margin-bottom:var(--space-lg);text-align:center;display:flex;align-items:center;justify-content:center;gap:var(--space-sm)}
@@ -350,7 +350,7 @@ img{display:block;max-width:100%}
    ============================================ */
 .file-icon-img{width:22px;height:22px;object-fit:contain;flex-shrink:0}
 .import-hint{font-size:12px;color:var(--text-tertiary);margin-top:4px;line-height:1.4}
-.project-card{background:var(--glass-bg-heavy);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:var(--space-lg);display:flex;flex-direction:column;gap:8px;transition:all var(--duration-fast) var(--spring);cursor:pointer}
+.project-card{background:var(--glass-bg-heavy);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius-lg);padding:var(--space-lg);display:flex;flex-direction:column;gap:8px;transition:all var(--duration-fast) var(--spring);cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.3),inset 0 -1px 0 rgba(0,0,0,0.08)}
 .project-card:active{transform:scale(0.97)}
 .project-card-title{font-weight:700;font-size:16px;display:flex;align-items:center;gap:8px}
 .project-card-meta{font-size:12px;color:var(--text-secondary)}
@@ -455,9 +455,36 @@ img{display:block;max-width:100%}
   .sticker-cell img{width:28px;height:28px}
   .task-item .tag-chip-row{gap:4px}
 }
+
+/* ============================================
+   LIQUID GLASS — hero card, blobs, specular, tap-flash
+   (kept off list items on purpose — cheap statics everywhere,
+   full physics only on the FAB and dashboard hero card)
+   ============================================ */
+.hero-glass{position:relative;border-radius:var(--radius-2xl);overflow:hidden;margin-bottom:var(--space-lg);isolation:isolate;box-shadow:0 8px 30px var(--glass-shadow),inset 0 1px 0 rgba(255,255,255,0.3);will-change:transform}
+.hero-glass .blob-layer{position:absolute;inset:0;overflow:hidden;z-index:0}
+.hero-glass .blob{position:absolute;width:65%;height:65%;filter:blur(18px);opacity:0.55;animation-timing-function:ease-in-out;animation-iteration-count:infinite}
+.hero-glass .blob-1{top:-25%;left:-10%;background:linear-gradient(135deg,#ff3b30,#ff9500);animation-name:hgMorph1,hgDrift1;animation-duration:9s,14s}
+.hero-glass .blob-2{bottom:-30%;right:-10%;width:70%;height:70%;background:linear-gradient(135deg,#34c759,#007aff);animation-name:hgMorph2,hgDrift2;animation-duration:11s,17s}
+@keyframes hgMorph1{0%,100%{border-radius:38% 62% 63% 37%/41% 44% 56% 59%}33%{border-radius:62% 38% 44% 56%/55% 61% 39% 45%}66%{border-radius:50% 50% 33% 67%/60% 40% 60% 40%}}
+@keyframes hgMorph2{0%,100%{border-radius:63% 37% 41% 59%/51% 46% 54% 49%}33%{border-radius:44% 56% 61% 39%/38% 62% 38% 62%}66%{border-radius:50% 50% 63% 37%/45% 55% 45% 55%}}
+@keyframes hgDrift1{0%,100%{transform:translate(0,0)}50%{transform:translate(8%,6%)}}
+@keyframes hgDrift2{0%,100%{transform:translate(0,0)}50%{transform:translate(-6%,-5%)}}
+.hero-glass .hero-surface{position:absolute;inset:0;backdrop-filter:blur(30px) saturate(160%) url(#liquidGlass);-webkit-backdrop-filter:blur(30px) saturate(160%);background:var(--glass-bg-light);z-index:1}
+.hero-glass .hero-content{position:relative;z-index:3;padding:var(--space-xl)}
+.specular{position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:overlay;opacity:0;background:radial-gradient(circle 180px at var(--gx,50%) var(--gy,50%),rgba(255,255,255,0.85),transparent 60%);transition:opacity 0.35s ease}
+.tap-flash{position:fixed;z-index:9999;width:8px;height:8px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,255,255,0.5) 35%,transparent 70%);mix-blend-mode:screen;transform:translate(-50%,-50%) scale(1);animation:tapFlashPop 0.5s ease-out forwards}
+@keyframes tapFlashPop{0%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(22);opacity:0}}
+@media(prefers-reduced-motion: reduce){.hero-glass .blob{animation:none !important}.tap-flash{display:none}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="liquidGlass" x="-20%" y="-20%" width="140%" height="140%">
+    <feTurbulence id="lgTurb" type="fractalNoise" baseFrequency="0.010 0.012" numOctaves="2" seed="7" result="noise"/>
+    <feDisplacementMap id="lgDisplace" in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
 <div class="loading-screen" id="loadingScreen">
   <img class="wemoji wemoji-2xl" src="https://i.ibb.co/LDGqYG69/Rocket.webp" alt="">
   <div class="loading-logo">MyDesk</div>
@@ -964,14 +991,14 @@ const oTasks=App.tasks.filter(t=>!t.done&&!t.archived&&t.due&&t.due<tStr);
 let tSched=[];App.schedules.forEach(s=>(s.entries||[]).filter(e=>e.day===dayN).forEach(e=>tSched.push({...e,color:s.color||'var(--accent)'})));tSched.sort((a,b)=>(a.time||'').localeCompare(b.time||''));
 const recent=[...App.notes].filter(n=>!n.archived).sort((a,b)=>(b.modified||0)-(a.modified||0)).slice(0,4);
 const pinned=App.notes.filter(n=>n.pinned&&!n.archived);
-let h=`<div class="dashboard-greeting animate-in">${getGreeting()} ${wemoji('wavingHand','md')}</div><div class="dashboard-date animate-in stagger-1">${getTodayStr()}</div>`;
+let h=`<div class="hero-glass glass-tap" id="dashHero"><div class="blob-layer"><div class="blob blob-1"></div><div class="blob blob-2"></div></div><div class="hero-surface"></div><div class="specular" id="dashHeroSpecular"></div><div class="hero-content"><div class="dashboard-greeting animate-in">${getGreeting()} ${wemoji('wavingHand','md')}</div><div class="dashboard-date animate-in stagger-1">${getTodayStr()}</div></div></div>`;
 if(oTasks.length>0){h+=`<div class="section-header animate-in stagger-2"><div class="section-title" style="color:var(--color-danger)">${icon('alarm',16)} Просроченные</div></div>`;oTasks.forEach(t=>h+=rTI(t))}
 if(tSched.length>0){h+=`<div class="section-header animate-in stagger-2"><div class="section-title">${icon('calendarOutline',16)} Сегодня</div><button class="section-action" onclick="navigateTo('schedule')">Все</button></div><div class="dash-card animate-in stagger-3">`;tSched.forEach(e=>h+=`<div class="dash-schedule-item"><div class="schedule-dot" style="background:${e.color}"></div><div class="schedule-time">${e.time||''}</div><div class="schedule-name">${escHtml(e.name)}</div></div>`);h+='</div>'}
 if(tTasks.length>0){h+=`<div class="section-header animate-in stagger-3"><div class="section-title">${icon('tasks',16)} Задачи</div><button class="section-action" onclick="navigateTo('tasks')">Все</button></div>`;tTasks.forEach(t=>h+=rTI(t))}
 if(pinned.length>0){h+=`<div class="section-header animate-in stagger-4"><div class="section-title">${icon('pin',16,'accent')} Закреплённые</div></div><div class="notes-grid animate-in stagger-5">`;pinned.forEach(n=>h+=rNC(n));h+='</div>'}
 if(recent.length>0){h+=`<div class="section-header animate-in stagger-4"><div class="section-title">${icon('notesOutline',16)} Недавние</div><button class="section-action" onclick="navigateTo('notes')">Все</button></div><div class="notes-grid animate-in stagger-5">`;recent.forEach(n=>h+=rNC(n));h+='</div>'}
 if(!App.notes.length&&!App.tasks.length&&!App.schedules.length)h+=`<div class="empty-state animate-in">${wemoji('sparkles','2xl')}<div class="empty-state-title">Чистый лист</div><div class="empty-state-desc">Нажмите + чтобы начать</div></div>`;
-el.innerHTML=h}
+el.innerHTML=h;initGlassEffects()}
 
 function rTI(t){return`<div class="task-item animate-in" onclick="toggleTask('${t.id}')"><div class="task-check ${t.done?'done':''}"></div><div class="task-text ${t.done?'done':''}">${escHtml(t.title)}</div>${t.reminderOn?icon('alarm',14,'accent'):''}${t.tags&&t.tags.length?`<div class="tag-chip-row" onclick="event.stopPropagation()">${renderTagChips(t.tags)}</div>`:''}${t.priority?`<div class="task-priority ${t.priority}"></div>`:''}${t.due?`<div class="task-due">${icon('clock',12)} ${formatDate(t.due)}</div>`:''}</div>`}
 
@@ -1653,6 +1680,66 @@ async function enablePushNotifications(){
 function initForegroundMessaging(){
   if(VAPID_KEY.includes('ВСТАВЬТЕ')||!('serviceWorker'in navigator)||!window.firebase||!firebase.messaging)return;
   try{if(!messaging)messaging=firebase.messaging();messaging.onMessage(payload=>{const n=payload.notification||{};showToast('🔔 '+(n.title||'Напоминание'))})}catch(e){}
+}
+
+// ============================================
+// LIQUID GLASS PHYSICS
+// Tap-flash: cheap, one-shot, safe to use anywhere (event delegation, no per-item listeners).
+// Full 3D-tilt + velocity-reactive refraction: only on the FAB and the dashboard hero card —
+// deliberately NOT on list items (note/task/project cards), since dozens of those can be on
+// screen at once and per-item pointermove tracking there is exactly what caused the lag/freeze
+// issues earlier. This keeps the "wow" moment without reintroducing that.
+// ============================================
+document.addEventListener('pointerdown',e=>{
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const el=e.target.closest('button,.note-card,.task-item,.project-card,.tab-item,.sticker-cell,.tag-chip,.project-new-card');
+  if(!el)return;
+  const flash=document.createElement('div');
+  flash.className='tap-flash';
+  flash.style.left=e.clientX+'px';flash.style.top=e.clientY+'px';
+  document.body.appendChild(flash);
+  flash.addEventListener('animationend',()=>flash.remove());
+});
+
+function initLiquidPhysics(el,specularEl,opts){
+  opts=opts||{};
+  const maxTilt=opts.maxTilt||14,baseScale=opts.baseScale||10,maxExtra=opts.maxExtra||24;
+  let targetRX=0,targetRY=0,curRX=0,curRY=0,targetScale=baseScale,curScale=baseScale;
+  let lastPX=null,lastPY=null,lastT=performance.now(),inside=false,raf=null;
+  function onMove(e){
+    inside=true;
+    const rect=el.getBoundingClientRect();
+    const nx=(e.clientX-rect.left)/rect.width,ny=(e.clientY-rect.top)/rect.height;
+    const dx=nx-0.5,dy=ny-0.5;
+    targetRY=dx*maxTilt*2;targetRX=-dy*maxTilt*2;
+    if(specularEl){specularEl.style.setProperty('--gx',(nx*100)+'%');specularEl.style.setProperty('--gy',(ny*100)+'%');specularEl.style.opacity='0.5'}
+    const now=performance.now(),dt=Math.max(1,now-lastT);
+    if(lastPX!==null){const d=Math.hypot(e.clientX-lastPX,e.clientY-lastPY);targetScale=baseScale+Math.min(maxExtra,(d/dt)*18)}
+    lastPX=e.clientX;lastPY=e.clientY;lastT=now;
+  }
+  function onLeave(){inside=false;targetRX=0;targetRY=0;targetScale=baseScale;lastPX=null;if(specularEl)specularEl.style.opacity='0'}
+  el.addEventListener('pointermove',onMove);
+  el.addEventListener('pointerleave',onLeave);
+  function tick(){
+    curRX+=(targetRX-curRX)*0.15;curRY+=(targetRY-curRY)*0.15;curScale+=(targetScale-curScale)*0.12;
+    el.style.transform=`perspective(800px) rotateX(${curRX.toFixed(2)}deg) rotateY(${curRY.toFixed(2)}deg)`;
+    if(lgDisplaceInstances.has(el))lgDisplaceInstances.get(el).setAttribute('scale',curScale.toFixed(1));
+    if(!inside)targetScale+=(baseScale-targetScale)*0.06;
+    raf=requestAnimationFrame(tick);
+  }
+  tick();
+}
+const lgDisplaceInstances=new Map();
+function initGlassEffects(){
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const fab=document.getElementById('fabButton')||document.querySelector('.fab');
+  if(fab&&!fab.dataset.glassBound){fab.dataset.glassBound='1';initLiquidPhysics(fab,null,{maxTilt:16,baseScale:8,maxExtra:20})}
+  const hero=document.getElementById('dashHero');
+  if(hero&&!hero.dataset.glassBound){
+    hero.dataset.glassBound='1';
+    lgDisplaceInstances.set(hero,document.getElementById('lgDisplace'));
+    initLiquidPhysics(hero,document.getElementById('dashHeroSpecular'),{maxTilt:6,baseScale:10,maxExtra:26});
+  }
 }
 
 function openModal(id){document.getElementById(id).classList.add('open')}
