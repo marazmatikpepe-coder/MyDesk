@@ -52,7 +52,7 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.method !== 'GET') return;
 
-  const isImageHost = req.url.includes('i.ibb.co');
+  const isImageHost = req.url.includes('i.ibb.co') || req.url.includes('allwebs.ru') || req.destination === 'image' || req.destination === 'video';
   if (!isImageHost) return; // остальные запросы (сама база, API) не трогаем
 
   event.respondWith(
