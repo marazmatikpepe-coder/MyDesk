@@ -581,7 +581,7 @@ img{display:block;max-width:100%}
 
   <div class="editor-overlay" id="noteEditor">
     <div class="editor-header"><button class="editor-back" id="editorClose"><div style="font-size:20px;font-weight:600;color:var(--accent);padding:0 8px;">←</div></button><div class="editor-status" id="editorStatus"></div><div class="editor-actions" id="editorActions"></div></div>
-    <div class="editor-body"><input type="text" class="editor-title-input" id="editorTitle" placeholder="Заголовок"><div class="editor-content" id="editorContent" contenteditable="true" data-placeholder="Начните писать..." spellcheck="true"></div><div class="tag-chip-row" id="editorTagRow" style="padding:0 20px 8px"></div><div class="editor-images" id="editorImages"></div><div class="editor-attachments" id="editorAttachments"></div></div>
+    <div class="editor-body"><input type="text" class="editor-title-input" id="editorTitle" placeholder="Заголовок"><div class="editor-content" id="editorContent" contenteditable="true" data-placeholder="Начните писать..." spellcheck="true"></div><div class="tag-chip-row" id="editorTagRow" style="padding:0 20px 8px"></div><div class="editor-images" id="editorImages"></div><div class="editor-images" id="editorVideos" style="margin-top:8px"></div><div class="editor-attachments" id="editorAttachments"></div></div>
     <div class="editor-toolbar" id="editorToolbar"></div>
   </div>
 
@@ -687,7 +687,7 @@ img{display:block;max-width:100%}
   </div>
   <nav class="tab-bar" id="tabBar"></nav>
 </div>
-<input type="file" id="imageUploadInput" accept="image/*" style="display:none;" multiple>
+<input type="file" id="imageUploadInput" accept="image/*,video/mp4,video/quicktime,video/webm,.mov" style="display:none;" multiple>
 <input type="file" id="docImportInput" accept=".txt,.md,.fb2,.doc,.docx,.pdf" style="display:none;" multiple>
 <input type="file" id="scanInput" accept="image/*" style="display:none;">
 <input type="file" id="docAttachInput" accept=".txt,.md,.pdf" style="display:none;">
@@ -1001,7 +1001,7 @@ window.addEventListener('focus',()=>{if(App.user&&App.isOnline)Sync.pullAll()});
 window.addEventListener('online',()=>{App.isOnline=true;showSync('Подключено');Sync.pushAll()});
 window.addEventListener('offline',()=>{App.isOnline=false;showSync('Офлайн')});
 
-async function uploadImage(f){const fd=new FormData();fd.append('source',f);try{const r=await fetch('https://allwebs.ru/api/1/upload',{method:'POST',headers:{'X-API-Key':ALLWEBS_API_KEY},body:fd});const d=await r.json();const url=d?.data?.url||d?.url||d?.image?.url||d?.data?.image?.url;if(url)return url;throw 0}catch{showToast('Ошибка загрузки, сохраняю локально');try{return await readAsDataURL(f)}catch(e2){return null}}}
+async function uploadImage(f){const fd=new FormData();fd.append('source',f);try{const r=await fetch('https://allwebs.ru/api/1/upload',{method:'POST',headers:{'X-API-Key':ALLWEBS_API_KEY},body:fd});const d=await r.json();const url=d?.data?.url||d?.url||d?.image?.url||d?.data?.image?.url;if(url)return url;throw 0}catch{if(f.size>3*1024*1024){showToast('Не удалось загрузить файл (сеть/сервер) — слишком большой для локального сохранения');return null}showToast('Ошибка загрузки, сохраняю локально');try{return await readAsDataURL(f)}catch(e2){return null}}}
 
 // ============================================
 // NAVIGATION
@@ -1067,9 +1067,23 @@ App.currentNote.title=t;App.currentNote.content=c;App.currentNote.modified=Date.
 function autoSaveNote(){if(!App.settings.autoSave||!App.currentNote)return;clearTimeout(App.saveTimer);updateEditorStatus('...',true);App.saveTimer=setTimeout(()=>{saveCurrentNote();updateEditorStatus('Сохранено')},500)}
 function updateEditorStatus(t,s=false){document.getElementById('editorStatus').innerHTML=s?`<div class="sync-spinner" style="width:12px;height:12px"></div><span>${t}</span>`:`${wemoji('check','xs')}<span>${t}</span>`}
 function toggleCurrentNotePin(){if(!App.currentNote)return;App.currentNote.pinned=!App.currentNote.pinned;App.currentNote.modified=Date.now();document.getElementById('editorPin').innerHTML=icon('pin',22,App.currentNote.pinned?'accent':'');saveCurrentNote();showToast(App.currentNote.pinned?'Закреплено':'Откреплено','star')}
-function renderEditorImages(){const c=document.getElementById('editorImages');if(!App.currentNote||!App.currentNote.images?.length){c.innerHTML='';return}c.innerHTML=App.currentNote.images.map((u,i)=>`<div style="position:relative;display:inline-block"><img class="editor-img" src="${u}" alt="" loading="lazy"><button onclick="removeNoteImage(${i})" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--color-danger);color:white;font-size:14px;display:flex;align-items:center;justify-content:center">×</button></div>`).join('')}
+function renderEditorImages(){const c=document.getElementById('editorImages');if(!App.currentNote||!App.currentNote.images?.length){c.innerHTML='';return}c.innerHTML=App.currentNote.images.map((u,i)=>`<div style="position:relative;display:inline-block"><img class="editor-img" src="${u}" alt="" loading="lazy"><button onclick="removeNoteImage(${i})" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--color-danger);color:white;font-size:14px;display:flex;align-items:center;justify-content:center">×</button></div>`).join('');renderEditorVideos()}
+function renderEditorVideos(){const c=document.getElementById('editorVideos');if(!c)return;if(!App.currentNote||!App.currentNote.videos?.length){c.innerHTML='';return}c.innerHTML=App.currentNote.videos.map((u,i)=>`<div style="position:relative;display:inline-block"><video class="editor-video" src="${u}" controls preload="metadata" style="width:220px;max-width:100%;border-radius:var(--radius-lg);display:block;background:#000"></video><button onclick="removeNoteVideo(${i})" style="position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--color-danger);color:white;font-size:14px;display:flex;align-items:center;justify-content:center">×</button></div>`).join('')}
 function removeNoteImage(i){if(!App.currentNote)return;App.currentNote.images.splice(i,1);App.currentNote.modified=Date.now();renderEditorImages();saveCurrentNote()}
-async function handleImageUpload(files){if(!App.currentNote||!files.length)return;showToast('Загрузка...');for(const f of files){const u=await uploadImage(f);if(u){if(!App.currentNote.images)App.currentNote.images=[];App.currentNote.images.push(u)}}renderEditorImages();saveCurrentNote();showToast('Добавлено','sparkles')}
+function removeNoteVideo(i){if(!App.currentNote)return;App.currentNote.videos.splice(i,1);App.currentNote.modified=Date.now();renderEditorVideos();saveCurrentNote()}
+async function handleImageUpload(files){
+  if(!App.currentNote||!files.length)return;
+  showToast('Загрузка...');
+  for(const f of files){
+    const isVideo=f.type.startsWith('video/')||/\.(mov|mp4|webm)$/i.test(f.name);
+    const u=await uploadImage(f);
+    if(u){
+      if(isVideo){App.currentNote.videos=App.currentNote.videos||[];App.currentNote.videos.push(u)}
+      else{App.currentNote.images=App.currentNote.images||[];App.currentNote.images.push(u)}
+    }
+  }
+  renderEditorImages();saveCurrentNote();showToast('Добавлено','sparkles');
+}
 function showNoteActions(){if(!App.currentNote)return;const n=App.currentNote;document.getElementById('noteActionsSheet').innerHTML=`<div class="modal-handle"></div><div class="modal-title">Действия</div><div style="display:flex;flex-direction:column;gap:4px"><button class="setting-item" onclick="toggleCurrentNotePin();closeModal('noteActionsModal')">${icon('pin',18)} <span class="setting-label">${n.pinned?'Открепить':'Закрепить'}</span></button><button class="setting-item" onclick="moveNoteToFolder()">${icon('foldersOutline',18)} <span class="setting-label">В папку</span></button><button class="setting-item" onclick="openVersionHistory()">${icon('clock',18)} <span class="setting-label">История версий</span></button><button class="setting-item" onclick="openCollabShare()">${icon('share',18)} <span class="setting-label">Совместный доступ</span></button><button class="setting-item" onclick="archiveCurrentNote()">${icon('archive',18)} <span class="setting-label">Архивировать</span></button><button class="setting-item" onclick="shareCurrentNote()">${icon('outboxTray',18)} <span class="setting-label">Поделиться как текст</span></button><button class="setting-item" onclick="deleteCurrentNote()">${icon('delete',18)} <span class="setting-label" style="color:var(--color-danger)">Удалить</span></button></div>`;openModal('noteActionsModal')}
 function archiveCurrentNote(){if(!App.currentNote)return;App.currentNote.archived=true;App.currentNote.modified=Date.now();saveCurrentNote();closeModal('noteActionsModal');closeEditor();showToast('Архивировано')}
 function deleteCurrentNote(){if(!App.currentNote||!confirm('Удалить?'))return;App.notes=App.notes.filter(n=>n.id!==App.currentNote.id);Store.saveNotes();Sync.debounceSync();closeModal('noteActionsModal');closeEditor();showToast('Удалено')}
@@ -1368,7 +1382,7 @@ window.addEventListener('message',e=>{if(e.data&&e.data.__pj)pjLog(e.data.level,
 // ============================================
 function contentToHtml(text){
   const esc=escHtml(text||'');
-  const withImgs=esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline" data-key="${k}" width="20" height="20" src="${it.u}" alt="${escHtml(it.n)}" contenteditable="false">`:m});
+  const withImgs=esc.replace(/\[\[s:([a-zA-Z0-9]+)\]\]/g,(m,k)=>{const it=STICKER_MAP[k];return it?`<img class="sticker-inline" data-key="${k}" width="20" height="20" src="${it.u}" alt="${escHtml(it.n)}" contenteditable="false">\u200B`:m});
   return withImgs.replace(/\n/g,'<br>');
 }
 function htmlToContent(el){
@@ -1385,7 +1399,7 @@ function htmlToContent(el){
     if(isBlock&&!out.endsWith('\n'))out+='\n';
   }
   el.childNodes.forEach(walk);
-  return out.replace(/\n+$/,'');
+  return out.replace(/\u200B/g,'').replace(/\n+$/,'');
 }
 let savedCaretRange=null;
 function saveCaret(el){
@@ -1406,10 +1420,14 @@ function insertStickerNode(container,key){
   else{range=document.createRange();range.selectNodeContents(container);range.collapse(false)}
   const img=document.createElement('img');
   img.className='sticker-inline';img.dataset.key=key;img.src=it.u;img.alt=it.n;img.width=20;img.height=20;img.setAttribute('contenteditable','false');
-  range.deleteContents();range.insertNode(img);
-  range.setStartAfter(img);range.setEndAfter(img);range.collapse(true);
-  sel.removeAllRanges();sel.addRange(range);
-  savedCaretRange=range.cloneRange();
+  range.deleteContents();
+  range.insertNode(img);
+  const anchor=document.createTextNode('\u200B');
+  img.after(anchor);
+  const newRange=document.createRange();
+  newRange.setStartAfter(anchor);newRange.setEndAfter(anchor);newRange.collapse(true);
+  sel.removeAllRanges();sel.addRange(newRange);
+  savedCaretRange=newRange.cloneRange();
 }
 function insertPlainTextAtEnd(container,text){
   if(container.childNodes.length)container.appendChild(document.createElement('br'));
