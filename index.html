@@ -599,7 +599,7 @@ img{display:block;max-width:100%}
     <div class="pj-body" id="pjBody" data-active="files">
       <div class="pj-sidebar" id="pjSidebar"></div>
       <div class="pj-editor-pane" id="pjEditorPane">
-        <div style="display:flex;align-items:center;border-bottom:1px solid var(--glass-border)"><div class="pj-file-tabs" id="pjFileTabs" style="border-bottom:none;flex:1"></div><button class="header-btn mic-btn" style="flex-shrink:0" title="Голосовой ввод" onclick="startVoiceInput('project')"><img src="https://allwebs.ru/images/2026/09/12/5b6aabbbd002101a7db56841ebd873ed.md.png" style="width:18px;height:18px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button><button class="header-btn" style="flex-shrink:0;margin-right:6px" title="Вставить стикер" onclick="openStickerPicker('insert',{target:'project'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:18px;height:18px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
+        <div style="display:flex;align-items:center;border-bottom:1px solid var(--glass-border)"><div class="pj-file-tabs" id="pjFileTabs" style="border-bottom:none;flex:1"></div><button class="header-btn mic-btn" style="flex-shrink:0" title="Голосовой ввод" onclick="startVoiceInput('project')"><img src="https://allwebs.ru/images/2026/09/12/5b6aabbbd002101a7db56841ebd873ed.md.png" style="width:18px;height:18px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
         <div class="pj-editor-host" id="pjEditorHost"><div class="pj-editor-empty" id="pjEditorEmpty">Выберите файл слева</div><textarea id="pjRawEditor" spellcheck="false" style="display:none"></textarea></div>
       </div>
       <div class="pj-preview-pane" id="pjPreviewPane">
@@ -615,7 +615,7 @@ img{display:block;max-width:100%}
 
   <div class="modal-backdrop" id="taskModal"><div class="modal-sheet"><div class="modal-handle"></div><div class="modal-title" id="taskModalHeader"></div><div style="display:flex;flex-direction:column;gap:12px;">
     <div style="position:relative;"><input type="text" class="input-field" id="taskTitle" placeholder="Название задачи" style="padding-right:40px"><button class="header-btn mic-btn" id="taskTitleMic" style="position:absolute;right:4px;top:4px;width:30px;height:30px" title="Голосовой ввод" onclick="startVoiceInput('taskTitle')"><img src="https://allwebs.ru/images/2026/09/12/5b6aabbbd002101a7db56841ebd873ed.md.png" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
-    <div style="position:relative;"><div class="input-field editable-desc" id="taskDesc" contenteditable="true" data-placeholder="Описание (опционально)" style="padding-right:76px"></div><button class="header-btn mic-btn" id="taskDescMic" style="position:absolute;right:40px;bottom:4px;width:30px;height:30px" title="Голосовой ввод" onclick="startVoiceInput('taskDesc')"><img src="https://allwebs.ru/images/2026/09/12/5b6aabbbd002101a7db56841ebd873ed.md.png" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button><button class="header-btn" style="position:absolute;right:4px;bottom:4px;width:30px;height:30px" title="Вставить стикер" onclick="saveCaret(document.getElementById('taskDesc'));openStickerPicker('insert',{target:'taskDesc'})"><img src="https://i.ibb.co/4nMW8Tw2/Artist-Palette.webp" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
+    <div style="position:relative;"><div class="input-field editable-desc" id="taskDesc" contenteditable="true" data-placeholder="Описание (опционально)" style="padding-right:40px"></div><button class="header-btn mic-btn" id="taskDescMic" style="position:absolute;right:4px;bottom:4px;width:30px;height:30px" title="Голосовой ввод" onclick="startVoiceInput('taskDesc')"><img src="https://allwebs.ru/images/2026/09/12/5b6aabbbd002101a7db56841ebd873ed.md.png" style="width:20px;height:20px;object-fit:contain;pointer-events:none;-webkit-user-drag:none;user-select:none"></button></div>
     <div style="display:flex;gap:8px;">
       <button class="picker-trigger" id="taskDueTrigger" style="flex:1;"><span class="picker-label">Дата</span><span class="picker-value" id="taskDueDisplay">Не выбрана</span></button>
       <button class="picker-trigger" id="taskTimeTrigger" style="flex:1;"><span class="picker-label">Время</span><span class="picker-value" id="taskTimeDisplay">—</span></button>
@@ -1001,7 +1001,33 @@ window.addEventListener('focus',()=>{if(App.user&&App.isOnline)Sync.pullAll()});
 window.addEventListener('online',()=>{App.isOnline=true;showSync('Подключено');Sync.pushAll()});
 window.addEventListener('offline',()=>{App.isOnline=false;showSync('Офлайн')});
 
-async function uploadImage(f){const fd=new FormData();fd.append('source',f);try{const r=await fetch('https://allwebs.ru/api/1/upload',{method:'POST',headers:{'X-API-Key':ALLWEBS_API_KEY},body:fd});const d=await r.json();const url=d?.data?.url||d?.url||d?.image?.url||d?.data?.image?.url;if(url)return url;throw 0}catch{if(f.size>3*1024*1024){showToast('Не удалось загрузить файл (сеть/сервер) — слишком большой для локального сохранения');return null}showToast('Ошибка загрузки, сохраняю локально');try{return await readAsDataURL(f)}catch(e2){return null}}}
+async function uploadImage(f){
+  const fd=new FormData();fd.append('source',f);
+  try{
+    const r=await fetch('https://allwebs.ru/api/1/upload',{method:'POST',headers:{'X-API-Key':ALLWEBS_API_KEY},body:fd});
+    const d=await r.json();
+    console.log('allwebs upload response:',d);
+    const url=findUrlInObject(d);
+    if(url)return url;
+    throw new Error('No URL found in upload response: '+JSON.stringify(d));
+  }catch(e){
+    console.error('Upload to allwebs.ru failed:',e);
+    if(f.size>3*1024*1024){showToast('Не удалось загрузить файл — проверьте консоль (F12) для деталей');return null}
+    showToast('Ошибка загрузки, сохраняю локально');
+    try{return await readAsDataURL(f)}catch(e2){return null}
+  }
+}
+function findUrlInObject(obj,depth){
+  depth=depth||0;if(depth>6)return null;
+  if(typeof obj==='string'&&/^https?:\/\/\S+\.(jpg|jpeg|png|gif|webp|bmp|avif|mp4|mov|webm)(\?.*)?$/i.test(obj))return obj;
+  if(obj&&typeof obj==='object'){
+    for(const k of Object.keys(obj)){
+      const found=findUrlInObject(obj[k],depth+1);
+      if(found)return found;
+    }
+  }
+  return null;
+}
 
 // ============================================
 // NAVIGATION
@@ -1050,8 +1076,8 @@ el.innerHTML=h}
 function openNote(id,presetNote){let note;if(presetNote){note=presetNote}else if(id){note=App.notes.find(n=>n.id===id);if(!note)return}else{note={id:uid(),title:'',content:'',created:Date.now(),modified:Date.now(),pinned:false,archived:false,folderId:null,images:[],tags:[],links:[]};App.notes.unshift(note);Store.saveNotes()}
 App.currentNote=note;document.getElementById('editorTitle').value=note.title||'';document.getElementById('editorContent').innerHTML=contentToHtml(note.content||'');renderEditorImages();updateEditorStatus('Сохранено');renderNoteTagRow();
 document.getElementById('editorActions').innerHTML=`<button class="header-btn" id="editorPin">${icon('pin',22,note.pinned?'accent':'')}</button><button class="header-btn" id="editorMore">${icon('more',22)}</button>`;
-document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn" id="eAttachDoc">${icon('attachFile',22)}</button><button class="toolbar-btn mic-btn" id="eMic">${icon('mic',22)}</button><button class="toolbar-btn" id="eScan">${icon('scan',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSticker">${wemoji('palette','sm')}</button><button class="toolbar-btn" id="eTag">${icon('tag',22)}</button><button class="toolbar-btn" id="eSpeak"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/></svg></button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
-document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eSticker').onclick=()=>{saveCaret(document.getElementById('editorContent'));openStickerPicker('insert',{target:'note'})};document.getElementById('eTag').onclick=()=>openStickerPicker('tag',{itemType:'note',id:App.currentNote.id});document.getElementById('eFolder').onclick=moveNoteToFolder;document.getElementById('eMic').onclick=()=>startVoiceInput('note');document.getElementById('eScan').onclick=()=>document.getElementById('scanInput').click();document.getElementById('eSpeak').onclick=speakCurrentNote;document.getElementById('eAttachDoc').onclick=()=>document.getElementById('docAttachInput').click();renderNoteAttachments();
+document.getElementById('editorToolbar').innerHTML=`<button class="toolbar-btn" id="eAddImg">${icon('camera',22)}</button><button class="toolbar-btn" id="eAttachDoc">${icon('attachFile',22)}</button><button class="toolbar-btn mic-btn" id="eMic">${icon('mic',22)}</button><button class="toolbar-btn" id="eScan">${icon('scan',22)}</button><button class="toolbar-btn" id="eAddLink">${icon('link',22)}</button><button class="toolbar-btn" id="eSpeak"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 010 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M19 6a8.5 8.5 0 010 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity="0.6"/></svg></button><div style="flex:1"></div><button class="toolbar-btn" id="eFolder">${icon('foldersOutline',22)}</button>`;
+document.getElementById('editorPin').onclick=toggleCurrentNotePin;document.getElementById('editorMore').onclick=showNoteActions;document.getElementById('eAddImg').onclick=()=>document.getElementById('imageUploadInput').click();document.getElementById('eAddLink').onclick=()=>{const u=prompt('URL:');if(u){insertPlainTextAtEnd(document.getElementById('editorContent'),u);autoSaveNote()}};document.getElementById('eFolder').onclick=moveNoteToFolder;document.getElementById('eMic').onclick=()=>startVoiceInput('note');document.getElementById('eScan').onclick=()=>document.getElementById('scanInput').click();document.getElementById('eSpeak').onclick=speakCurrentNote;document.getElementById('eAttachDoc').onclick=()=>document.getElementById('docAttachInput').click();renderNoteAttachments();
 document.getElementById('noteEditor').classList.add('open');setTimeout(()=>{if(!note.title)document.getElementById('editorTitle').focus();else document.getElementById('editorContent').focus()},300);
 if(note.shareId)attachCollabListener(note.shareId);else detachCollabListener();setTimeout(applyKeyboardAvoidance,350);}
 
@@ -1310,8 +1336,7 @@ function openProject(id){
   const p=App.projects.find(x=>x.id===id);if(!p)return;
   App.currentProjectId=id;App.openFiles=[];App.currentFilePath=null;
   document.getElementById('pjTitle').textContent=p.name;
-  document.getElementById('pjActions').innerHTML=`<button class="header-btn" id="pjTagBtn" title="Метки">${icon('tag',20)}</button><button class="header-btn" id="pjUploadBtn" title="Загрузить файлы">${icon('attachFile',20)}</button><button class="header-btn" id="pjZipBtn" title="Импорт .zip">${icon('fileZip',20)}</button><button class="header-btn" id="pjExportBtn" title="Скачать .zip">${icon('outboxTray',20)}</button>`;
-  document.getElementById('pjTagBtn').onclick=()=>openStickerPicker('tag',{itemType:'project',id:p.id});
+  document.getElementById('pjActions').innerHTML=`<button class="header-btn" id="pjUploadBtn" title="Загрузить файлы">${icon('attachFile',20)}</button><button class="header-btn" id="pjZipBtn" title="Импорт .zip">${icon('fileZip',20)}</button><button class="header-btn" id="pjExportBtn" title="Скачать .zip">${icon('outboxTray',20)}</button>`;
   document.getElementById('pjUploadBtn').onclick=()=>document.getElementById('projectFileInput').click();
   document.getElementById('pjZipBtn').onclick=()=>document.getElementById('projectZipInput').click();
   document.getElementById('pjExportBtn').onclick=exportProjectZip;
@@ -1515,8 +1540,8 @@ function toggleItemTag(itemType,id,key){
   else if(itemType==='project'){const p=App.projects.find(x=>x.id===id);if(!p)return;p.tags=p.tags||[];const i=p.tags.indexOf(key);if(i>=0)p.tags.splice(i,1);else p.tags.push(key);p.modified=Date.now();Store.saveProjects();Sync.debounceSync();renderProjects()}
 }
 function renderTagChips(tags){return(tags||[]).map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip" title="${escHtml(it.n)}"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')}
-function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'note',id:'${App.currentNote.id}'})">+</span>`}
-function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')+`<span class="add-tag-btn" onclick="openStickerPicker('tag',{itemType:'task',id:null})">+</span>`}
+function renderNoteTagRow(){const el=document.getElementById('editorTagRow');if(!el||!App.currentNote)return;const tags=App.currentNote.tags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('note','${App.currentNote.id}','${k}')"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')}
+function renderTaskTagRow(){const el=document.getElementById('taskTagRow');if(!el)return;const tags=App.editingTaskTags||[];el.innerHTML=tags.map(k=>{const it=STICKER_MAP[k];return it?`<span class="tag-chip removable" title="Убрать" onclick="toggleItemTag('task',null,'${k}')"><img src="${it.u}" width="17" height="17" alt="" loading="lazy" decoding="async"></span>`:''}).join('')}
 function renderTagFilterBar(kind,items){
   const tagSet=new Set();items.forEach(it=>(it.tags||[]).forEach(k=>tagSet.add(k)));
   if(!tagSet.size)return'';
