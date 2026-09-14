@@ -957,7 +957,7 @@ const ALLWEBS_API_KEY='chv_h1Vj_fbdaee8c02a39946d0c40ecd1883464f6cedb2a542deeecc
 // ============================================
 const App={user:null,currentScreen:'dashboard',currentNote:null,fabOpen:false,onboardingStep:0,calendarDate:new Date(),selectedCalDate:new Date().toISOString().split('T')[0],settings:{theme:'system',accentColor:'#007AFF',autoSave:true,animations:true},notes:[],tasks:[],schedules:[],folders:[],projects:[],isOnline:navigator.onLine,isSyncing:false,lastSync:null,saveTimer:null,taskPriority:'low',editingTaskId:null,editingScheduleId:null,scheduleEntries:[],currentProjectId:null,currentFilePath:null,openFiles:[],pjView:'code',pjSaveTimer:null,editingTaskTags:[],notesTagFilter:null,tasksTagFilter:null,projectsTagFilter:null,stickerCtx:null,stickerCat:'activity'};
 
-const Store={get(k){try{const v=localStorage.getItem('mydesk_'+k);return v?JSON.parse(v):null}catch{return null}},set(k,v){try{localStorage.setItem('mydesk_'+k,JSON.stringify(v))}catch(e){console.warn(e)}},loadAll(){App.notes=this.get('notes')||[];App.tasks=this.get('tasks')||[];App.schedules=this.get('schedules')||[];App.folders=this.get('folders')||[];App.projects=this.get('projects')||[];App.lastSync=this.get('lastSync');const s=this.get('settings');if(s)App.settings={...App.settings,...s}},saveNotes(){this.set('notes',App.notes)},saveTasks(){this.set('tasks',App.tasks)},saveSchedules(){this.set('schedules',App.schedules)},saveFolders(){this.set('folders',App.folders)},saveProjects(){this.set('projects',App.projects)},saveSettings(){this.set('settings',App.settings)}};
+const Store={get(k){try{const v=localStorage.getItem('mydesk_'+k);return v?JSON.parse(v):null}catch{return null}},set(k,v){try{localStorage.setItem('mydesk_'+k,JSON.stringify(v))}catch(e){if(e&&e.name==='QuotaExceededError'&&k==='notes'&&Array.isArray(v)){try{const stripped=v.map(n=>({...n,images:(n.images||[]).filter(u=>typeof u==='string'&&!u.startsWith('data:')),videos:(n.videos||[]).filter(u=>typeof u==='string'&&!u.startsWith('data:'))}));localStorage.setItem('mydesk_notes',JSON.stringify(stripped));showToast('Локальное хранилище переполнено — крупные вложения, которые не успели загрузиться на сервер, были убраны, чтобы не потерять текст заметок')}catch(e2){console.warn('Store quota fallback failed',e2)}}else console.warn('Store.set failed',k,e)}},loadAll(){App.notes=this.get('notes')||[];App.tasks=this.get('tasks')||[];App.schedules=this.get('schedules')||[];App.folders=this.get('folders')||[];App.projects=this.get('projects')||[];App.lastSync=this.get('lastSync');const s=this.get('settings');if(s)App.settings={...App.settings,...s};this.cleanupOversizedAttachments()},cleanupOversizedAttachments(){let changed=false;App.notes.forEach(n=>{if(Array.isArray(n.images)){const before=n.images.length;n.images=n.images.filter(u=>typeof u==='string'&&!u.startsWith('data:'));if(n.images.length!==before)changed=true}if(Array.isArray(n.videos)){const before=n.videos.length;n.videos=n.videos.filter(u=>typeof u==='string'&&!u.startsWith('data:'));if(n.videos.length!==before)changed=true}});if(changed){this.saveNotes();setTimeout(()=>showToast('Найдены незагруженные вложения из прошлых сессий — они были удалены локально, чтобы освободить память браузера'),1200)}},saveNotes(){this.set('notes',App.notes)},saveTasks(){this.set('tasks',App.tasks)},saveSchedules(){this.set('schedules',App.schedules)},saveFolders(){this.set('folders',App.folders)},saveProjects(){this.set('projects',App.projects)},saveSettings(){this.set('settings',App.settings)}};
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,9)}
 function formatDate(d){if(!d)return'';const dt=new Date(d),now=new Date(),diff=now-dt;if(diff<60000)return'Только что';if(diff<3600000)return Math.floor(diff/60000)+' мин назад';if(diff<86400000)return Math.floor(diff/3600000)+' ч назад';if(diff<172800000)return'Вчера';return dt.toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}
@@ -1001,6 +1001,7 @@ window.addEventListener('focus',()=>{if(App.user&&App.isOnline)Sync.pullAll()});
 window.addEventListener('online',()=>{App.isOnline=true;showSync('Подключено');Sync.pushAll()});
 window.addEventListener('offline',()=>{App.isOnline=false;showSync('Офлайн')});
 
+function estimateStorageUsage(){try{let total=0;for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);total+=(localStorage.getItem(k)||'').length}return total}catch(e){return 0}}
 async function uploadImage(f){
   const fd=new FormData();fd.append('source',f);
   try{
@@ -1011,9 +1012,13 @@ async function uploadImage(f){
     if(url)return url;
     throw new Error('No URL found in upload response: '+JSON.stringify(d));
   }catch(e){
-    console.error('Upload to allwebs.ru failed:',e);
-    if(f.size>3*1024*1024){showToast('Не удалось загрузить файл — проверьте консоль (F12) для деталей');return null}
-    showToast('Ошибка загрузки, сохраняю локально');
+    console.error('Upload to allwebs.ru failed (вероятно, сервер не разрешает запросы из браузера — CORS):',e);
+    const usage=estimateStorageUsage();
+    if(f.size>500*1024||usage>3.5*1024*1024){
+      showToast('Загрузка на сервер не работает (см. консоль F12) — файл слишком большой для сохранения в браузере, не прикреплён');
+      return null;
+    }
+    showToast('Сервер загрузки недоступен, сохраняю маленькую копию локально');
     try{return await readAsDataURL(f)}catch(e2){return null}
   }
 }
