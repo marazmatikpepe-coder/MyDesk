@@ -1940,6 +1940,20 @@ function setupKeyboardAvoidance(){
   document.getElementById('editorContent').addEventListener('click',()=>{if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(nudgeCaretIntoView)});
 }
 
+// ============================================
+// LOCAL-FILE WARNING — opening as file:// causes misleading errors
+// (stickers/uploads/sync/notifications all behave differently there
+// than on the real hosted site), so warn clearly instead of letting
+// the person chase phantom bugs.
+// ============================================
+function warnIfLocalFile(){
+  if(location.protocol!=='file:')return;
+  const banner=document.createElement('div');
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#ff453a;color:#fff;padding:10px 16px;font-size:13px;font-weight:600;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,0.3)';
+  banner.innerHTML='⚠️ Файл открыт локально с компьютера — стикеры, загрузка фото, синхронизация и уведомления здесь работать не будут как надо. Откройте настоящий адрес сайта (GitHub Pages), а не этот файл. <span style="text-decoration:underline;cursor:pointer;margin-left:6px" onclick="this.parentElement.remove()">Скрыть</span>';
+  document.body.prepend(banner);
+}
+
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModal(m.id)}));
@@ -1973,7 +1987,7 @@ document.getElementById('pjRawEditor').addEventListener('input',()=>{clearTimeou
 document.addEventListener('click',e=>{if(App.fabOpen&&!e.target.closest('#fab')&&!e.target.closest('#fabMenu'))closeFab()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(document.getElementById('noteEditor').classList.contains('open'))closeEditor();if(document.getElementById('projectWorkspace').classList.contains('open'))closeProjectWorkspace();if(document.getElementById('docReaderOverlay').classList.contains('open'))closeDocReader();closeFab();document.querySelectorAll('.modal-backdrop.open').forEach(m=>closeModal(m.id));DatePicker.close();TimePicker.close()}});
 renderTabBar();renderDashboard();
-checkSharedLink();checkReminders();initForegroundMessaging();setupKeyboardAvoidance();
+checkSharedLink();checkReminders();initForegroundMessaging();setupKeyboardAvoidance();warnIfLocalFile();
 registerCachingServiceWorker();
 setTimeout(()=>{document.getElementById('loadingScreen').classList.add('hidden');if(!Store.get('onboardingDone'))document.getElementById('onboarding').classList.remove('hidden');warmStickerCache()},800)}
 
